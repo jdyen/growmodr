@@ -1,3 +1,45 @@
+growmod <- function(x, ...) {
+  UseMethod('growmod')
+}
+
+growmod.formula <- function(formula,
+                            data_set,
+                            model = 'hillslope',
+                            n_iter = 5000,
+                            n_burnin = 2000,
+                            n_thin = 1,
+                            n_chains = 4,
+                            stan_cores = 1,
+                            spline_params = list(degree = 8,
+                                                 n_knots = 10,
+                                                 spline_type = 'ispline'),
+                            ...) {
+  ## WORK OUT FUNCTION SETUP
+  # check data_set and local env for all elements of formula
+  
+  # pull out size vector, age vector, a species/individual vector (rep(1, n) if not provided)
+  #   and a traits/lower-level predictor matrix (rep(1, n) = intercept-only if not provided)
+  
+  # Check data once this is done
+  
+  # fit model growmod.default
+  
+  # return(mod, data)
+}
+
+growmod.default <- function(size,
+                            age,
+                            block_id,
+                            predictors,
+                            model,
+                            n_iter, n_burnin, n_thin, n_chains, stan_cores,
+                            spline_params) {
+  # switch_fun for model - switch(model) return (num_params)
+  # define curve parameters using a paste function (e.g. paste(a, 1:num_params))
+  # work out predictor params similarly
+}
+
+
 #' Fit growth model to data on sizes through time
 #' 
 #' Fit a Stan model to data on sizes through time
@@ -8,21 +50,33 @@
 #' @param n.iter number of HMC iterations to run for stan model
 #' @param n.thin thinning rate for HMC chains
 #' @param n.chains number of HMC chains
-#' @param spline_params named list of settings for spline model (degree, n_knots, use_b_spline)
+#' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
 #' @param ... parameters to be passed to stan model call
 #' 
 #' @return stan_model fitted stan model object
+#' @return data_set
+#' @return loo
+#' @return waic
+#' @return r2
+#' @return rmsd
+#' @return md
 #' 
-stan_growth_model <- function(data, model,
+stan_growth_model <- function(data,
+                              model,
                               save_loglik = FALSE,
                               n.iter = 10000,
                               n.burnin = round(n.iter / 2),
                               n.thin = max(1, floor(n.iter / 10000)),
                               n.chains = 4,
-                              spline_params = list(degree = 8, n_knots = 10, use_b_spline = FALSE),
+                              stan_cores = 1,
+                              spline_params = list(degree = 8,
+                                                   n_knots = 10,
+                                                   spline_type = 'ispline'),
                               ...) {
-  mod.file <- gen_mod_file(model)
-  data.set <- fetch_model_data(data, model = model, all_traits = all_traits, n.plot = n.plot,
+  mod.file <- gen_mod_file(model = model)
+  data.set <- fetch_model_data(data_set = data,
+                               model = model,
+                               n.plot = 100,
                                spline_params = spline_params)
   if (is.null(inits)) {
     inits <- '0'
@@ -53,7 +107,7 @@ stan_growth_model <- function(data, model,
               init = inits,
               seed = seed,
               control = control,
-              cores = cores, ...)
+              cores = stan_cores, ...)
   if (validate) {
     log_lik1 <- extract_log_lik(mod)
     loo <- loo(log_lik1)
@@ -75,24 +129,6 @@ stan_growth_model <- function(data, model,
   return(list(stan_model = mod, data_set = data.set,
               loo = loo, waic = waic,
               r2 = r2, rmsd = rmsd, md = md))
-}
-
-stan_growth_mod_int <- function(i,
-                                data,
-                                mod.list,
-                                all_traits,
-                                validate = TRUE,
-                                n.iter = 1000,
-                                n.chains = 4,
-                                spline_params = list(degree = 8, n_knots = 10)) {
-  out <- stan_growth_model(data,
-                           model = mod.list[i],
-                           all_traits = all_traits[i],
-                           validate = validate,
-                           n.iter = n.iter,
-                           n.chains = n.chains,
-                           spline_params = spline_params)
-  out
 }
 
 stan_model_compare <- function(mod1, mod2) {
@@ -480,7 +516,7 @@ fetch_model_data <- function(data_set, model, all_traits = FALSE, n.plot,
     basis.func <- array(NA, dim = c(n.plot, length(unique(data_set$SPP)), (n.int.knots + bs.order - 1)))
     basis.func2 <- array(NA, dim = c(n.plot, length(unique(data_set$SPP)), (n.int.knots + bs.order - 1)))
     for (i in seq(along = unique(data_set$SPP))) {
-      if (spline_params$use_b_spline) {
+      if (spline_params$spline_type = 'bspline') {
         if (n.int.knots > 0) {
           knots_set <- sort(c(rep(c(min(data_set$Yrs), max(data_set$Yrs)), bs.order),
                               quantile(seq(min(data_set$Yrs), max(data_set$Yrs), length = 100),
@@ -516,7 +552,7 @@ fetch_model_data <- function(data_set, model, all_traits = FALSE, n.plot,
                                                 derivs = 1)
       }
     }
-    if (spline_params$use_b_spline) {
+    if (spline_params$spline_type == 'bspline') {
       if (n.int.knots > 0) {
         knots_set <- sort(c(rep(c(min(data_set$Yrs), max(data_set$Yrs)), bs.order),
                             quantile(seq(min(data_set$Yrs), max(data_set$Yrs), length = 100),

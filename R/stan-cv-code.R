@@ -1,17 +1,47 @@
-stan_growth_model_cv <- function(data, model, all_traits,
+growmod_cv <- function(x, ...) {
+  UseMethod('growmod_cv')
+}
+
+growmod_cv.formula <- function(formula,
+                               data_train,
+                               data_test = NULL,
+                               model = 'hillslope',
+                               n_cv = NULL,
+                               n_iter = 5000,
+                               n_burnin = 2000,
+                               n_thin = 1,
+                               n_chains = 4,
+                               stan_cores = 1,
+                               spline_params = list(degree = 8,
+                                                    n_knots = 10,
+                                                    spline_type = 'ispline'),
+                               ...) {
+  ## IF is.null(data_test) THEN use normal CV (n_cv = n_sp or n_ind or 5/10?)
+  #   ELSE
+  #    use data_train to build and data_test to test (no folds -- external validation)
+}
+
+growmod_cv.default <- function() {
+  
+}
+                                                          
+stan_growth_model_cv <- function(data,
+                                 model,
                                  n.cv = NULL,
                                  n.iter = 10000,
                                  n.burnin = round(n.iter / 2),
                                  n.thin = max(1, floor(n.iter / 10000)),
                                  n.chains = 4,
-                                 inits = NULL,
-                                 seed = 12528921,
-                                 control = NULL,
-                                 cores = 1,
-                                 spline_params = list(degree = 8, n_knots = 10, use_b_spline = FALSE),
+                                 cv_cores = 1,
+                                 stan_cores = 1,
+                                 spline_params = list(degree = 8,
+                                                      n_knots = 10,
+                                                      spline_type = 'ispline'),
                                  ...) {
   mod.file <- gen_mod_file_cv(model)
-  data.set <- fetch_model_data(data, model = model, all_traits = all_traits, n.plot = 100,
+  data.set <- fetch_model_data(data,
+                               model = model,
+                               n.plot = 100,
                                spline_params = spline_params)
   if (is.null(inits)) {
     inits <- '0'
@@ -35,7 +65,8 @@ stan_growth_model_cv <- function(data, model, all_traits,
                     seed,
                     control, 
                     spline_params,
-                    mc.cores = parallel::detectCores(),
+                    stan_cores,
+                    mc.cores = cores,
                     ...)
   } else {
     mod <- lapply(1:n.cv, stan_cv_internal,
@@ -48,7 +79,9 @@ stan_growth_model_cv <- function(data, model, all_traits,
                   inits,
                   seed,
                   control,
-                  spline_params, ...)
+                  spline_params,
+                  stan_cores,
+                  ...)
   }
   out.full <- do.call('rbind', mod)
   r2_cv <- cor(out.full$h_pred, out.full$h_real) ** 2
@@ -71,7 +104,9 @@ stan_cv_internal <- function(i,
                              inits,
                              seed,
                              control, 
-                             spline_params, ...) {
+                             spline_params,
+                             stan_cores,
+                             ...) {
   data_set <- refine_data_cv(data.set, model, i, n = data.set$n, n.cv, spline_params)
   if (model != 'spline') {
     if (length(data_set$x_h_holdout) == ncol(data_set$x_h)) {
@@ -98,7 +133,9 @@ stan_cv_internal <- function(i,
                   chains = n.chains,
                   init = inits,
                   seed = seed,
-                  control = control, ...)
+                  control = control, 
+                  cores = stan_cores,
+                  ...)
   out.loglik <- get_posterior_mean(mod, pars = c('log_lik_holdout'))
   out.hpred <- get_posterior_mean(mod, pars = c('h_holdout_pred'))
   h_holdout_real <- data_set$h_holdout
@@ -355,7 +392,7 @@ refine_data_cv <- function(data, model, i, n, n.cv, spline_params) {
   } else {
     n.int.knots <- spline_params$n_knots
     bs.order <- spline_params$degree + 1
-    if (spline_params$use_b_spline) {
+    if (spline_params$spline_type == 'bspline') {
       if (n.int.knots > 0) {
         knots_set <- sort(c(rep(c(min(data$t), max(data$t)), bs.order),
                             quantile(seq(min(data$t), max(data$t), length = 100),
