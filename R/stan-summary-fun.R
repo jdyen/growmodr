@@ -51,7 +51,7 @@ plot_stan_growth <- function(mod, data = NULL,
                              data_set_label = NULL,
                              species_to_plot = 'all') {
   if (class(mod) != 'stanfit') {
-    tmp <- mod$summary[grep('h_plot\\[', rownames(mod$summary)), ]
+    tmp <- mod[grep('h_plot\\[', rownames(mod)), ]
   } else {
     tmp <- stan_summary_fun(mod, param = 'h_plot\\[')
   }
