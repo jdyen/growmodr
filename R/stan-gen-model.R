@@ -1,15 +1,24 @@
-stan_growth_model <- function(data, model, all_traits,
-                              validate = FALSE,
-                              n.plot = 100,
+#' Fit growth model to data on sizes through time
+#' 
+#' Fit a Stan model to data on sizes through time
+#' 
+#' @param data list containing data on size, age, species, and traits
+#' @param model growth model form to be fitted
+#' @param save_loglik logical indicating whether to record loglik for LOO and WAIC calculations
+#' @param n.iter number of HMC iterations to run for stan model
+#' @param n.thin thinning rate for HMC chains
+#' @param n.chains number of HMC chains
+#' @param spline_params named list of settings for spline model (degree, n_knots, use_b_spline)
+#' @param ... parameters to be passed to stan model call
+#' 
+#' @return stan_model fitted stan model object
+#' 
+stan_growth_model <- function(data, model,
+                              save_loglik = FALSE,
                               n.iter = 10000,
                               n.burnin = round(n.iter / 2),
                               n.thin = max(1, floor(n.iter / 10000)),
                               n.chains = 4,
-                              pars = NULL,
-                              inits = NULL,
-                              seed = 12528921,
-                              control = NULL,
-                              cores = 1,
                               spline_params = list(degree = 8, n_knots = 10, use_b_spline = FALSE),
                               ...) {
   mod.file <- gen_mod_file(model)

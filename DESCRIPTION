@@ -16,4 +16,4 @@ Depends:
     R (>= 3.0)
 Imports:
 Suggests:
-
+RoxygenNote: 6.0.1
