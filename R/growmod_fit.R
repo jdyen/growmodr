@@ -11,31 +11,18 @@ NULL
 #' @import rstan
 #' 
 #' @param x list containing data on size, age, species, and traits
-#' 
 #' @param formula list containing data on size, age, species, and traits
-#' 
 #' @param size list containing data on size, age, species, and traits
-#' 
 #' @param index list containing data on size, age, species, and traits
-#' 
 #' @param block list containing data on size, age, species, and traits
-#' 
 #' @param predictors list containing data on size, age, species, and traits
-#' 
 #' @param data list containing data on size, age, species, and traits
-#' 
 #' @param model growth model form to be fitted
-#' 
 #' @param n_iter number of HMC iterations to run for stan model
-#' 
 #' @param n_burnin number of HMC iterations to run for stan model
-#' 
 #' @param n_thin thinning rate for HMC chains
-#' 
 #' @param n_chains number of HMC chains
-#' 
 #' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
-#' 
 #' @param \dots parameters to be passed to stan model call
 #' 
 #' @details \code{growmod} takes a formula or data vectors as arguments
@@ -44,12 +31,64 @@ NULL
 #' @return \code{mod} A fitted \code{grow_mod} object containing
 #'   parameter estimates, validation statistics, and the original
 #'   data set used to fit the model. 
+#'
+#' @examples
+#' \dontrun {
+#'   # simulate some data
+#'   data_sim <- growth_data_sim(n = 100,
+#'                               nblock = 5,
+#'                               age_range = c(0, 1),
+#'                               include_predictors = TRUE,
+#'                               true_model = 'hillslope')
+#'
+#'   # fit the correct model
+#'   mod1 <- growmod(size ~ (age | block),
+#'                   predictors = predictors,
+#'                   data = data_sim,
+#'                   model = 'hillslope',
+#'                   n_iter = 1000,
+#'                   n_burnin = 500,
+#'                   n_chains = 2,
+#'                   stan_cores = 1)
+#'
+#'   # plot the fitted model
+#'   plot(mod1)
+#'   
+#'   # summarise the fitted model
+#'   summary(mod1)
+#'   
+#'   # print the fitted model
+#'   print(mod1)
+#'
+#'   # cross validate the fitted model
+#'   mod1_cv <- validate(mod1)
+#'                    
+#'   # fit an incorrect model
+#'   mod2 <- growmod(size ~ (age | block),
+#'                   predictors = predictors,
+#'                   data = data_sim,
+#'                   model = 'koblog',
+#'                   n_iter = 1000,
+#'                   n_burnin = 500,
+#'                   n_chains = 2,
+#'                   stan_cores = 1)
+#'
+#'   # compare the fitted models using summary measures of fit
+#'   compare(mod1, mod2)
+#'   
+#'   # compare the fitted models using cross validation
+#'   mod2_cv <- validate(mod2)
+#'   compare(mod1_cv, mod2_cv)
+#'   
+#' }
 #' 
 #' growmod <- function(x, ...) {
   UseMethod('growmod')
 }
 
-#' @describeIn growmod Fit growth model from formula
+#' @rdname growmod
+#' @export
+#' @import rstan
 growmod.formula <- function(formula,
                             predictors = NULL,
                             data,
@@ -152,7 +191,9 @@ growmod.formula <- function(formula,
   mod
 }
 
-#' @describeIn growmod Default fitting method for growmod
+#' @rdname growmod
+#' @export
+#' @import rstan
 growmod.default <- function(size,
                             index,
                             block,
@@ -187,3 +228,49 @@ growmod.default <- function(size,
   # return outputs
   mod
 }
+
+#' @rdname growmod
+#' @export
+compare.growmod <- function(..., x) {
+  dots <- list(...)
+  if (length(dots)) {
+    if (!missing(x)) {
+      stop("If 'x' is specified then '...' should not be specified.")
+    }
+    nms <- as.character(match.call(expand.dots = TRUE))[-1L]
+  } else {
+    if (!is.list(x) || !length(x)) {
+      stop("'x' must be a list.")
+    }
+    dots <- x
+    nms <- names(dots)
+    if (!length(nms)) {
+      nms <- paste0('model', seq_along(dots))
+    }
+  }
+}
+
+#' @rdname growmod
+#' @export
+plot.growmod <- function(x, ...) {
+  
+}
+
+#' @rdname growmod
+#' @export
+summary.growmod <- function(x, ...) {
+  
+}
+
+#' @rdname growmod
+#' @export
+print.growmod <- function(x, ...) {
+  
+}
+
+#' @rdname growmod
+#' @export
+validate.growmod <- function(x, ...) {
+  
+}
+
