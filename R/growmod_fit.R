@@ -274,10 +274,14 @@ growmod.default <- function(size,
     }
   }
   
+  # perhaps have if(model == 'spline') { use_same_preds_for_all }?
+  
   ### WORK OUT PREDICTORS -- NEED TO SETUP FOR STAN MODEL
-  data.set <- fetch_model_data(data_set = list(size = size,
-                                               age = age,
-                                               block_id = block_id,
+  data_set <- A # if single model
+  #else list if multiple
+  data.set <- growmod_data(data_set = list(size = size,
+                                               index = index,
+                                               block = block_data,
                                                predictors = predictors),
                                model = model,
                                n.plot = 100,
