@@ -237,8 +237,12 @@ growmod.default <- function(size,
   
   # setup model parameters and extract predictors
   if (length(model) == 1) {
-    mod_params <- get(paste0(model, '_param_fetch'))()
-    num_params <- mod_params$num_par
+    if (model != 'spline') {
+      mod_params <- get(paste0(model, '_param_fetch'))()
+      num_params <- mod_params$num_par
+    } else {
+      num_params <- spline_params$n_knots + spline_params$degree
+    }
     pred_set <- check_preds(predictors = predictors,
                             model = model,
                             block_data = block,
@@ -248,7 +252,11 @@ growmod.default <- function(size,
   } else {
     mod_params <- vector('list', length = length(model))
     for (i in seq(along = model)) {
-      mod_params[[i]] <- get(paste0(model[i], '_param_fetch'))()
+      if (model != 'spline') {
+        mod_params[[i]] <- get(paste0(model[i], '_param_fetch'))()
+      } else {
+        mod_params[[i]] <- list(num_par = (spline_params$n_knots + spline_params$degree))
+      }
     }
     num_params <- sapply(mod_params, function(x) x$num_par)
     pred_set <- vector('list', length = length(model))
