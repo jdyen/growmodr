@@ -80,6 +80,16 @@ NULL
 #'   mod2_cv <- validate(mod2)
 #'   compare(mod1_cv, mod2_cv)
 #'   
+#'   # example of different predictor sets for each parameter
+#'   # TO BE ADDED
+#'   
+#'   # example of multiple models fitted in one call
+#'   # TO BE ADDED
+#'   
+#'   # example of multiple models fitted in one call with different
+#'   #  predictors for each model and parameter
+#'   # TO BE ADDED
+#'   
 #' }
 #' 
 growmod <- function(x, ...) {
@@ -115,7 +125,7 @@ growmod.formula <- function(formula,
     if (exists(size_resp, parent.frame())) {
       size_data <- get(size_resp, parent.frame())
     } else {
-      stop(paste0(size_resp, ' not available in data or in global environment'),
+      stop(paste0(size_resp, ' not found'),
            call. = FALSE)
     }
   }
@@ -127,7 +137,7 @@ growmod.formula <- function(formula,
     if (exists(index_var, parent.frame())) {
       index_data <- get(index_var, parent.frame())
     } else {
-      stop(paste0(index_var, ' not available in data or in global environment'),
+      stop(paste0(index_var, ' not found'),
            call. = FALSE)
     }
   }
@@ -146,7 +156,7 @@ growmod.formula <- function(formula,
       if (exists(block_var, parent.frame())) {
         block_data <- get(block_var, parent.frame())
       } else {
-        stop(paste0(block_var, ' not available in data or in global environment'),
+        stop(paste0(block_var, ' not found'),
              call. = FALSE)
       }
     }

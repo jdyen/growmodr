@@ -1,5 +1,4 @@
-# could extend with 
-#   for (i in 1:num_par) { paste0('psi', i, ';\n')}
+# generate stan model file
 gen_mod_file <- function(model) {
   if (model != 'spline') {
     mod.params <- get(paste0(model, '_param_fetch'))()
@@ -32,6 +31,9 @@ gen_mod_file <- function(model) {
       real<lower=0> sigma_obs;
       real<lower=0> sd_h;
       real<lower=0> sd_a;\n',
+      for (i in 1:num_param) {
+        paste0(' real<lower=0> h', i, ';\n')
+      }
       if (three.par) {
         ' real<lower=0> sd_b;\n'
       },
