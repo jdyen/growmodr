@@ -2,12 +2,17 @@
 # block = block
 # age = t
 
-hillslope_param_fetch <- function() {
+hillslope_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
-  mu <- 'h1[block[i]] / (1 + exp(-h2[block[i]] * (age[i] - h3[block[i]])))'
+  mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (age[i] - h3[block_data[i]])))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (age_holdout[i] - h3_holdout[block_holdout[i]])))'
-  mu_plot <- 'h1[j] / (1 + exp(-h2[j] * (age_plot[i] - h3[j])))'
-  mu_agr <- 'mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (age_plot[i] - h3[j]))) / (1 + exp(-h2[j] * (age_plot[i] - h3[j]))))'
+  if (include_block) {
+    mu_plot <- 'h1[j] / (1 + exp(-h2[j] * (age_plot[i] - h3[j])))'
+    mu_agr <- 'mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (age_plot[i] - h3[j]))) / (1 + exp(-h2[j] * (age_plot[i] - h3[j]))))'
+  } else {
+    mu_plot <- 'h1 / (1 + exp(-h2 * (age_plot[i] - h3)))'
+    mu_agr <- 'mu_plot_growth[i] * (h2 * (exp(-h2 * (age_plot[i] - h3))) / (1 + exp(-h2 * (age_plot[i] - h3))))'
+  }
   return(list(num_par = num_par,
               mu = mu,
               mu_holdout = mu_holdout,
@@ -17,7 +22,7 @@ hillslope_param_fetch <- function() {
 
 hillslope_log_param_fetch <- function() {
   num_par <- 3
-  mu <- 'h1[block[i]] / (1 + exp(-h2[block[i]] * (log(age[i]) - h3[block[i]])))'
+  mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (log(age[i]) - h3[block_data[i]])))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (log(age_holdout[i]) - h3_holdout[block_holdout[i]])))'
   mu_plot <- 'h1[j] / (1 + exp(-h2[j] * (log(age_plot[i]) - h3[j])))'
   mu_agr <- 'mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (log(age_plot[i]) - h3[j]))) / (1 + exp(-h2[j] * (log(age_plot[i]) - h3[j]))))'
@@ -30,7 +35,7 @@ hillslope_log_param_fetch <- function() {
 
 power2_param_fetch <- function() {
   num_par <- 2
-  mu <- 'h1[block[i]] * (age[i] ^ h2[block[i]])'
+  mu <- 'h1[block_data[i]] * (age[i] ^ h2[block_data[i]])'
   mu_holdout <- 'h1_holdout[block_holdout[i]] * (age_holdout[i] ^ h2_holdout[block_holdout[i]])'
   mu_plot <- 'h1[j] * (age_plot[i] ^ h2[j])'
   mu_agr <- 'h1[j] * h2[j] * (age_plot[i] ^ (h2[j] - 1))'
@@ -43,7 +48,7 @@ power2_param_fetch <- function() {
 
 expo_param_fetch <- function() {
   num_par <- 2
-  mu <- 'h1[block[i]] + (h2[block[i]] * log(age[i]))'
+  mu <- 'h1[block_data[i]] + (h2[block_data[i]] * log(age[i]))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] + (h2_holdout[block_holdout[i]] * log(age_holdout[i]))'
   mu_plot <- 'h1[j] + (h2[j] * log(age_plot[i]))'
   mu_agr <- 'h2[j] / age_plot[i]'
@@ -56,7 +61,7 @@ expo_param_fetch <- function() {
 
 monod_param_fetch <- function() {
   num_par <- 2
-  mu <- 'h1[block[i]] * (age[i] / (h2[block[i]] + t[i]))'
+  mu <- 'h1[block_data[i]] * (age[i] / (h2[block_data[i]] + age[i]))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] * (age_holdout[i] / (h2_holdout[block_holdout[i]] + age_holdout[i]))'
   mu_plot <- 'h1[j] * (age_plot[i] / (h2[j] + age_plot[i]))'
   mu_agr <- 'h1[j] * (h2[j] / ((h2[j] + age_plot[i]) ^ 2))'
@@ -69,7 +74,7 @@ monod_param_fetch <- function() {
 
 neg_exp_param_fetch <- function() {
   num_par <- 2
-  mu <- 'h1[block[i]] * (1 - exp(-h2[block[i]] * t[i]))'
+  mu <- 'h1[block_data[i]] * (1 - exp(-h2[block_data[i]] * age[i]))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] * (1 - exp(-h2_holdout[block_holdout[i]] * age_holdout[i]))'
   mu_plot <- 'h1[j] * (1 - exp(-h2[j] * age_plot[i]))'
   mu_agr <- 'h1[j] * h2[j] * exp(-h2[j] * age_plot[i])'
@@ -82,7 +87,7 @@ neg_exp_param_fetch <- function() {
 
 koblog_param_fetch <- function() {
   num_par <- 2
-  mu <- 'h1[block[i]] * log(1 + (age[i] / h2[block[i]]))'
+  mu <- 'h1[block_data[i]] * log(1 + (age[i] / h2[block_data[i]]))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] * log(1 + (age_holdout[i] / h2_holdout[block_holdout[i]]))'
   mu_plot <- 'h1[j] * log(1 + (age_plot[i] / h2[j]))'
   mu_agr <- 'h1[j] / (h2[j] + age_plot[i])'
@@ -95,7 +100,7 @@ koblog_param_fetch <- function() {
 
 power3_param_fetch <- function() {
   num_par <- 3
-  mu <- 'h1[block[i]] * (age[i] ^ (h2[block[i]] - (h3[block[i]] / t[i])))'
+  mu <- 'h1[block_data[i]] * (age[i] ^ (h2[block_data[i]] - (h3[block_data[i]] / age[i])))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] * (age_holdout[i] ^ (h2_holdout[block_holdout[i]] - (h3_holdout[block_holdout[i]] / age_holdout[i])))'
   mu_plot <- 'h1[j] * (age_plot[i] ^ (h2[j] - (h3[j] / age_plot[i])))'
   mu_agr <- 'mu_plot_growth[i, j] * (((h2[j] - (h3[j] / age_plot[i])) / age_plot[i]) + (h3[j] * log(age_plot[i])) / (age_plot[i] ^ 2))'
@@ -108,7 +113,7 @@ power3_param_fetch <- function() {
 
 logistic3_param_fetch <- function() {
   num_par <- 3
-  mu <- 'h1[block[i]] / (1 + exp(-h2[block[i]] * t[i] + h3[block[i]]))'
+  mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * age[i] + h3[block_data[i]]))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * age_holdout[i] + h3_holdout[block_holdout[i]]))'
   mu_plot <- 'h1[j] / (1 + exp(-h2[j] * age_plot[i] + h3[j]))'
   mu_agr <- 'h2[j] * h1[j] / (2 * cosh(h3[j] - h2[j] * age_plot[i]) + 2)'
@@ -121,7 +126,7 @@ logistic3_param_fetch <- function() {
 
 archibold_param_fetch <- function() {
   num_par <- 3
-  mu <- 'h1[block[i]] / (h2[block[i]] + (h3[block[i]] ^ t[i]))'
+  mu <- 'h1[block_data[i]] / (h2[block_data[i]] + (h3[block_data[i]] ^ age[i]))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] / (h2_holdout[block_holdout[i]] + (h3_holdout[block_holdout[i]] ^ age_holdout[i]))'
   mu_plot <- 'h1[j] / (h2[j] + (h3[j] ^ age_plot[i]))'
   mu_agr <- '-h1[j] * (h3[j] ^ age_plot[i]) * log(h3[j]) / ((h2[j] + (h3[j] ^ age_plot[i])) ^ 2)'
@@ -134,7 +139,7 @@ archibold_param_fetch <- function() {
 
 weibull3_param_fetch <- function() {
   num_par <- 3
-  mu <- 'h1[block[i]] * (1 - exp(-h2[block[i]] * (age[i] ^ h3[block[i]])))'
+  mu <- 'h1[block_data[i]] * (1 - exp(-h2[block_data[i]] * (age[i] ^ h3[block_data[i]])))'
   mu_holdout <- 'h1_holdout[block_holdout[i]] * (1 - exp(-h2_holdout[block_holdout[i]] * (age_holdout[i] ^ h3_holdout[block_holdout[i]])))'
   mu_plot <- 'h1[j] * (1 - exp(-h2[j] * (age_plot[i] ^ h3[j])))'
   mu_agr <- 'h1[j] * h2[j] * h3[j] * (age_plot[i] ^ (h3[j] - 1)) * exp(-h2[j] * (age_plot[i] ^ h3[j]))'
@@ -145,9 +150,9 @@ weibull3_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-crazytesage_param_fetch <- function() {
+crazytest_param_fetch <- function() {
   num_par <- 5
-  mu <- 'h1[block[i]] + h2[block[i]] + h3[block[i]] * (age[i] - h4[block[i]]) + h5[block[i]]'
+  mu <- 'h1[block_data[i]] + h2[block_data[i]] + h3[block_data[i]] * (age[i] - h4[block_data[i]]) + h5[block_data[i]]'
   mu_holdout <- 'h1[block_holdout[i]] + h2[block_holdout[i]] + h3[block_holdout[i]] * (age_holdout[i] - h4[block_holdout[i]]) + h5[block_holdout[i]]'
   mu_plot <- 'h1[j] + h2[j] + h3[j] * (age_plot[i] - h4[j]) + h5[j]'
   mu_agr <- 'h1[j] + h2[j] + h3[j] * (age_plot[i] - h4[j]) + h5[j]'

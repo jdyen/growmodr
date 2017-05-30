@@ -6,8 +6,7 @@ check_preds <- function(predictors,
                         block_data,
                         num_params,
                         n,
-                        nblock,
-                        block_var) {
+                        nblock) {
   # get predictor data
   if (!is.null(predictors)) {
     if (is.null(block_data)) {
@@ -47,9 +46,10 @@ check_preds <- function(predictors,
                     ' rows in each element'),
              call. = FALSE)
       }
-      warning(paste0('there should be value of each predictor variable for each 
-                     unique ', block_var, '; tapply() has been used to calculate mean
-                     values of each predictor for each level of ', block_var, '.'),
+      warning('there should be value of each predictor variable for each 
+                 unique level of the blocking variable; tapply() has been
+                 used to calculate mean values of each predictor for each
+                 blocking level.',
               call. = FALSE)
       if (is.matrix(predictors) | is.data.frame(predictors)) {
         predictors_clean <- matrix(NA,
@@ -80,10 +80,10 @@ check_preds <- function(predictors,
     }
   } else {
     if (!is.null(block_data)) {
-      cat('model has no predictors and will assume that each block
-          has an independent growth curve.')
+      cat('Note: model has no predictors and will assume that each block
+          has an independent growth curve.\n')
     }
-    predictors <- NULL
+    predictors_clean <- NULL
     npred <- NULL
     nblock_pred <- NULL
   }

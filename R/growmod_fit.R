@@ -101,10 +101,10 @@ growmod <- function(x, ...) {
 #' @import rstan
 growmod.formula <- function(formula,
                             predictors = NULL,
-                            data,
+                            data = NULL,
                             model = 'hillslope',
                             n_iter = 5000,
-                            n_burnin = 2000,
+                            n_burnin = floor(n_iter / 2),
                             n_thin = 1,
                             n_chains = 4,
                             stan_cores = 1,
@@ -118,9 +118,11 @@ growmod.formula <- function(formula,
   index_var <- pred_vars[1]
   size_resp <- all.vars(form_tmp)[1]
   
-  # do X
-  if (exists(size_resp, data)) {
-    size_data <- get(size_resp, data)
+  # check for size data in data and workspace
+  if (!is.null(data)) {
+    if (exists(size_resp, data)) {
+      size_data <- get(size_resp, data)
+    }
   } else {
     if (exists(size_resp, parent.frame())) {
       size_data <- get(size_resp, parent.frame())
@@ -130,9 +132,11 @@ growmod.formula <- function(formula,
     }
   }
   
-  # do Y
-  if (exists(index_var, data)) {
-    index_data <- get(index_var, data)
+  # check for index variable in data and workspace
+  if (!is.null(data)) {
+    if (exists(index_var, data)) {
+      index_data <- get(index_var, data)
+    }
   } else {
     if (exists(index_var, parent.frame())) {
       index_data <- get(index_var, parent.frame())
@@ -150,8 +154,10 @@ growmod.formula <- function(formula,
     block_data <- NULL
   } else {
     block_var <- pred_vars[2]
-    if (exists(block_var, data)) {
-      block_data <- get(block_var, data)
+    if (!is.null(data)) {
+      if (exists(block_var, data)) {
+        block_data <- get(block_var, data)
+      }
     } else {
       if (exists(block_var, parent.frame())) {
         block_data <- get(block_var, parent.frame())
@@ -204,7 +210,10 @@ growmod.default <- function(size,
                             block,
                             predictors,
                             model,
-                            n_iter, n_burnin, n_thin, n_chains,
+                            n_iter,
+                            n_burnin,
+                            n_thin,
+                            n_chains,
                             stan_cores,
                             spline_params,
                             ...) {
@@ -227,17 +236,15 @@ growmod.default <- function(size,
   }
   
   # setup model parameters and extract predictors
-  model <- match.arg(model)
   if (length(model) == 1) {
     mod_params <- get(paste0(model, '_param_fetch'))()
     num_params <- mod_params$num_par
     pred_set <- check_preds(predictors = predictors,
                             model = model,
-                            block_data = block_data,
+                            block_data = block,
                             num_params = num_params,
                             n = n,
-                            nblock = nblock,
-                            block_var = block_var)
+                            nblock = nblock)
   } else {
     mod_params <- vector('list', length = length(model))
     for (i in seq(along = model)) {
@@ -266,55 +273,99 @@ growmod.default <- function(size,
       }
       pred_set[[i]] <- check_preds(predictors = predictors_tmp,
                                    model = model[i],
-                                   block_data = block_data,
+                                   block_data = block,
                                    num_params = num_params[i],
                                    n = n,
-                                   nblock = nblock,
-                                   block_var = block_var)
+                                   nblock = nblock)
     }
   }
   
-  # perhaps have if(model == 'spline') { use_same_preds_for_all }?
-  
-  ### WORK OUT PREDICTORS -- NEED TO SETUP FOR STAN MODEL
-  data_set <- A # if single model
-  #else list if multiple
-  data.set <- growmod_data(data_set = list(size = size,
-                                               index = index,
-                                               block = block_data,
-                                               predictors = predictors),
-                               model = model,
-                               n.plot = 100,
-                               spline_params = spline_params)
-  
-  ## generate stan model -- add loops for correct number of parameters
-  ## Make sure predictors are added correctly
-  
-  # loop over multiple models if required
+  # setup data set for stan model
   if (length(model) == 1) {
+    data_set <- growmod_data(data_set = list(size = size,
+                                             index = index,
+                                             block = block,
+                                             predictors = pred_set),
+                             model = model,
+                             num_params = num_params,
+                             spline_params = spline_params,
+                             n_plot = 100)
+  } else {
+    data_set <- vector('list', length = length(model))
+    for (i in seq(along = model)) {
+      data_set[[i]] <- growmod_data(data_set = list(size = size,
+                                                    index = index,
+                                                    block = block,
+                                                    predictors = pred_set[[i]]),
+                                    model = model[i],
+                                    num_params = num_params[i],
+                                    spline_params = spline_params,
+                                    n_plot = 100)
+    }
+  }
+
+  # set some defaults for basic Stan settings
+  if (!hasArg(control)) {
+    control <- list(adapt_delta = 0.99)
+  }
+  if (!hasArg(inits)) {
+    inits <- '0'
+  }
+  
+  # fit models; loop over multiple models if required
+  if (length(model) == 1) {
+    # generate stan model
     mod_file <- gen_mod_file(model = model,
-                             spline_params = spline_params)
-    mod <- fit_stan_model(size = size_data,
-                          index = index_data,
-                          block = block_data,
-                          predictors = pred_set,
-                          model = model,
-                          n_iter = n_iter,
-                          n_burnin = n_burnin,
-                          n_thin = n_thin,
-                          n_chains = n_chains,
-                          stan_cores = stan_cores,
-                          spline_params = spline_params,
-                          ...)
+                             spline_params = spline_params,
+                             mod_file = NULL,
+                             include_pred = !is.null(predictors))
+    
+    # fit model
+    stan_mod <- stan(file = mod_file,
+                data = data_set,
+                chains = n_chains,
+                iter = n_iter,
+                warmup = n_burnin,
+                thin = n_thin,
+                cores = stan_cores,
+                ...)
+    
+    # summarise fitted stan model
+    log_lik_tmp <- extract_log_lik(stan_mod)
+    loo <- loo(log_lik_tmp)
+    waic <- waic(log_lik_tmp)
+    fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
+    fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
+    r2 <- round(cor(fitted_vals, data_set$size_data) ** 2, 3)
+    rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
+    md <- round(mean((fitted_vals - data_set$size_data)), 3)
+
+    # put outputs into a named list
+    ## THINK ABOUT THIS FOR VALIDATE METHOD
+    ##  DOESN'T REALLY NEED FULL STAN MODEL,
+    ##    JUST data_set AND compiled stan_mod
+    mod <- list(fitted = fitted_vals,
+                r2 = r2,
+                rmsd = rmsd,
+                md = md,
+                loo = loo,
+                waic = waic,
+                stan_mod = stan_mod)
     
     # set model class for single growth curve model
     class(mod) <- 'grow_mod'
   } else {
-    out <- vector('list', length = length(model))
-    mod_file <- gen_mod_file(model = model[i],
-                             spline_params = spline_params)
+    mod <- vector('list', length = length(model))
+    
     for (i in seq(along = model)) {
-      mod[[i]] <- fit_stan_model(size = size_data,
+      # generate stan model
+      mod_file <- gen_mod_file(model = model[i],
+                               spline_params = spline_params,
+                               mod_file = NULL,
+                               include_pred = !is.null(predictors))
+      
+      # fit model
+      stan_mod <- fit_stan_model(size = size_data,
                                  index = index_data,
                                  block = block_data,
                                  predictors = pred_set[[i]],
@@ -326,6 +377,9 @@ growmod.default <- function(size,
                                  stan_cores = stan_cores,
                                  spline_params = spline_params,
                                  ...)
+      
+      # summarise fitted tsan model
+      mod[[i]] <- summary(stan_mod)
     }
     
     # set model class for multiple growth curve models
