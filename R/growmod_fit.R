@@ -292,6 +292,8 @@ growmod.default <- function(size,
   
   # loop over multiple models if required
   if (length(model) == 1) {
+    mod_file <- gen_mod_file(model = model,
+                             spline_params = spline_params)
     mod <- fit_stan_model(size = size_data,
                           index = index_data,
                           block = block_data,
@@ -309,6 +311,8 @@ growmod.default <- function(size,
     class(mod) <- 'grow_mod'
   } else {
     out <- vector('list', length = length(model))
+    mod_file <- gen_mod_file(model = model[i],
+                             spline_params = spline_params)
     for (i in seq(along = model)) {
       mod[[i]] <- fit_stan_model(size = size_data,
                                  index = index_data,
