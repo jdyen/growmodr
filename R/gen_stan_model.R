@@ -48,10 +48,10 @@ gen_mod_file <- function(model,
         '}
         
         generated quantities {
-        matrix[n_plot] mu_plot_growth;
-        matrix[n_plot] mu_plot_agr;
-        matrix<lower=0>[n_plot] size_plot;
-        matrix<lower=0>[n_plot] size_plot_agr;
+        vector[n_plot] mu_plot_growth;
+        vector[n_plot] mu_plot_agr;
+        vector<lower=0>[n_plot] size_plot;
+        vector<lower=0>[n_plot] size_plot_agr;
         vector[n] log_lik;
         
         for (i in 1:n_plot)
@@ -61,7 +61,6 @@ gen_mod_file <- function(model,
         for (i in 1:n_plot)
         mu_plot_agr[i] = ', mu_plot_agr, ';\n',
         ' for (i in 1:n_plot)
-        for (j in 1:n_block)
         size_plot_agr[i] = exp(mu_plot_agr[i]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
@@ -124,10 +123,10 @@ gen_mod_file <- function(model,
         '}
             
             generated quantities {
-            matrix[n_plot] mu_plot_growth;
-            matrix[n_plot] mu_plot_agr;
-            matrix<lower=0>[n_plot] size_plot;
-            matrix<lower=0>[n_plot] size_plot_agr;
+            vector[n_plot] mu_plot_growth;
+            vector[n_plot] mu_plot_agr;
+            vector<lower=0>[n_plot] size_plot;
+            vector<lower=0>[n_plot] size_plot_agr;
             vector[n] log_lik;
             
             for (i in 1:n_plot)\n',

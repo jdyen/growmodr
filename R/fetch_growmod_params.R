@@ -4,12 +4,14 @@
 
 hillslope_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
-  mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (age[i] - h3[block_data[i]])))'
-  mu_holdout <- 'h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (age_holdout[i] - h3_holdout[block_holdout[i]])))'
   if (include_block) {
+    mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (age[i] - h3[block_data[i]])))'
+    mu_holdout <- 'h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (age_holdout[i] - h3_holdout[block_holdout[i]])))'
     mu_plot <- 'h1[j] / (1 + exp(-h2[j] * (age_plot[i] - h3[j])))'
     mu_agr <- 'mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (age_plot[i] - h3[j]))) / (1 + exp(-h2[j] * (age_plot[i] - h3[j]))))'
   } else {
+    mu <- 'h1 / (1 + exp(-h2 * (age[i] - h3)))'
+    mu_holdout <- 'h1_holdout / (1 + exp(-h2_holdout * (age_holdout[i] - h3_holdout)))'
     mu_plot <- 'h1 / (1 + exp(-h2 * (age_plot[i] - h3)))'
     mu_agr <- 'mu_plot_growth[i] * (h2 * (exp(-h2 * (age_plot[i] - h3))) / (1 + exp(-h2 * (age_plot[i] - h3))))'
   }

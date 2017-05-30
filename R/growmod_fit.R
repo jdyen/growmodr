@@ -318,7 +318,8 @@ growmod.default <- function(size,
     mod_file <- gen_mod_file(model = model,
                              spline_params = spline_params,
                              mod_file = NULL,
-                             include_pred = !is.null(predictors))
+                             include_pred = !is.null(predictors),
+                             include_block = !is.null(block))
     
     # fit model
     stan_mod <- stan(file = mod_file,
@@ -362,7 +363,8 @@ growmod.default <- function(size,
       mod_file <- gen_mod_file(model = model[i],
                                spline_params = spline_params,
                                mod_file = NULL,
-                               include_pred = !is.null(predictors))
+                               include_pred = !is.null(predictors),
+                               include_block = !is.null(block))
       
       # fit model
       stan_mod <- fit_stan_model(size = size_data,
