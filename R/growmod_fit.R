@@ -122,6 +122,13 @@ growmod.formula <- function(formula,
   if (!is.null(data)) {
     if (exists(size_resp, data)) {
       size_data <- get(size_resp, data)
+    } else {
+      if (exists(size_resp, data, parent.frame())) {
+        size_data <- get(size_resp, data, parent.frame())
+      } else {
+        stop(paste0(size_resp, data, ' not found'),
+             call. = FALSE)
+      }
     }
   } else {
     if (exists(size_resp, parent.frame())) {
@@ -136,12 +143,41 @@ growmod.formula <- function(formula,
   if (!is.null(data)) {
     if (exists(index_var, data)) {
       index_data <- get(index_var, data)
+    } else {
+      if (exists(index_var, parent.frame())) {
+        index_data <- get(index_var, parent.frame())
+      } else {
+        stop(paste0(index_var, ' not found'),
+             call. = FALSE)
+      }
     }
   } else {
     if (exists(index_var, parent.frame())) {
       index_data <- get(index_var, parent.frame())
     } else {
       stop(paste0(index_var, ' not found'),
+           call. = FALSE)
+    }
+  }
+  
+  # check for predictors
+  pred_var <- deparse(substitute(predictors))
+  if (!is.null(data)) {
+    if (exists(pred_var, data)) {
+      predictors <- get(pred_var, data)
+    } else {
+      if (exists(pred_var, parent.frame())) {
+        predictors <- get(pred_var, parent.frame())
+      } else {
+        stop(paste0(pred_var, ' not found'),
+             call. = FALSE)
+      }
+    }
+  } else {
+    if (exists(pred_var, parent.frame())) {
+      predictors <- get(pred_var, parent.frame())
+    } else {
+      stop(paste0(pred_var, ' not found'),
            call. = FALSE)
     }
   }
