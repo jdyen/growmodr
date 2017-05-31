@@ -1,3 +1,6 @@
+## NEED TO ADD n_x indices to this
+# AND POSSIBLY X?
+
 # prepare data sets for stan models
 growmod_data <- function(data_set,
                          model,
