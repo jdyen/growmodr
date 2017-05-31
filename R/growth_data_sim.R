@@ -26,7 +26,7 @@
 #'
 growth_data_sim <- function(n = 100,
                             nblock = 5,
-                            age_range = c(0, 1),
+                            age_range = c(0, 20),
                             include_predictors = TRUE,
                             true_model = 'hillslope') {
   # simulate data
@@ -41,11 +41,11 @@ growth_data_sim <- function(n = 100,
     npred <- 2
     predictors <- matrix(rnorm((npred * nblock), sd = 0.5), ncol = npred)
     true_coefs <- matrix(rnorm((3 * npred)), ncol = 3)
-    h1_set <- abs(predictors %*% true_coefs[, 1]) + 0.5
+    h1_set <- abs(predictors %*% true_coefs[, 1]) + 10
     h2_set <- abs(predictors %*% true_coefs[, 2]) + 0.5
     h3_set <- abs(predictors %*% true_coefs[, 3]) + 0.5
   } else {
-    h1_set <- runif(nblock, min = 0.5, max = 1.5)
+    h1_set <- runif(nblock, min = 0.5, max = 1.5) + 10
     h2_set <- runif(nblock, min = 0.5, max = 1.5)
     h3_set <- runif(nblock, min = 0.5, max = 1.5)
     predictors <- NULL
@@ -62,7 +62,7 @@ growth_data_sim <- function(n = 100,
     index <- c(index, sim_data_tmp$index)
     block_id <- c(block_id, rep(i, block_size[i]))
   }
-  out <- list(size = sim_data,
+  out <- list(size = ifelse(sim_data > 0.1, sim_data, 0.1),
               block = block_id,
               index = index,
               predictors = predictors,
