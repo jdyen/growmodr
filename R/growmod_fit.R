@@ -395,7 +395,8 @@ growmod.default <- function(size,
                 md = md,
                 loo = loo,
                 waic = waic,
-                stan_mod = stan_mod)
+                stan_summary = summary(stan_mod)$summary,
+                train_data = data_set)
     
     # set model class for single growth curve model
     class(mod) <- 'grow_mod'
@@ -424,8 +425,27 @@ growmod.default <- function(size,
                                  spline_params = spline_params,
                                  ...)
       
-      # summarise fitted tsan model
-      mod[[i]] <- summary(stan_mod)
+      # summarise fitted stan model
+      log_lik_tmp <- extract_log_lik(stan_mod)
+      loo <- loo(log_lik_tmp)
+      waic <- waic(log_lik_tmp)
+      fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
+      fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
+      r2 <- round(cor(fitted_vals, data_set$size_data) ** 2, 3)
+      rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
+      md <- round(mean((fitted_vals - data_set$size_data)), 3)
+      
+      mod[[i]] <- list(fitted = fitted_vals,
+                       r2 = r2,
+                       rmsd = rmsd,
+                       md = md,
+                       loo = loo,
+                       waic = waic,
+                       stan_summary = summary(stan_mod)$summary,
+                       train_data = data_set)
+
+      # set model class for single growth curve model
+      class(mod[[i]]) <- 'grow_mod'
     }
     
     # set model class for multiple growth curve models
@@ -434,190 +454,4 @@ growmod.default <- function(size,
   
   # return outputs
   mod
-}
-
-#' @rdname growmod
-#' @export
-compare <- function(x, ...) {
-  UseMethod('compare')
-}
-
-#' @rdname growmod
-#' @export
-compare.grow_mod <- function(..., x) {
-  dots <- list(...)
-  if (length(dots)) {
-    if (!missing(x)) {
-      stop("If 'x' is specified then '...' should not be specified.")
-    }
-    nms <- as.character(match.call(expand.dots = TRUE))[-1L]
-  } else {
-    if (!is.list(x) || !length(x)) {
-      stop("'x' must be a list.")
-    }
-    dots <- x
-    nms <- names(dots)
-    if (!length(nms)) {
-      nms <- paste0('model', seq_along(dots))
-    }
-  }
-}
-
-#' @rdname growmod
-#' @export
-compare.grow_mod_cv <- function(..., x) {
-  dots <- list(...)
-  if (length(dots)) {
-    if (!missing(x)) {
-      stop("If 'x' is specified then '...' should not be specified.")
-    }
-    nms <- as.character(match.call(expand.dots = TRUE))[-1L]
-  } else {
-    if (!is.list(x) || !length(x)) {
-      stop("'x' must be a list.")
-    }
-    dots <- x
-    nms <- names(dots)
-    if (!length(nms)) {
-      nms <- paste0('model', seq_along(dots))
-    }
-  }
-}
-
-#' @rdname growmod
-#' @export
-compare.grow_mod_multi <- function(..., x) {
-  dots <- list(...)
-  if (length(dots)) {
-    if (!missing(x)) {
-      stop("If 'x' is specified then '...' should not be specified.")
-    }
-    nms <- as.character(match.call(expand.dots = TRUE))[-1L]
-  } else {
-    if (!is.list(x) || !length(x)) {
-      stop("'x' must be a list.")
-    }
-    dots <- x
-    nms <- names(dots)
-    if (!length(nms)) {
-      nms <- paste0('model', seq_along(dots))
-    }
-  }
-}
-
-#' @rdname growmod
-#' @export
-compare.grow_mod_cv_multi <- function(..., x) {
-  dots <- list(...)
-  if (length(dots)) {
-    if (!missing(x)) {
-      stop("If 'x' is specified then '...' should not be specified.")
-    }
-    nms <- as.character(match.call(expand.dots = TRUE))[-1L]
-  } else {
-    if (!is.list(x) || !length(x)) {
-      stop("'x' must be a list.")
-    }
-    dots <- x
-    nms <- names(dots)
-    if (!length(nms)) {
-      nms <- paste0('model', seq_along(dots))
-    }
-  }
-}
-
-#' @rdname growmod
-#' @export
-validate <- function(x, ...) {
-  UseMethod('validate')
-}
-
-#' @rdname growmod
-#' @export
-validate.grow_mod <- function(x, ...) {
-  
-  mod_cv <- x
-  class(mod_cv) <- 'growmod_cv'
-  mod_cv
-}
-
-#' @rdname growmod
-#' @export
-validate.grow_mod_multi <- function(x, ...) {
-  
-  mod_cv <- x
-  class(mod_cv) <- 'growmod_cv_multi'
-  mod_cv
-}
-
-#' @rdname growmod
-#' @export
-plot.grow_mod <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-plot.grow_mod_cv <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-plot.grow_mod_multi <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-plot.grow_mod_cv_multi <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-summary.grow_mod <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-summary.grow_mod_cv <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-summary.grow_mod_multi <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-summary.grow_mod_cv_multi <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-print.grow_mod <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-print.grow_mod_cv <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-print.grow_mod_multi <- function(x, ...) {
-  
-}
-
-#' @rdname growmod
-#' @export
-print.grow_mod_cv_multi <- function(x, ...) {
-  
 }

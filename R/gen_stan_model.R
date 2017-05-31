@@ -64,7 +64,9 @@ gen_mod_file <- function(model,
         size_plot_agr[i] = exp(mu_plot_agr[i]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }\n\n',
+        }
+        
+        ',
         file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
     } else {
       if (!is.null(spline_params)) {
@@ -139,7 +141,9 @@ gen_mod_file <- function(model,
             size_plot_agr[i] = exp(mu_plot_agr[i]);
             for (i in 1:n)
             log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-            }\n\n',
+            }
+        
+        ',
         file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
     }    
   } else {
@@ -229,7 +233,9 @@ gen_mod_file <- function(model,
       size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
       for (i in 1:n)
       log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-      }\n\n',
+      }
+          
+          ',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       } else {
         if (!is.null(spline_params)) {
@@ -334,7 +340,9 @@ gen_mod_file <- function(model,
         size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }\n\n',
+        }
+          
+        ',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       }
     } else {
@@ -418,7 +426,9 @@ gen_mod_file <- function(model,
         size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }\n\n',
+        }
+          
+          ',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       } else {
         if (!is.null(spline_params)) {
@@ -517,7 +527,9 @@ gen_mod_file <- function(model,
             size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
             for (i in 1:n)
             log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-            }\n\n',
+            }
+          
+          ',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       }
     }
