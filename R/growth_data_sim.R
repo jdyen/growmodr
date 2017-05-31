@@ -38,16 +38,18 @@ growth_data_sim <- function(n = 100,
   block_id <- NULL
   index <- NULL
   if (include_predictors) {
-    npred <- 3
-    predictors <- matrix(rnorm((npred * nblock)), ncol = npred)
-    h1_set <- predictors %*% rnorm(npred)
-    h2_set <- predictors %*% rnorm(npred)
-    h3_set <- predictors %*% rnorm(npred)
+    npred <- 2
+    predictors <- matrix(rnorm((npred * nblock), sd = 0.5), ncol = npred)
+    true_coefs <- matrix(rnorm((3 * npred)), ncol = 3)
+    h1_set <- abs(predictors %*% true_coefs[, 1]) + 0.5
+    h2_set <- abs(predictors %*% true_coefs[, 2]) + 0.5
+    h3_set <- abs(predictors %*% true_coefs[, 3]) + 0.5
   } else {
     h1_set <- runif(nblock, min = 0.5, max = 1.5)
     h2_set <- runif(nblock, min = 0.5, max = 1.5)
     h3_set <- runif(nblock, min = 0.5, max = 1.5)
     predictors <- NULL
+    true_coefs <- NULL
   }
   for (i in seq(along = block_size)) {
     sim_data_tmp <- sim_growth_curve(block_size[i],
@@ -63,7 +65,8 @@ growth_data_sim <- function(n = 100,
   out <- list(size = sim_data,
               block = block_id,
               index = index,
-              predictors = predictors)
+              predictors = predictors,
+              coefs = true_coefs)
   out
 }
 

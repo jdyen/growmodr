@@ -1,6 +1,3 @@
-## NEED TO ADD n_x indices to this
-# AND POSSIBLY X?
-
 # prepare data sets for stan models
 growmod_data <- function(data_set,
                          model,
@@ -39,9 +36,9 @@ growmod_data <- function(data_set,
                                               length = n_plot)))
     if (!is.null(data_set$predictors)) {
       for (i in 1:num_params) {
-        append(out, get(paste0('x', i)))
+        out <- append(out, list(get(paste0('x', i))))
         names(out)[length(out)] <- paste0('x', i)
-        append(out, ncol(get(paste0('x', i))))
+        out <- append(out, list(ncol(get(paste0('x', i)))))
         names(out)[length(out)] <- paste0('n_x', i)
       }
     }
@@ -199,9 +196,9 @@ growmod_data <- function(data_set,
                                b_spline_deriv = basis.func2))
     if (!is.null(data_set$predictors)) {
       for (i in 1:num_params) {
-        append(out, get(paste0('x', i)))
+        out <- append(out, get(paste0('x', i)))
         names(out)[length(out)] <- paste0('x', i)
-        append(out, ncol(get(paste0('x', i))))
+        out <- append(out, ncol(get(paste0('x', i))))
         names(out)[length(out)] <- paste0('n_x', i)
       }
     }
