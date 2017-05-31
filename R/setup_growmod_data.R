@@ -196,9 +196,9 @@ growmod_data <- function(data_set,
                                b_spline_deriv = basis.func2))
     if (!is.null(data_set$predictors)) {
       for (i in 1:num_params) {
-        out <- append(out, get(paste0('x', i)))
+        out <- append(out, list(get(paste0('x', i))))
         names(out)[length(out)] <- paste0('x', i)
-        out <- append(out, ncol(get(paste0('x', i))))
+        out <- append(out, list(ncol(get(paste0('x', i)))))
         names(out)[length(out)] <- paste0('n_x', i)
       }
     }
