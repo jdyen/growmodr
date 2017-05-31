@@ -22,7 +22,7 @@ hillslope_param_fetch <- function(include_block = TRUE) {
               mu_agr = mu_agr))
 }
 
-hillslope_log_param_fetch <- function() {
+hillslope_log_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
   if (include_block) {
     mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (log(age[i]) - h3[block_data[i]])))'
@@ -42,7 +42,7 @@ hillslope_log_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-power2_param_fetch <- function() {
+power2_param_fetch <- function(include_block = TRUE) {
   num_par <- 2
   if (include_block) {
     mu <- 'h1[block_data[i]] * (age[i] ^ h2[block_data[i]])'
@@ -62,7 +62,7 @@ power2_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-expo_param_fetch <- function() {
+expo_param_fetch <- function(include_block = TRUE) {
   num_par <- 2
   if (include_block) {
     mu <- 'h1[block_data[i]] + (h2[block_data[i]] * log(age[i]))'
@@ -82,7 +82,7 @@ expo_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-monod_param_fetch <- function() {
+monod_param_fetch <- function(include_block = TRUE) {
   num_par <- 2
   if (include_block) {
     mu <- 'h1[block_data[i]] * (age[i] / (h2[block_data[i]] + age[i]))'
@@ -102,7 +102,7 @@ monod_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-neg_exp_param_fetch <- function() {
+neg_exp_param_fetch <- function(include_block = TRUE) {
   num_par <- 2
   if (include_block) {
     mu <- 'h1[block_data[i]] * (1 - exp(-h2[block_data[i]] * age[i]))'
@@ -122,7 +122,7 @@ neg_exp_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-koblog_param_fetch <- function() {
+koblog_param_fetch <- function(include_block = TRUE) {
   num_par <- 2
   if (include_block) {
     mu <- 'h1[block_data[i]] * log(1 + (age[i] / h2[block_data[i]]))'
@@ -130,7 +130,7 @@ koblog_param_fetch <- function() {
     mu_plot <- 'h1[j] * log(1 + (age_plot[i] / h2[j]))'
     mu_agr <- 'h1[j] / (h2[j] + age_plot[i])'
   } else {
-    mu <- 'h1] * log(1 + (age[i] / h2))'
+    mu <- 'h1 * log(1 + (age[i] / h2))'
     mu_holdout <- 'h1_holdout * log(1 + (age_holdout[i] / h2_holdout))'
     mu_plot <- 'h1 * log(1 + (age_plot[i] / h2))'
     mu_agr <- 'h1 / (h2 + age_plot[i])'
@@ -142,7 +142,7 @@ koblog_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-power3_param_fetch <- function() {
+power3_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
   if (include_block) {
     mu <- 'h1[block_data[i]] * (age[i] ^ (h2[block_data[i]] - (h3[block_data[i]] / age[i])))'
@@ -162,7 +162,7 @@ power3_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-logistic3_param_fetch <- function() {
+logistic3_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
   if (include_block) {
     mu <- 'h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * age[i] + h3[block_data[i]]))'
@@ -182,7 +182,7 @@ logistic3_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-archibold_param_fetch <- function() {
+archibold_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
   if (include_block) {
     mu <- 'h1[block_data[i]] / (h2[block_data[i]] + (h3[block_data[i]] ^ age[i]))'
@@ -202,7 +202,7 @@ archibold_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-weibull3_param_fetch <- function() {
+weibull3_param_fetch <- function(include_block = TRUE) {
   num_par <- 3
   if (include_block) {
     mu <- 'h1[block_data[i]] * (1 - exp(-h2[block_data[i]] * (age[i] ^ h3[block_data[i]])))'
@@ -222,7 +222,7 @@ weibull3_param_fetch <- function() {
               mu_agr = mu_agr))
 }
 
-crazytest_param_fetch <- function() {
+crazytest_param_fetch <- function(include_block = TRUE) {
   num_par <- 5
   if (include_block) {
     mu <- 'h1[block_data[i]] + h2[block_data[i]] + h3[block_data[i]] * (age[i] - h4[block_data[i]]) + h5[block_data[i]]'

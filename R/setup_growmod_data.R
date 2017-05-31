@@ -62,10 +62,55 @@ growmod_data <- function(data_set,
     n.int.knots <- spline_params$n_knots
     bs.order <- spline_params$degree + 1
     age_index <- match(data_set$index, sort(unique(data_set$index)))
-    max.vals <- tapply(data_set$index, data_set$block, max)
-    basis.func <- array(NA, dim = c(n_plot, length(unique(data_set$block)), (n.int.knots + bs.order - 1)))
-    basis.func2 <- array(NA, dim = c(n_plot, length(unique(data_set$block)), (n.int.knots + bs.order - 1)))
-    for (i in seq(along = unique(data_set$block))) {
+    if (!is.null(data_set$block)) {
+      max.vals <- tapply(data_set$index, data_set$block, max)
+      basis.func <- array(NA, dim = c(n_plot, length(unique(data_set$block)), (n.int.knots + bs.order - 1)))
+      basis.func2 <- array(NA, dim = c(n_plot, length(unique(data_set$block)), (n.int.knots + bs.order - 1)))
+      for (i in seq(along = unique(data_set$block))) {
+        if (spline_params$spline_type == 'bspline') {
+          if (n.int.knots > 0) {
+            knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
+                                quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+                                         exp(seq.int(from = log(0.001), to = log(1),
+                                                     length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])))
+          } else {
+            knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order)))
+          }
+          basis.func[, i, ] <- splineDesign(knots_set,
+                                            x = seq(min(data_set$index), max.vals[i], length = n_plot),
+                                            ord = bs.order,
+                                            derivs = 0)[, -1, drop = FALSE]
+          basis.func2[, i, ] <- splineDesign(knots_set,
+                                             x = seq(min(data_set$index), max.vals[i], length = 100),
+                                             ord = bs.order,
+                                             derivs = 1)[, -1, drop = FALSE]
+        } else {
+          if (spline_params$spline_type != 'ispline') {
+            warning(paste0(spline_params$spline_type, ' is not a known spline model; ispline used by default.'),
+                    call. = FALSE)
+          }
+          if (n.int.knots > 0) {
+            knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+                                  exp(seq.int(from = log(0.001), to = log(1),
+                                              length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])
+          } else {
+            knots_set <- NULL
+          }
+          basis.func[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
+                                                 knots = knots_set,
+                                                 degree = (bs.order - 1),
+                                                 Boundary.knots = c(min(data_set$index), max(data_set$index)))
+          basis.func2[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = 100),
+                                                  knots = knots_set,
+                                                  degree = (bs.order - 1),
+                                                  Boundary.knots = c(min(data_set$index), max(data_set$index)),
+                                                  derivs = 1)
+        }
+      }
+    } else {
+      max.vals <- max(data_set$index)
+      basis.func <- array(NA, dim = c(n_plot, (n.int.knots + bs.order - 1)))
+      basis.func2 <- array(NA, dim = c(n_plot, (n.int.knots + bs.order - 1)))
       if (spline_params$spline_type == 'bspline') {
         if (n.int.knots > 0) {
           knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
@@ -75,14 +120,14 @@ growmod_data <- function(data_set,
         } else {
           knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order)))
         }
-        basis.func[, i, ] <- splineDesign(knots_set,
-                                          x = seq(min(data_set$index), max.vals[i], length = n_plot),
-                                          ord = bs.order,
-                                          derivs = 0)[, -1, drop = FALSE]
-        basis.func2[, i, ] <- splineDesign(knots_set,
-                                           x = seq(min(data_set$index), max.vals[i], length = 100),
-                                           ord = bs.order,
-                                           derivs = 1)[, -1, drop = FALSE]
+        basis.func <- splineDesign(knots_set,
+                                   x = seq(min(data_set$index), max.vals, length = n_plot),
+                                   ord = bs.order,
+                                   derivs = 0)[, -1, drop = FALSE]
+        basis.func2 <- splineDesign(knots_set,
+                                    x = seq(min(data_set$index), max.vals, length = 100),
+                                    ord = bs.order,
+                                    derivs = 1)[, -1, drop = FALSE]
       } else {
         if (spline_params$spline_type != 'ispline') {
           warning(paste0(spline_params$spline_type, ' is not a known spline model; ispline used by default.'),
@@ -95,17 +140,18 @@ growmod_data <- function(data_set,
         } else {
           knots_set <- NULL
         }
-        basis.func[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
-                                               knots = knots_set,
-                                               degree = (bs.order - 1),
-                                               Boundary.knots = c(min(data_set$index), max(data_set$index)))
-        basis.func2[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = 100),
-                                                knots = knots_set,
-                                                degree = (bs.order - 1),
-                                                Boundary.knots = c(min(data_set$index), max(data_set$index)),
-                                                derivs = 1)
+        basis.func <- splines2::iSpline(seq(min(data_set$index), max.vals, length = n_plot),
+                                        knots = knots_set,
+                                        degree = (bs.order - 1),
+                                        Boundary.knots = c(min(data_set$index), max(data_set$index)))
+        basis.func2 <- splines2::iSpline(seq(min(data_set$index), max.vals, length = 100),
+                                         knots = knots_set,
+                                         degree = (bs.order - 1),
+                                         Boundary.knots = c(min(data_set$index), max(data_set$index)),
+                                         derivs = 1)
       }
     }
+    
     if (spline_params$spline_type == 'bspline') {
       if (n.int.knots > 0) {
         knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
@@ -132,6 +178,7 @@ growmod_data <- function(data_set,
                                       degree = (bs.order - 1),
                                       Boundary.knots = c(min(data_set$index), max(data_set$index)))
     }
+    offset_mod <- 0.0
     out <- with(data_set, list(n = length(size),
                                n_block = length(unique(block)),
                                size_data = size,
@@ -141,7 +188,7 @@ growmod_data <- function(data_set,
                                age_plot = seq(min(index) + offset_mod,
                                               max(index),
                                               length = n_plot),
-                               n_age = length(unique(t_index)),
+                               n_age = length(unique(age_index)),
                                n_k = (n.int.knots + bs.order - 1),
                                age_index = age_index,
                                b_spline = spline_out,

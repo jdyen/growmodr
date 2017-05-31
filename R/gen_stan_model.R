@@ -75,7 +75,7 @@ gen_mod_file <- function(model,
       }
       h_var <- NULL
       h_prior <- NULL
-      mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1[block_data[i]]'
+      mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1'
       mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i][1] * h1'
       mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i][1] * h1'
       for (i in 1:num_param) {
@@ -98,7 +98,7 @@ gen_mod_file <- function(model,
             int<lower=0> n_age;
             int<lower=0> n_k;
             int<lower=0> age_index[n];
-            row_vector[n_k] b_spline[n_t];
+            row_vector[n_k] b_spline[n_age];
             int<lower=0> n_plot;
             vector[n_plot] age_plot;
             row_vector[n_k] b_spline_plot[n_plot];
@@ -283,7 +283,7 @@ gen_mod_file <- function(model,
   int<lower=0> age_index[n];
   int<lower=0, upper=n_block> block_data[n];\n',
           x_var,
-          'row_vector[n_k] b_spline[n_t];
+          'row_vector[n_k] b_spline[n_age];
         int<lower=0> n_plot;
         vector[n_plot] age_plot;
         row_vector[n_k] b_spline_plot[n_plot, n_block];
@@ -438,8 +438,8 @@ gen_mod_file <- function(model,
         h_prior <- NULL
         sdh_prior <- NULL
         mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1[block_data[i]]'
-        mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i, j][1] * h1[j]'
-        mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i, j][1] * h1[j]'
+        mu_var_plot <- 'mu_plot_growth[i, j] = b_spline_plot[i, j][1] * h1[j]'
+        mu_var_agr <- 'mu_plot_agr[i, j] = b_spline_deriv[i, j][1] * h1[j]'
         for (i in 1:num_param) {
           if (i > 1) {
             mu_var <- paste0(mu_var, ' + b_spline[age_index[i]][', i, '] * h', i, '[block_data[i]]')
@@ -466,7 +466,7 @@ gen_mod_file <- function(model,
             int<lower=0> n_k;
             int<lower=0> age_index[n];
             int<lower=0, upper=n_block> block_data[n];
-            row_vector[n_k] b_spline[n_t];
+            row_vector[n_k] b_spline[n_age];
             int<lower=0> n_plot;
             vector[n_plot] age_plot;
             row_vector[n_k] b_spline_plot[n_plot, n_block];
