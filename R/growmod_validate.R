@@ -8,9 +8,11 @@ validate <- function(x, ...) {
 #' @export
 validate.grow_mod <- function(x, ...) {
   # generate model file
+  # Can we just use existing gen_stan_model approach?
   
   # fetch data (should be OK to use data set from X)
   #   Need to change from plot to holdout (can we re-use?)
+  # THis would be ideal.
   
   # pre-compile model to avoid compiling repeatedly
   mod.def <- stan_model(file = mod.file)
