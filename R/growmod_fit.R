@@ -386,9 +386,6 @@ growmod.default <- function(size,
     md <- round(mean((fitted_vals - data_set$size_data)), 3)
 
     # put outputs into a named list
-    ## THINK ABOUT THIS FOR VALIDATE METHOD
-    ##  DOESN'T REALLY NEED FULL STAN MODEL,
-    ##    JUST data_set AND compiled stan_mod
     mod <- list(fitted = fitted_vals,
                 r2 = r2,
                 rmsd = rmsd,
@@ -396,7 +393,8 @@ growmod.default <- function(size,
                 loo = loo,
                 waic = waic,
                 stan_summary = summary(stan_mod)$summary,
-                train_data = data_set)
+                train_data = data_set,
+                mod_file = mod_file)
     
     # set model class for single growth curve model
     class(mod) <- 'grow_mod'
@@ -442,7 +440,8 @@ growmod.default <- function(size,
                        loo = loo,
                        waic = waic,
                        stan_summary = summary(stan_mod)$summary,
-                       train_data = data_set)
+                       train_data = data_set,
+                       mod_file = mod_file)
 
       # set model class for single growth curve model
       class(mod[[i]]) <- 'grow_mod'

@@ -1,3 +1,6 @@
+### DO WE NEED TO REFIT MODELS SPECIALLY WITH HOLDOUT DATA OR CAN WE JUST STORE PARAMS
+## AND USE predict.growmod?
+
 #' @rdname growmod
 #' @export
 validate <- function(x, ...) {
@@ -8,23 +11,22 @@ validate <- function(x, ...) {
 #' @export
 validate.grow_mod <- function(x, ...) {
   # generate model file
-  # Can we just use existing gen_stan_model approach?
+  # pre-compile model to avoid compiling repeatedly
+  mod_compiled <- stan_model(file = x$mod_file)
   
   # fetch data (should be OK to use data set from X)
   #   Need to change from plot to holdout (can we re-use?)
   # THis would be ideal.
   
-  # pre-compile model to avoid compiling repeatedly
-  mod.def <- stan_model(file = mod.file)
   
   if ((cores > 1) & (Sys.info()['sysname'] == 'Darwin')) {
     mod <- mclapply(1:n.cv, stan_cv_internal,
-                    mod.def,
-                    data.set,
+                    mod_compiled,
+                    data,
                     model,
-                    n.cv,
-                    n.iter,
-                    n.chains,
+                    n_cv,
+                    n_iter,
+                    n_chains,
                     inits,
                     seed,
                     control, 
@@ -34,12 +36,12 @@ validate.grow_mod <- function(x, ...) {
                     ...)
   } else {
     mod <- lapply(1:n.cv, stan_cv_internal,
-                  mod.def,
-                  data.set,
+                  mod_compiled,
+                  data,
                   model,
-                  n.cv,
-                  n.iter,
-                  n.chains,
+                  n_cv,
+                  n_iter,
+                  n_chains,
                   inits,
                   seed,
                   control,
@@ -65,5 +67,26 @@ validate.grow_mod_multi <- function(x, ...) {
   mod_cv <- x
   class(mod_cv) <- 'growmod_cv_multi'
   mod_cv
+}
+
+stan_cv_internal <- function(i,
+                             mod_compiled,
+                             data,
+                             model,
+                             n_cv,
+                             n_iter,
+                             n_chains,
+                             inits,
+                             seed,
+                             control,
+                             spline_params,
+                             stan_cores,
+                             ...) {
+  # subset data appropriately
+  # we have train_data and mod_file
+  
+  # fit model just to training set
+  
+  # use predict.growmod(mod_train, data_test) to get predictions
 }
 
