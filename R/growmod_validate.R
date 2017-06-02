@@ -37,6 +37,9 @@ validate.grow_mod <- function(x,
     rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
     md_cv <- mean((size_real - size_pred))
   } else {
+    if (n_cv > x$data_set$n_block) {
+      n_cv <- x$data_set$n_block
+    }
     mod <- lapply(1:n_cv, stan_cv_internal,
                   mod_compiled,
                   x$data_set,
@@ -127,6 +130,7 @@ stan_cv_internal <- function(i,
   ## NEED a version for structured loo, structured k-fold, random loo, random k-fold
   # structured loo or unstructured k-fold
   if (n_cv == data$n_block) {
+    block_id <- i
     cv_id <- which(data$block_data == i)
   } else {
     n_holdout <- floor(data$n_block / n_cv)
@@ -135,13 +139,13 @@ stan_cv_internal <- function(i,
       block_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
       cv_id <- NULL
       for (i in seq_along(block_id)) {
-        cv_id <- c(cv_id, which(data$block_data == i))
+        cv_id <- c(cv_id, which(data$block_data == block_id[i]))
       }
     } else {
       block_id <- ((i - 1) * n_holdout + 1):data$n_block
       cv_id <- NULL
       for (i in seq_along(block_id)) {
-        cv_id <- c(cv_id, which(data$block_data == i))
+        cv_id <- c(cv_id, which(data$block_data == block_id[i]))
       }
     }
   }
@@ -151,17 +155,29 @@ stan_cv_internal <- function(i,
   } else {
     num_params <- spline_params$n_knots + spline_params$degree
   }
+
+  ## NEED to check dimension of predictors -- could be n rows rather htan nblock rows
+  ## (might be easier to do this above through
+  #    definition of block_id to avoid changing block_id section here)
   if (!is.null(predictors)) {
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       predictors_tmp <- predictors[-block_id, ]
-      predictors_tmp_test <- predictors[block_id, ]
+      if (length(block_id) == 1) {
+        predictors_tmp_test <- matrix(predictors[block_id, ], nrow = 1)
+      } else {
+        predictors_tmp_test <- predictors[block_id, ]
+      }
     } else {
       if (is.list(predictors)) {
         predictors_tmp <- vector('list', length = length(predictors))
         predictors_tmp_test <- vector('list', length = length(predictors))
         for (j in seq(along = predictors)) {
           predictors_tmp[[j]] <- predictors[[j]][-block_id, ]
-          predictors_tmp_test[[j]] <- predictors[[j]][block_id, ]
+          if (length(block_id) == 1) {
+            predictors_tmp_test[[j]] <- matrix(predictors[[j]][block_id, ], nrow = 1)
+          } else {
+            predictors_tmp_test[[j]] <- predictors[[j]][block_id, ]
+          }
         }
       }
     }
