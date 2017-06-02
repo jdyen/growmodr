@@ -161,10 +161,21 @@ growmod.formula <- function(formula,
   }
   
   # check for predictors
-  pred_var <- deparse(substitute(predictors))
-  if (!is.null(data)) {
-    if (exists(pred_var, data)) {
-      predictors <- get(pred_var, data)
+  ## BREAKING HERE because predictors isn't passing correctly (string or missing object)
+  if (!is.null(predictors)) {
+#    pred_var <- deparse(substitute(predictors))
+    pred_var <- predictors
+    if (!is.null(data)) {
+      if (exists(pred_var, data)) {
+        predictors <- get(pred_var, data)
+      } else {
+        if (exists(pred_var, parent.frame())) {
+          predictors <- get(pred_var, parent.frame())
+        } else {
+          stop(paste0(pred_var, ' not found'),
+               call. = FALSE)
+        }
+      }
     } else {
       if (exists(pred_var, parent.frame())) {
         predictors <- get(pred_var, parent.frame())
@@ -172,13 +183,6 @@ growmod.formula <- function(formula,
         stop(paste0(pred_var, ' not found'),
              call. = FALSE)
       }
-    }
-  } else {
-    if (exists(pred_var, parent.frame())) {
-      predictors <- get(pred_var, parent.frame())
-    } else {
-      stop(paste0(pred_var, ' not found'),
-           call. = FALSE)
     }
   }
 
@@ -366,14 +370,15 @@ growmod.default <- function(size,
                              include_block = !is.null(block))
     
     # fit model
-    stan_mod <- stan(file = mod_file,
-                     data = data_set,
-                     chains = n_chains,
-                     iter = n_iter,
-                     warmup = n_burnin,
-                     thin = n_thin,
-                     cores = stan_cores,
-                     ...)
+    stanmod <- stan_model(file = mod_file)
+    stan_mod <- sampling(object = stanmod,
+                         data = data_set,
+                         chains = n_chains,
+                         iter = n_iter,
+                         warmup = n_burnin,
+                         thin = n_thin,
+                         cores = stan_cores,
+                         ...)
     
     # summarise fitted stan model
     log_lik_tmp <- extract_log_lik(stan_mod)
@@ -396,7 +401,7 @@ growmod.default <- function(size,
                 data_set = data_set,
                 predictors = predictors,
                 model = model,
-                mod_file = mod_file,
+                stanmod = stanmod,
                 spline_params = spline_params,
                 stan_cores = stan_cores)
     
@@ -414,18 +419,15 @@ growmod.default <- function(size,
                                include_block = !is.null(block))
       
       # fit model
-      stan_mod <- fit_stan_model(size = size_data,
-                                 index = index_data,
-                                 block = block_data,
-                                 predictors = pred_set[[i]],
-                                 model = model[i],
-                                 n_iter = n_iter,
-                                 n_burnin = n_burnin,
-                                 n_thin = n_thin,
-                                 n_chains = n_chains,
-                                 stan_cores = stan_cores,
-                                 spline_params = spline_params,
-                                 ...)
+      stanmod <- stan_model(file = mod_file)
+      stan_mod <- sampling(object = stanmod,
+                           data = data_set,
+                           chains = n_chains,
+                           iter = n_iter,
+                           warmup = n_burnin,
+                           thin = n_thin,
+                           cores = stan_cores,
+                           ...)
       
       # summarise fitted stan model
       log_lik_tmp <- extract_log_lik(stan_mod)
@@ -446,7 +448,7 @@ growmod.default <- function(size,
                        stan_summary = summary(stan_mod)$summary,
                        data_set = data_set,
                        model = model,
-                       mod_file = mod_file,
+                       stanmod = stanmod,
                        spline_params = spline_params,
                        stan_cores = stan_cores)
 

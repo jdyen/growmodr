@@ -92,7 +92,7 @@ compare.grow_mod_cv_multi <- function(..., x) {
 #' @export
 plot.grow_mod <- function(x, ...) {
   mod_tmp <- x$stan_summary
-  data_tmp <- x$train_data
+  data_tmp <- x$data_set
   plot_vals <- mod_tmp[grep('size_plot\\[', rownames(mod_tmp)), ]
   for (i in 1:data_tmp$n_block) {
     row_id <- grep(paste0('plot\\[[[:digit:]]*,', i, '\\]'), rownames(mod_tmp))

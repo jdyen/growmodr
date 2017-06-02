@@ -17,7 +17,11 @@ validate.grow_mod <- function(x,
                               test_data = NULL,
                               ...) {
   # generate model file
-  mod_compiled <- stan_model(file = x$mod_file)
+  #mod_compiled <- stan_model(file = x$mod_file)
+  # don't need this line if it works
+  mod_compiled <- x$stanmod
+  
+  ## SET n_iter etc to NULL and estimate from fitted model
   
   # run cv in loop
   if (!is.null(test_data)) {
@@ -33,10 +37,10 @@ validate.grow_mod <- function(x,
     rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
     md_cv <- mean((size_real - size_pred))
   } else {
-    mod <- lapply(1:n.cv, stan_cv_internal,
+    mod <- lapply(1:n_cv, stan_cv_internal,
                   mod_compiled,
                   x$data_set,
-                  x$predictors
+                  x$predictors,
                   x$model,
                   n_cv,
                   n_iter,
@@ -49,7 +53,7 @@ validate.grow_mod <- function(x,
     
     # prepare outputs
     out_full <- do.call('rbind', mod)
-    size_real <- x$data_set$size_data
+    size_real <- out_full$size_real
     size_pred <- out_full$size_pred
     r2_cv <- cor(size_real, size_pred) ** 2
     rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
@@ -79,7 +83,7 @@ validate.grow_mod_multi <- function(x, n_cv, n_iter, n_chains,
     if (!is.null(test_data)) {
       # fit to train data
     } else {
-      mod <- lapply(1:n.cv, stan_cv_internal,
+      mod <- lapply(1:n_cv, stan_cv_internal,
                     mod_compiled,
                     x[[i]]$data_set,
                     x[[i]]$predictors,
@@ -125,11 +129,20 @@ stan_cv_internal <- function(i,
   if (n_cv == data$n_block) {
     cv_id <- which(data$block_data == i)
   } else {
-    n_holdout <- floor(data$n / n_cv)
-    if (i < n.cv) {
-      cv_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
+    n_holdout <- floor(data$n_block / n_cv)
+    n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
+    if (i < n_cv) {
+      block_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
+      cv_id <- NULL
+      for (i in seq_along(block_id)) {
+        cv_id <- c(cv_id, which(data$block_data == i))
+      }
     } else {
-      cv_id <- ((i - 1) * n_holdout + 1):(data$n)
+      block_id <- ((i - 1) * n_holdout + 1):data$n_block
+      cv_id <- NULL
+      for (i in seq_along(block_id)) {
+        cv_id <- c(cv_id, which(data$block_data == i))
+      }
     }
   }
   if (model != 'spline') {
@@ -140,15 +153,15 @@ stan_cv_internal <- function(i,
   }
   if (!is.null(predictors)) {
     if (is.matrix(predictors) | is.data.frame(predictors)) {
-      predictors_tmp <- predictors[-cv_id, ]
-      predictors_tmp_test <- predictors[cv_id, ]
+      predictors_tmp <- predictors[-block_id, ]
+      predictors_tmp_test <- predictors[block_id, ]
     } else {
       if (is.list(predictors)) {
         predictors_tmp <- vector('list', length = length(predictors))
         predictors_tmp_test <- vector('list', length = length(predictors))
         for (j in seq(along = predictors)) {
-          predictors_tmp[[j]] <- predictors[[j]][-cv_id, ]
-          predictors_tmp_test[[j]] <- predictors[[j]][cv_id, ]
+          predictors_tmp[[j]] <- predictors[[j]][-block_id, ]
+          predictors_tmp_test[[j]] <- predictors[[j]][block_id, ]
         }
       }
     }
@@ -171,10 +184,9 @@ stan_cv_internal <- function(i,
                           num_params = num_params,
                           spline_params = spline_params,
                           n_plot = 10)
-  
   # fit model just to training set
   stan_mod <- sampling(object = mod_compiled,
-                       data_cv = data_set,
+                       data = data_cv,
                        chains = n_chains,
                        iter = n_iter,
                        warmup = n_burnin,
@@ -182,7 +194,7 @@ stan_cv_internal <- function(i,
                        cores = stan_cores,
                        ...)
   
-  # use predict.growmod(mod_train, data_test) to get predictions
+  # use predict function to get predictions
   pred_test <- check_preds(predictors = predictors_tmp_test,
                            model = model,
                            block_data = data$block_data[cv_id],
@@ -192,16 +204,25 @@ stan_cv_internal <- function(i,
   test_data <- list(size = data$size_data[cv_id],
                     index = data$age[cv_id],
                     block = data$block_data[cv_id],
-                    predictors = pred_set)
+                    predictors = pred_test)
+  data_tmp_test <- growmod_data(data_set = test_data,
+                                model = model,
+                                num_params = num_params,
+                                spline_params = spline_params,
+                                n_plot = 10)
+  
   # need to switch for model type (no blocks, with blocks, with predictors)
-  ## THIS MIGHT NEED TO HAPPEN EARLIER
-  param_est <- get_posterior_mean(pars = paste0('b', 1:num_params))
-  ## WORK OUT DETAILS FOR DIMENSIONS
-  b_params <- matrix(param_est, ncol = num_params)
-  # define this function or use existing data sim function (move to utils.R)
+  h_est <- matrix(NA, nrow = length(unique(test_data$block)), ncol = num_params)
+  for (j in 1:num_params) {
+    param_tmp <- get_posterior_mean(stan_mod, pars = paste0('b', j))
+    param_tmp <- param_tmp[, ncol(param_tmp)]
+    pred_tmp <- data_tmp_test[which(names(data_tmp_test) == paste0('x', j))][[1]]
+    h_est[, j] <- pred_tmp %*% param_tmp
+  }
   cv_tmp <- calc_growth_curve(model = model,
                               index = test_data$index,
-                              params = (param_est %*% test_data$predictors))
+                              block = test_data$block,
+                              params = h_est)
   out <- data.frame(size_pred = cv_tmp, size_real = test_data$size)
   out
 }
