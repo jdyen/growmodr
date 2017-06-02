@@ -184,3 +184,13 @@ print.grow_mod_multi <- function(x, ...) {
 print.grow_mod_cv_multi <- function(x, ...) {
   
 }
+
+# NOT ACTUALLY FOR grow_mod OBJECTS -- USED FOR CV
+#' @rdname growmod
+#' @export
+predict.grow_mod <- function(object, newdata, ...) {
+  param_est <- rstan::summary(object)
+  
+  # switch for methods with and without blocks and predictors
+  NULL  
+}

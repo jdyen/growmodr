@@ -354,22 +354,26 @@ gen_mod_file <- function(model,
         mu_plot_agr <- mod_par$mu_agr
         h_var <- NULL
         sdh_var <- NULL
-        nxh_var <- NULL
-        x_var <- NULL
-        b_var <- NULL
         psi_var <- NULL
         psi_reg_var <- NULL
         b_prior <- NULL
         h_prior <- NULL
         sdh_prior <- NULL
+        block_sd <- NULL
+        psi_mean <- NULL
+        block_sd_prior <- NULL
+        psi_mean_prior <- NULL
         for (i in 1:num_param) {
           h_var <- paste0(h_var, 'vector<lower=0>[n_block] h', i, ';\n  ')
           sdh_var <- paste0(sdh_var, 'real<lower=0> sd_h', i, ';\n  ')
-          x_var <- paste0(x_var, 'matrix[n_block, n_x', i, '] x', i, ';\n  ')
           psi_var <- paste0(psi_var, 'vector[n_block] psi', i, ';\n  ')
-          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(0.0, block_sd);\n  ')
           h_prior <- paste0(h_prior, 'h', i, ' ~ normal(psi', i, ', sd_h', i, ');\n  ')
           sdh_prior <- paste0(sdh_prior, 'sd_h', i, ' ~ normal(0.0, 2.0);\n  ')
+          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(paste0(psi_mean', i, 'block_sd', i, ');\n  ')
+          block_sd <- paste0(block_sd, 'real<lower=0> block_sd', i, ';\n  ')
+          psi_mean <- paste0(psi_mean, 'real psi_mean', i, ';\n  ')
+          psi_mean_prior <- paste0(psi_mean_prior, 'psi_mean', i, ' ~ normal(0.0, 2.0);\n  ')
+          block_sd_prior <- paste0(block_sd_prior, 'block_sd', i, ' ~ normal(0.0, 2.0);\n  ')
         }
         cat(
           'data {
@@ -383,8 +387,9 @@ gen_mod_file <- function(model,
     }
         
         parameters {
-        real<lower=0> block_sd;
         real<lower=0> sigma_obs;\n',
+          block_sd,
+          psi_mean,
           sdh_var,
           psi_var,
           h_var,
@@ -398,9 +403,10 @@ gen_mod_file <- function(model,
         
         model {
         log(size_data) ~ normal(mu, sigma_obs);
-        block_sd ~ normal(0, 2);
         sigma_obs ~ normal(0, 2);\n',
           psi_reg_var,
+          block_sd_prior,
+          psi_mean_prior,
           h_prior,
           sdh_prior,
           '}
@@ -447,6 +453,10 @@ gen_mod_file <- function(model,
         b_prior <- NULL
         h_prior <- NULL
         sdh_prior <- NULL
+        block_sd <- NULL
+        psi_mean <- NULL
+        block_sd_prior <- NULL
+        psi_mean_prior <- NULL
         mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1[block_data[i]]'
         mu_var_plot <- 'mu_plot_growth[i, j] = b_spline_plot[i, j][1] * h1[j]'
         mu_var_agr <- 'mu_plot_agr[i, j] = b_spline_deriv[i, j][1] * h1[j]'
@@ -459,9 +469,13 @@ gen_mod_file <- function(model,
           h_var <- paste0(h_var, 'vector[n_block] h', i, ';\n  ')
           sdh_var <- paste0(sdh_var, 'real<lower=0> sd_h', i, ';\n  ')
           psi_var <- paste0(psi_var, 'vector[n_block] psi', i, ';\n  ')
-          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(0.0, block_sd);\n  ')
           h_prior <- paste0(h_prior, 'for (j in 1:n_block)\n h', i, '[j] ~ normal(psi', i, '[j], sd_h', i, ');\n  ')
           sdh_prior <- paste0(sdh_prior, 'sd_h', i, ' ~ normal(0.0, 2.0);\n  ')
+          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(paste0(psi_mean', i, 'block_sd', i, ');\n  ')
+          block_sd <- paste0(block_sd, 'real<lower=0> block_sd', i, ';\n  ')
+          psi_mean <- paste0(psi_mean, 'real psi_mean', i, ';\n  ')
+          psi_mean_prior <- paste0(psi_mean_prior, 'psi_mean', i, ' ~ normal(0.0, 2.0);\n  ')
+          block_sd_prior <- paste0(block_sd_prior, 'block_sd', i, ' ~ normal(0.0, 2.0);\n  ')
         }
         mu_var <- paste0(mu_var, ';\n  ')
         mu_var_plot <- paste0(mu_var_plot, ';\n  ')
@@ -484,8 +498,9 @@ gen_mod_file <- function(model,
         }
             
             parameters {
-            real<lower=0> block_sd;
             real<lower=0> sigma_obs;\n',
+          block_sd,
+          psi_mean,
           sdh_var,
           psi_var,
           h_var,
@@ -499,9 +514,10 @@ gen_mod_file <- function(model,
             
             model {
             log(size_data) ~ normal(mu, sigma_obs);
-            block_sd ~ normal(0, 2);
             sigma_obs ~ normal(0, 2);\n',
           h_prior,
+          block_sd_prior,
+          psi_mean_prior,
           psi_reg_var,
           sdh_prior,
           '}

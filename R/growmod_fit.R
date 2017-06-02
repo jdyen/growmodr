@@ -367,13 +367,13 @@ growmod.default <- function(size,
     
     # fit model
     stan_mod <- stan(file = mod_file,
-                data = data_set,
-                chains = n_chains,
-                iter = n_iter,
-                warmup = n_burnin,
-                thin = n_thin,
-                cores = stan_cores,
-                ...)
+                     data = data_set,
+                     chains = n_chains,
+                     iter = n_iter,
+                     warmup = n_burnin,
+                     thin = n_thin,
+                     cores = stan_cores,
+                     ...)
     
     # summarise fitted stan model
     log_lik_tmp <- extract_log_lik(stan_mod)

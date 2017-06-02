@@ -193,7 +193,15 @@ stan_cv_internal <- function(i,
                     index = data$age[cv_id],
                     block = data$block_data[cv_id],
                     predictors = pred_set)
-  cv_tmp <- predict(stan_mod, test_data)
+  # need to switch for model type (no blocks, with blocks, with predictors)
+  ## THIS MIGHT NEED TO HAPPEN EARLIER
+  param_est <- get_posterior_mean(pars = paste0('b', 1:num_params))
+  ## WORK OUT DETAILS FOR DIMENSIONS
+  b_params <- matrix(param_est, ncol = num_params)
+  # define this function or use existing data sim function (move to utils.R)
+  cv_tmp <- calc_growth_curve(model = model,
+                              index = test_data$index,
+                              params = (param_est %*% test_data$predictors))
   out <- data.frame(size_pred = cv_tmp, size_real = test_data$size)
   out
 }
