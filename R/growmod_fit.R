@@ -393,8 +393,12 @@ growmod.default <- function(size,
                 loo = loo,
                 waic = waic,
                 stan_summary = summary(stan_mod)$summary,
-                train_data = data_set,
-                mod_file = mod_file)
+                data_set = data_set,
+                predictors = predictors,
+                model = model,
+                mod_file = mod_file,
+                spline_params = spline_params,
+                stan_cores = stan_cores)
     
     # set model class for single growth curve model
     class(mod) <- 'grow_mod'
@@ -440,8 +444,11 @@ growmod.default <- function(size,
                        loo = loo,
                        waic = waic,
                        stan_summary = summary(stan_mod)$summary,
-                       train_data = data_set,
-                       mod_file = mod_file)
+                       data_set = data_set,
+                       model = model,
+                       mod_file = mod_file,
+                       spline_params = spline_params,
+                       stan_cores = stan_cores)
 
       # set model class for single growth curve model
       class(mod[[i]]) <- 'grow_mod'
