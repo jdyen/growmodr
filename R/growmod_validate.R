@@ -58,9 +58,9 @@ validate.grow_mod <- function(x,
     out_full <- do.call('rbind', mod)
     size_real <- out_full$size_real
     size_pred <- out_full$size_pred
-    r2_cv <- cor(size_real, size_pred) ** 2
-    rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
-    md_cv <- mean((size_real - size_pred))
+    r2_cv <- round(cor(size_real, size_pred) ** 2, 3)
+    rmsd_cv <- round(sqrt(mean((size_real - size_pred) ** 2)), 3)
+    md_cv <- round(mean((size_real - size_pred)), 3)
   }
   mod_cv <- list(size_real = size_real,
                  size_pred = size_pred,
@@ -102,10 +102,14 @@ validate.grow_mod_multi <- function(x, n_cv, n_iter, n_chains,
       
       # prepare outputs
       out_full <- do.call('rbind', mod)
-      r2_cv <- cor(out_full$size_pred, out_full$size_real) ** 2
-      rmsd_cv <- sqrt(mean((out_full$size_pred - out_full$size_real) ** 2))
-      md_cv <- mean((out_full$size_pred - out_full$size_real))
-      mod_cv[[i]] <- list(r2 = r2_cv,
+      size_real <- out_full$size_real
+      size_pred <- out_full$size_pred
+      r2_cv <- round(cor(size_real, size_pred) ** 2, 3)
+      rmsd_cv <- round(sqrt(mean((size_real - size_pred) ** 2)), 3)
+      md_cv <- round(mean((size_real - size_pred)), 3)
+      mod_cv[[i]] <- list(size_real = size_real,
+                          size_pred = size_pred,
+                          r2 = r2_cv,
                           rmsd = rmsd_cv,
                           md = md_cv)
     }
