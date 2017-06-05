@@ -9,22 +9,22 @@ validate <- function(x, ...) {
 
 #' @rdname growmod
 #' @export
-validate.grow_mod <- function(x,
-                              n_cv,
-                              train_data = NULL,
-                              test_data = NULL,
-                              n_iter = NULL,
-                              n_burnin = NULL,
-                              n_thin = NULL,
-                              n_chains = NULL,
-                              ...) {
+validate.growmod <- function(x,
+                             n_cv = NULL,
+                             train_data = NULL,
+                             test_data = NULL,
+                             n_iter = NULL,
+                             n_burnin = NULL,
+                             n_thin = NULL,
+                             n_chains = NULL,
+                             ...) {
   # generate model file
   if (!is.null(x$stanmod)) {
     mod_compiled <- x$stanmod
   } else {
     mod_compiled <- stan_model(file = x$mod_file)
   }
-
+  
   # set sampling details
   if (is.null(n_iter)) {
     n_iter <- x$n_iter
@@ -37,6 +37,38 @@ validate.grow_mod <- function(x,
   }
   if (is.null(n_chains)) {
     n_chains <- x$n_chains
+  }
+
+  # check for type of CV
+  if (is.null(n_cv)) {
+    if (is.null(test_data) & is.null(train_data)) {
+      stop('Either the number of folds (n_cv) or train_data and test_data must be provided
+           for model validation', call. = FALSE)
+    } else {
+      if (is.null(test_data)) {
+        stop('test_data must be provided for model validation with train_data',
+             call. = FALSE)
+      } else {
+        if (is.null(train_data)) {
+          stop('train_data must be provided for model validation with test_data',
+               call. = FALSE)
+        } else {
+          cat('Performing model validation based on train_data and test_data\n')
+        }
+      }
+    }
+  } else {
+    # UPDATE THIS TO ADDRESS MODEL VARIANTS
+    if ((n_cv == 'loo') & !is.null(x$data_set$block_data)) {
+      n_cv <- x$data_set$n_block
+    } else {
+      if (is.numeric(n_cv)) {
+        cat(paste0('Performing ', n_cv, '-fold cross validation\n'))
+      } else {
+        stop('n_cv must specify a number of folds or be set to "loo" for model validation',
+             call. = FALSE)
+      }
+    }
   }
   
   # run cv in loop
@@ -53,6 +85,7 @@ validate.grow_mod <- function(x,
     rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
     md_cv <- mean((size_real - size_pred))
   } else {
+    # this assumes block_data are available
     if (n_cv > x$data_set$n_block) {
       n_cv <- x$data_set$n_block
     }
@@ -90,15 +123,15 @@ validate.grow_mod <- function(x,
 
 #' @rdname growmod
 #' @export
-validate.grow_mod_multi <- function(x,
-                                    n_cv,
-                                    train_data = NULL,
-                                    test_data = NULL,
-                                    n_iter = NULL,
-                                    n_burnin = NULL,
-                                    n_thin = NULL,
-                                    n_chains = NULL,
-                                    ...) {
+validate.growmod_multi <- function(x,
+                                   n_cv,
+                                   train_data = NULL,
+                                   test_data = NULL,
+                                   n_iter = NULL,
+                                   n_burnin = NULL,
+                                   n_thin = NULL,
+                                   n_chains = NULL,
+                                   ...) {
   
   mod_cv <- vector('list', length(x))
   names(mod_cv) <- sapply(x, function(x) x$model)
@@ -281,7 +314,7 @@ stan_cv_internal <- function(i,
   for (j in 1:num_params) {
     param_tmp <- get_posterior_mean(stan_mod, pars = paste0('b', j))
     param_tmp <- param_tmp[, ncol(param_tmp)]
-    pred_tmp <- data_tmp_test[which(names(data_tmp_test) == paste0('x', j))][[1]]
+    pred_tmp <- as.matrix(data_tmp_test[which(names(data_tmp_test) == paste0('x', j))][[1]])
     h_est[, j] <- pred_tmp %*% param_tmp
   }
   cv_tmp <- calc_growth_curve(model = model,

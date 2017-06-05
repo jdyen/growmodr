@@ -277,6 +277,29 @@ growmod.default <- function(size,
     }
   }
   
+  # remove NAs
+  na_rem_list <- NULL
+  rows_to_rm <- NULL
+  if (any(is.na(size))) {
+    rows_to_rm <- c(rows_to_rm, which(is.na(size)))
+    na_rem_list <- c(na_rem_list, 'size')
+  }
+  if (any(is.na(index))) {
+    rows_to_rm <- c(rows_to_rm, which(is.na(index)))
+    na_rem_list <- c(na_rem_list, 'index')
+  }
+  if (any(is.na(block))) {
+    rows_to_rm <- c(rows_to_rm, which(is.na(block)))
+    na_rem_list <- c(na_rem_list, 'block')
+  }
+  if (length(rows_to_rm)) {
+    size <- size[-rows_to_rm]
+    index <- index[-rows_to_rm]
+    block <- block[-rows_to_rm]
+    warning(paste0('removed ', length(rows_to_rm), ' observations due to NAs in ', na_rem_list),
+            call. = FALSE)
+  }
+  
   # setup model parameters and extract predictors
   if (length(model) == 1) {
     if (model != 'spline') {
