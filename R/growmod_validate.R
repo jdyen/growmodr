@@ -11,17 +11,33 @@ validate <- function(x, ...) {
 #' @export
 validate.grow_mod <- function(x,
                               n_cv,
-                              n_iter, n_burnin, n_thin,
-                              n_chains,
                               train_data = NULL,
                               test_data = NULL,
+                              n_iter = NULL,
+                              n_burnin = NULL,
+                              n_thin = NULL,
+                              n_chains = NULL,
                               ...) {
   # generate model file
-  #mod_compiled <- stan_model(file = x$mod_file)
-  # don't need this line if it works
-  mod_compiled <- x$stanmod
-  
-  ## SET n_iter etc to NULL and estimate from fitted model
+  if (!is.null(x$stanmod)) {
+    mod_compiled <- x$stanmod
+  } else {
+    mod_compiled <- stan_model(file = x$mod_file)
+  }
+
+  # set sampling details
+  if (is.null(n_iter)) {
+    n_iter <- x$n_iter
+  }
+  if (is.null(n_burnin)) {
+    n_burnin <- x$n_burnin
+  }
+  if (is.null(n_thin)) {
+    n_thin <- x$n_thin
+  }
+  if (is.null(n_chains)) {
+    n_chains <- x$n_chains
+  }
   
   # run cv in loop
   if (!is.null(test_data)) {
@@ -74,9 +90,14 @@ validate.grow_mod <- function(x,
 
 #' @rdname growmod
 #' @export
-validate.grow_mod_multi <- function(x, n_cv, n_iter, n_chains,
+validate.grow_mod_multi <- function(x,
+                                    n_cv,
                                     train_data = NULL,
                                     test_data = NULL,
+                                    n_iter = NULL,
+                                    n_burnin = NULL,
+                                    n_thin = NULL,
+                                    n_chains = NULL,
                                     ...) {
   
   mod_cv <- vector('list', length(x))
@@ -84,6 +105,20 @@ validate.grow_mod_multi <- function(x, n_cv, n_iter, n_chains,
   for (i in seq(along = x)) {
     # generate model file
     mod_compiled <- stan_model(file = x[[i]]$mod_file)
+    
+    # set sampling details
+    if (is.null(n_iter)) {
+      n_iter <- x[[i]]$n_iter
+    }
+    if (is.null(n_burnin)) {
+      n_burnin <- x[[i]]$n_burnin
+    }
+    if (is.null(n_thin)) {
+      n_thin <- x[[i]]$n_thin
+    }
+    if (is.null(n_chains)) {
+      n_chains <- x[[i]]$n_chains
+    }
     
     # run cv in loop
     if (!is.null(test_data)) {
@@ -135,27 +170,31 @@ stan_cv_internal <- function(i,
                              spline_params,
                              stan_cores,
                              ...) {
-  ## NEED a version for structured loo, structured k-fold, random loo, random k-fold
-  # structured loo or unstructured k-fold
-  if (n_cv == data$n_block) {
-    block_id <- i
-    cv_id <- which(data$block_data == i)
-  } else {
-    n_holdout <- floor(data$n_block / n_cv)
-    n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
-    if (i < n_cv) {
-      block_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
-      cv_id <- NULL
-      for (i in seq_along(block_id)) {
-        cv_id <- c(cv_id, which(data$block_data == block_id[i]))
-      }
+  ## NEED a version for random loo and random k-fold
+  # structured loo or structured k-fold
+  if (!is.null(data$block_data)) {
+    if (n_cv == data$n_block) {
+      block_id <- i
+      cv_id <- which(data$block_data == i)
     } else {
-      block_id <- ((i - 1) * n_holdout + 1):data$n_block
-      cv_id <- NULL
-      for (i in seq_along(block_id)) {
-        cv_id <- c(cv_id, which(data$block_data == block_id[i]))
+      n_holdout <- floor(data$n_block / n_cv)
+      n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
+      if (i < n_cv) {
+        block_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
+        cv_id <- NULL
+        for (i in seq_along(block_id)) {
+          cv_id <- c(cv_id, which(data$block_data == block_id[i]))
+        }
+      } else {
+        block_id <- ((i - 1) * n_holdout + 1):data$n_block
+        cv_id <- NULL
+        for (i in seq_along(block_id)) {
+          cv_id <- c(cv_id, which(data$block_data == block_id[i]))
+        }
       }
     }
+  } else {
+    # model without blocks
   }
   if (model != 'spline') {
     mod_params <- get(paste0(model, '_param_fetch'))()
@@ -208,6 +247,7 @@ stan_cv_internal <- function(i,
                           num_params = num_params,
                           spline_params = spline_params,
                           n_plot = 10)
+  
   # fit model just to training set
   stan_mod <- sampling(object = mod_compiled,
                        data = data_cv,
@@ -218,7 +258,7 @@ stan_cv_internal <- function(i,
                        cores = stan_cores,
                        ...)
   
-  # use predict function to get predictions
+  # calculate out-of-sample predictions
   pred_test <- check_preds(predictors = predictors_tmp_test,
                            model = model,
                            block_data = data$block_data[cv_id],
@@ -236,6 +276,7 @@ stan_cv_internal <- function(i,
                                 n_plot = 10)
   
   # need to switch for model type (no blocks, with blocks, with predictors)
+  ### POSSIBLY can just use values of data_tmp_test to work out model type?
   h_est <- matrix(NA, nrow = length(unique(test_data$block)), ncol = num_params)
   for (j in 1:num_params) {
     param_tmp <- get_posterior_mean(stan_mod, pars = paste0('b', j))

@@ -161,13 +161,20 @@ growmod.formula <- function(formula,
   }
   
   # check for predictors
-  ## BREAKING HERE because predictors isn't passing correctly (string or missing object)
   if (!is.null(predictors)) {
-#    pred_var <- deparse(substitute(predictors))
-    pred_var <- predictors
-    if (!is.null(data)) {
-      if (exists(pred_var, data)) {
-        predictors <- get(pred_var, data)
+    if (is.character(predictors)) {
+      pred_var <- predictors
+      if (!is.null(data)) {
+        if (exists(pred_var, data)) {
+          predictors <- get(pred_var, data)
+        } else {
+          if (exists(pred_var, parent.frame())) {
+            predictors <- get(pred_var, parent.frame())
+          } else {
+            stop(paste0(pred_var, ' not found'),
+                 call. = FALSE)
+          }
+        }
       } else {
         if (exists(pred_var, parent.frame())) {
           predictors <- get(pred_var, parent.frame())
@@ -177,15 +184,10 @@ growmod.formula <- function(formula,
         }
       }
     } else {
-      if (exists(pred_var, parent.frame())) {
-        predictors <- get(pred_var, parent.frame())
-      } else {
-        stop(paste0(pred_var, ' not found'),
-             call. = FALSE)
-      }
+      predictors <- predictors
     }
   }
-
+  
   # check if a blocking variable has been provided
   if (length(pred_vars) == 1) {
     cat('model has no blocking variable and will assume that all data points are
@@ -403,7 +405,11 @@ growmod.default <- function(size,
                 model = model,
                 stanmod = stanmod,
                 spline_params = spline_params,
-                stan_cores = stan_cores)
+                stan_cores = stan_cores,
+                n_iter = n_iter,
+                n_burnin = n_burnin,
+                n_thin = n_thin,
+                n_chains = n_chains)
     
     # set model class for single growth curve model
     class(mod) <- 'growmod'
@@ -451,7 +457,11 @@ growmod.default <- function(size,
                        model = model,
                        stanmod = stanmod,
                        spline_params = spline_params,
-                       stan_cores = stan_cores)
+                       stan_cores = stan_cores,
+                       n_iter = n_iter,
+                       n_burnin = n_burnin,
+                       n_thin = n_thin,
+                       n_chains = n_chains)
 
       # set model class for single growth curve model
       class(mod[[i]]) <- 'growmod'
