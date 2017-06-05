@@ -28,7 +28,7 @@ NULL
 #' @details \code{growmod} takes a formula or data vectors as arguments
 #'   and constructs and fits a Stan model for a chosen growth curve.
 #' 
-#' @return \code{mod} A fitted \code{grow_mod} object containing
+#' @return \code{mod} A fitted \code{growmod} object containing
 #'   parameter estimates, validation statistics, and the original
 #'   data set used to fit the model. 
 #'
@@ -406,9 +406,10 @@ growmod.default <- function(size,
                 stan_cores = stan_cores)
     
     # set model class for single growth curve model
-    class(mod) <- 'grow_mod'
+    class(mod) <- 'growmod'
   } else {
     mod <- vector('list', length = length(model))
+    names(mod) <- model
     
     for (i in seq(along = model)) {
       # generate stan model
@@ -453,11 +454,11 @@ growmod.default <- function(size,
                        stan_cores = stan_cores)
 
       # set model class for single growth curve model
-      class(mod[[i]]) <- 'grow_mod'
+      class(mod[[i]]) <- 'growmod'
     }
     
     # set model class for multiple growth curve models
-    class(mod) <- 'grow_mod_multi'
+    class(mod) <- 'growmod_multi'
   }
   
   # return outputs

@@ -66,7 +66,8 @@ validate.grow_mod <- function(x,
                  size_pred = size_pred,
                  r2 = r2_cv,
                  rmsd = rmsd_cv,
-                 md = md_cv)
+                 md = md_cv,
+                 model = x$model)
   class(mod_cv) <- 'growmod_cv'
   mod_cv
 }
@@ -74,10 +75,12 @@ validate.grow_mod <- function(x,
 #' @rdname growmod
 #' @export
 validate.grow_mod_multi <- function(x, n_cv, n_iter, n_chains,
+                                    train_data = NULL,
                                     test_data = NULL,
                                     ...) {
   
   mod_cv <- vector('list', length(x))
+  names(mod_cv) <- sapply(x, function(x) x$model)
   for (i in seq(along = x)) {
     # generate model file
     mod_compiled <- stan_model(file = x[[i]]$mod_file)
@@ -111,7 +114,8 @@ validate.grow_mod_multi <- function(x, n_cv, n_iter, n_chains,
                           size_pred = size_pred,
                           r2 = r2_cv,
                           rmsd = rmsd_cv,
-                          md = md_cv)
+                          md = md_cv,
+                          model = x[[i]]$model)
     }
   }
   class(mod_cv) <- 'growmod_cv_multi'
