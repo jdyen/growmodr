@@ -107,10 +107,10 @@ calc_growth_curve <- function(model, index, block, params) {
   for (i in 1:length(unique(block))) {
     x_vals <- index[which(block == unique(block)[i])]
     h_vals <- params[i, ]
-    out[which(block == unique(block)[i])] <- eqn_set(x_vals,
-                                                     h_vals[1],
-                                                     h_vals[2],
-                                                     h_vals[3])
+    out[which(block == unique(block)[i])] <- exp(eqn_set(x_vals,
+                                                         h_vals[1],
+                                                         h_vals[2],
+                                                         h_vals[3]))
   }
   out
 }

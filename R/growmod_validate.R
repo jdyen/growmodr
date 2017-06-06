@@ -315,6 +315,12 @@ stan_cv_internal <- function(i,
     param_tmp <- get_posterior_mean(stan_mod, pars = paste0('b', j))
     param_tmp <- param_tmp[, ncol(param_tmp)]
     pred_tmp <- as.matrix(data_tmp_test[which(names(data_tmp_test) == paste0('x', j))][[1]])
+    if (nrow(pred_tmp) == 1) {
+      pred_tmp <- as.numeric(pred_tmp)
+    }
+    print(pred_tmp)
+    print(class(pred_tmp))
+    print(param_tmp)
     h_est[, j] <- pred_tmp %*% param_tmp
   }
   cv_tmp <- calc_growth_curve(model = model,
