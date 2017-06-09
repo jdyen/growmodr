@@ -74,6 +74,16 @@ validate.growmod <- function(x,
   # run cv in loop
   if (!is.null(test_data)) {
     # fit to train data
+    out_tmp <- growmod_pred(x$model,
+                            train_data,
+                            test_data,
+                            n_iter,
+                            n_burnin,
+                            n_thin,
+                            n_chains,
+                            x$spline_params,
+                            x$stan_cores,
+                            ...)
     
     # predict to test data
     pred_test <- predict(mod_cv, test_data = test_data)

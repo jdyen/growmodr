@@ -3,7 +3,9 @@ growmod_data <- function(data_set,
                          model,
                          num_params,
                          spline_params,
-                         n_plot = 100) {
+                         n_plot = 100,
+                         train_data = NULL,
+                         test_data = NULL) {
   if (model != 'spline') {
     if (!is.null(data_set$predictors)) {
       if (is.data.frame(data_set$predictors) | is.matrix(data_set$predictors)) {
@@ -42,6 +44,12 @@ growmod_data <- function(data_set,
         names(out)[length(out)] <- paste0('n_x', i)
       }
     }
+    if (is.null(train_data) & is.null(test_data)) {
+      out$age_holdout <- rnorm(5)
+    } else {
+      out$age_holdout <- out$train_data$age
+    }
+    out$n_pred <- length(out$age_holdout)
   } else {
     if (!is.null(data_set$predictors)) {
       if (is.data.frame(data_set$predictors) | is.matrix(data_set$predictors)) {

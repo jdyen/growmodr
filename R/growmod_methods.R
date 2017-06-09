@@ -245,7 +245,11 @@ plot.growmod_cv_multi <- function(x, ...) {
 #' @rdname growmod
 #' @export
 summary.growmod <- function(x, ...) {
-  
+  print_out <- c(x$r2, x$rmsd, x$md, round(x$loo$looic, 2), round(x$waic$waic, 2))
+  names(print_out) <- c('r2', 'rmsd', 'md', 'loo_ic', 'waic')
+  mod_type <- x$model
+  ## pull out rhats and print warning if some >1.1
+  ## state number of obs, number of blocks, return model call (perhaps formatted)
 }
 
 #' @rdname growmod
@@ -269,25 +273,25 @@ summary.growmod_cv_multi <- function(x, ...) {
 #' @rdname growmod
 #' @export
 print.growmod <- function(x, ...) {
-  
+  compare(x, ...)
 }
 
 #' @rdname growmod
 #' @export
 print.growmod_cv <- function(x, ...) {
-  
+  compare(x, ...)
 }
 
 #' @rdname growmod
 #' @export
 print.growmod_multi <- function(x, ...) {
-  
+  compare(x, ...)
 }
 
 #' @rdname growmod
 #' @export
 print.growmod_cv_multi <- function(x, ...) {
-  
+  compare(x, ...)
 }
 
 #' @rdname growmod

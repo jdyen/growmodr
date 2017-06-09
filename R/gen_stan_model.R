@@ -15,11 +15,16 @@ gen_mod_file <- function(model,
       mod_mu <- mod_par$mu
       mu_plot <- mod_par$mu_plot
       mu_plot_agr <- mod_par$mu_agr
+      mu_pred <- mod_par$mu_holdout
       h_var <- NULL
       h_prior <- NULL
+      h_holdout <- NULL
+      h_pred <- NULL
       for (i in 1:num_param) {
         h_var <- paste0(h_var, 'real<lower=0> h', i, ';\n  ')
         h_prior <- paste0(h_prior, 'h', i, ' ~ normal(0.0, 2.0);\n  ')
+        h_holdout <- paste0(h_holdout, 'real<lower=0> h', i, '_holdout;\n')
+        h_pred <- paste0(h_pred, 'h', i, '_holdout = h', i, ';\n')
       }
       cat(
         'data {
@@ -27,7 +32,9 @@ gen_mod_file <- function(model,
         vector<lower=0>[n] size_data;
         vector[n] age;
         int<lower=0> n_plot;
+        int<lower=0> n_pred;
         vector[n_plot] age_plot;
+        vector[n_pred] age_holdout;
     }
         
         parameters {
@@ -36,9 +43,11 @@ gen_mod_file <- function(model,
         '}
         
         transformed parameters {
-        vector[n] mu;
-        for (i in 1:n)
+        vector[n] mu;\n',
+        h_holdout,
+        '  for (i in 1:n)
         mu[i] = ', mod_mu, ';\n',
+        h_pred,
         '}
         
         model {
@@ -50,8 +59,10 @@ gen_mod_file <- function(model,
         generated quantities {
         vector[n_plot] mu_plot_growth;
         vector[n_plot] mu_plot_agr;
+        vector[n_pred] mu_pred;
         vector<lower=0>[n_plot] size_plot;
         vector<lower=0>[n_plot] size_plot_agr;
+        vector<lower=0>[n_pred] size_pred;
         vector[n] log_lik;
         
         for (i in 1:n_plot)
@@ -62,6 +73,10 @@ gen_mod_file <- function(model,
         mu_plot_agr[i] = ', mu_plot_agr, ';\n',
         ' for (i in 1:n_plot)
         size_plot_agr[i] = exp(mu_plot_agr[i]);
+        for (i in 1:n_pred)
+          mu_pred[i] = ', mu_pred, ';\n',
+        ' for (i in 1:n_pred)
+          size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
         }
@@ -80,30 +95,39 @@ gen_mod_file <- function(model,
       mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1'
       mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i][1] * h1'
       mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i][1] * h1'
+      mu_pred <- 'mu_pred[i] = b_spline_pred[age_holdout[i]][1] * h1_holdout'
       for (i in 1:num_param) {
         if (i > 1) {
           mu_var <- paste0(mu_var, ' + b_spline[age_index[i]][', i, '] * h', i)
           mu_var_plot <- paste0(mu_var_plot, ' + b_spline_plot[i][', i, '] * h', i)
           mu_var_agr <- paste0(mu_var_agr, ' + b_spline_deriv[i][', i, '] * h', i)
+          mu_pred <- paste0(mu_pred, ' + b_spline_pred[age_holdout[i]][', i, '] * h', i, '_holdout')
         }
         h_var <- paste0(h_var, 'real h', i, ';\n  ')
         h_prior <- paste0(h_prior, 'h', i, '~ normal(0.0, 2.0);\n  ')
+        h_holdout <- paste0(h_holdout, 'real<lower=0> h', i, '_holdout;\n')
+        h_pred <- paste0(h_pred, 'h', i, '_holdout = h', i, ';\n')
       }
       mu_var <- paste0(mu_var, ';\n  ')
       mu_var_plot <- paste0(mu_var_plot, ';\n  ')
       mu_var_agr <- paste0(mu_var_agr, ';\n  ')
+      mu_pred <- paste0(mu_pred, ';\n  ')
       cat(
         'data {
             int<lower=0> n;
             vector<lower=0>[n] size_data;
             vector[n] age;
             int<lower=0> n_age;
+            int<lower=0> n_age_pred;
             int<lower=0> n_k;
             int<lower=0> age_index[n];
             row_vector[n_k] b_spline[n_age];
             int<lower=0> n_plot;
+            int<lower=0> n_pred;
             vector[n_plot] age_plot;
+            int<lower=0> age_holdout[n_pred];
             row_vector[n_k] b_spline_plot[n_plot];
+            row_vector[n_k] b_spline_pred[n_age_pred];
             row_vector[n_k] b_spline_deriv[n_plot];
         }
             
@@ -113,9 +137,11 @@ gen_mod_file <- function(model,
         '}
             
             transformed parameters {
-            vector[n] mu;
-        for (i in 1:n)\n',
+            vector[n] mu;\n',
+        h_holdout,
+        '  for (i in 1:n)\n',
         mu_var,
+        h_pred,
         '}
             
             model {
@@ -127,8 +153,10 @@ gen_mod_file <- function(model,
             generated quantities {
             vector[n_plot] mu_plot_growth;
             vector[n_plot] mu_plot_agr;
+            vector[n_pred] mu_pred;
             vector<lower=0>[n_plot] size_plot;
             vector<lower=0>[n_plot] size_plot_agr;
+            vector<lower=0>[n_pred] size_pred;
             vector[n] log_lik;
             
             for (i in 1:n_plot)\n',
@@ -139,7 +167,11 @@ gen_mod_file <- function(model,
         mu_var_agr,
         'for (i in 1:n_plot)
             size_plot_agr[i] = exp(mu_plot_agr[i]);
-            for (i in 1:n)
+            for (i in 1:n_pred)\n',
+        mu_pred,
+        'for (i in 1:n_pred)
+        size_pred[i] = exp(mu_pred[i]);
+        for (i in 1:n)
             log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
             }
         
@@ -147,6 +179,11 @@ gen_mod_file <- function(model,
         file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
     }    
   } else {
+    
+    ##### WORK THROUGH FROM HERE to add in pred outputs
+    ## need to setup data correctly for holdout data (currently just generates
+    #     small random hodlout set)
+    
     if (include_pred) {
       if (model != 'spline') {
         mod_par <- get(paste0(model, '_param_fetch'))()
