@@ -99,8 +99,11 @@ growmod <- function(x, ...) {
 #' @rdname growmod
 #' @export
 #' @import rstan
+#' 
+#' 
+#' ## fix for formula = size ~ (age | species / traits)
+#' ### AND PULL PREDICTORS OUT OF TRAITS
 growmod.formula <- function(formula,
-                            predictors = NULL,
                             data = NULL,
                             model = 'hillslope',
                             n_iter = 5000,
