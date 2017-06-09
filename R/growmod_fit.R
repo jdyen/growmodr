@@ -42,8 +42,7 @@ NULL
 #'                               true_model = 'hillslope')
 #'
 #'   # fit the correct model
-#'   mod1 <- growmod(size ~ (age | block),
-#'                   predictors = predictors,
+#'   mod1 <- growmod(size ~ (age | block / predictors),
 #'                   data = data_sim,
 #'                   model = 'hillslope',
 #'                   n_iter = 1000,
@@ -64,8 +63,7 @@ NULL
 #'   mod1_cv <- validate(mod1)
 #'                    
 #'   # fit an incorrect model
-#'   mod2 <- growmod(size ~ (age | block),
-#'                   predictors = predictors,
+#'   mod2 <- growmod(size ~ (age | block / predictors),
 #'                   data = data_sim,
 #'                   model = 'koblog',
 #'                   n_iter = 1000,
@@ -99,10 +97,6 @@ growmod <- function(x, ...) {
 #' @rdname growmod
 #' @export
 #' @import rstan
-#' 
-#' 
-#' ## fix for formula = size ~ (age | species / traits)
-#' ### AND PULL PREDICTORS OUT OF TRAITS
 growmod.formula <- function(formula,
                             data = NULL,
                             model = 'hillslope',
@@ -117,8 +111,8 @@ growmod.formula <- function(formula,
                             ...) {
   # collate data from formula
   form_tmp <- formula
-  pred_vars <- all.vars(form_tmp[[length(form_tmp)]])
-  index_var <- pred_vars[1]
+  all_vars <- all.vars(form_tmp[[length(form_tmp)]])
+  index_var <- all_vars[1]
   size_resp <- all.vars(form_tmp)[1]
   
   # check for size data in data and workspace
@@ -164,20 +158,11 @@ growmod.formula <- function(formula,
   }
   
   # check for predictors
-  if (!is.null(predictors)) {
-    if (is.character(predictors)) {
-      pred_var <- predictors
-      if (!is.null(data)) {
-        if (exists(pred_var, data)) {
-          predictors <- get(pred_var, data)
-        } else {
-          if (exists(pred_var, parent.frame())) {
-            predictors <- get(pred_var, parent.frame())
-          } else {
-            stop(paste0(pred_var, ' not found'),
-                 call. = FALSE)
-          }
-        }
+  if (length(all_vars) == 3) {
+    pred_var <- all_vars[3]
+    if (!is.null(data)) {
+      if (exists(pred_var, data)) {
+        predictors <- get(pred_var, data)
       } else {
         if (exists(pred_var, parent.frame())) {
           predictors <- get(pred_var, parent.frame())
@@ -187,18 +172,25 @@ growmod.formula <- function(formula,
         }
       }
     } else {
-      predictors <- predictors
+      if (exists(pred_var, parent.frame())) {
+        predictors <- get(pred_var, parent.frame())
+      } else {
+        stop(paste0(pred_var, ' not found'),
+             call. = FALSE)
+      }
     }
+  } else {
+    predictors <- NULL
   }
   
   # check if a blocking variable has been provided
-  if (length(pred_vars) == 1) {
+  if (length(all_vars) == 1) {
     cat('model has no blocking variable and will assume that all data points are
          samples from a single growth curve.')
     block_var <- NULL
     block_data <- NULL
   } else {
-    block_var <- pred_vars[2]
+    block_var <- all_vars[2]
     if (!is.null(data)) {
       if (exists(block_var, data)) {
         block_data <- get(block_var, data)
