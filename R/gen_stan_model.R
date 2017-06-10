@@ -191,6 +191,7 @@ gen_mod_file <- function(model,
         mod_mu <- mod_par$mu
         mu_plot <- mod_par$mu_plot
         mu_plot_agr <- mod_par$mu_agr
+        mu_pred <- mod_par$mu_holdout
         h_var <- NULL
         sdh_var <- NULL
         nxh_var <- NULL
@@ -199,6 +200,9 @@ gen_mod_file <- function(model,
         psi_var <- NULL
         psi_reg_var <- NULL
         b_prior <- NULL
+        
+        ## NEED h_holdout, block_holdout(data) (seems wrong), age_holdout(data)
+        
         h_prior <- NULL
         sdh_prior <- NULL
         for (i in 1:num_param) {
@@ -216,12 +220,16 @@ gen_mod_file <- function(model,
         cat(
           'data {
       int<lower=0> n;
-      int<lower=0> n_block;\n',
+      int<lower=0> n_pred;
+      int<lower=0> n_block;
+      int<lower=0> n_block_holdout;\n',
           nxh_var,
           x_var,
           'vector<lower=0>[n] size_data;
       vector[n] age;
+      vector[n_pred] age_holdout;
       int<lower=0, upper=n_block> block_data[n];
+      int<lower=0, upper=n_block_holdout> block_holdout[n_pred];
       int<lower=0> n_plot;
       vector[n_plot] age_plot;
   }
@@ -252,8 +260,10 @@ gen_mod_file <- function(model,
       generated quantities {
       matrix[n_plot, n_block] mu_plot_growth;
       matrix[n_plot, n_block] mu_plot_agr;
+      matrix[n_pred, n_block_holdout] mu_pred;
       matrix<lower=0>[n_plot, n_block] size_plot;
       matrix<lower=0>[n_plot, n_block] size_plot_agr;
+      matrix<lower=0>[n_plot, n_block_holdout] size_pred;
       vector[n] log_lik;
       
       for (i in 1:n_plot)
@@ -268,7 +278,11 @@ gen_mod_file <- function(model,
           ' for (i in 1:n_plot)
       for (j in 1:n_block)
       size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
-      for (i in 1:n)
+      for (i in 1:n_pred)
+          mu_pred[i, block_holdout[i]] = ', mu_pred, ';\n',
+          ' for (i in 1:n_pred)
+          size_pred[i, block_holdout[i]] = exp(mu_pred[i, block_holdout[i]]);
+          for (i in 1:n)
       log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
       }
           
