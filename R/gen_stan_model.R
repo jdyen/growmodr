@@ -92,6 +92,8 @@ gen_mod_file <- function(model,
       }
       h_var <- NULL
       h_prior <- NULL
+      h_holdout <- NULL
+      h_pred <- NULL
       mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1'
       mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i][1] * h1'
       mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i][1] * h1'
