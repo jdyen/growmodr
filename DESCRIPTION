@@ -1,13 +1,18 @@
 Package: growmod
 Type: Package
-Title
+Title: Growth Curve Modelling and Validation with Stan
 Version: 0.0.1
 Date: 2017-06-14
 Authors@R: c(
     person("Jian", "Yen", role = c("aut", "cre"), email = "jdl.yen@gmail.com"),
     person("Freya", "Thomas", role = c("aut")
     )
-Description:
+Description: R package to fit growth models to data on size at age. Supports
+    multiple model types, including standard growth-curve fitting, growth
+    curves that differ among blocks in a data set (e.g. different growth curves
+    for each species in a data set), and hierarchical models of growth curves
+    where curve parameters depend on a predictor variable (e.g. a species's
+    traits). Includes methods for model validation, comparison, and plotting.
 License: Apache License 2.0
 URL: https://github.com/jdyen/growmod
 BugReports: https://github.com/jdyen/growmod/issues

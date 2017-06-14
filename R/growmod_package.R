@@ -10,7 +10,7 @@
 #'        multiple model types, including standard growth-curve fitting, growth
 #'        curves that differ among blocks in a data set (e.g. different growth
 #'        curves for each species in a data set), and hierarchical models of growth
-#'        curves where curve parameters depend on a predictor variables (e.g., a
+#'        curves where curve parameters depend on a predictor variable (e.g., a
 #'        species's traits). Includes methods for model validation, comparison,
 #'        and plotting.
 #'
