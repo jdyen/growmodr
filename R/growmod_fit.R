@@ -1,12 +1,12 @@
 # Fitting growth models using growmod functions
 
-#' @name growmod
+#' @name growmod-fit
 #' @title Fitting growth models using growmod
 #' @description Fit a growth model to data on sizes through time. Currently
 #'   uses Stan to fit models for one of twelve common growth curves.
 NULL
 
-#' @rdname growmod
+#' @rdname growmod-fit
 #' @export
 #' @import rstan
 #' @import loo
@@ -95,9 +95,8 @@ growmod <- function(x, ...) {
   UseMethod('growmod')
 }
 
-#' @rdname growmod
+#' @rdname growmod-fit
 #' @export
-#' @import rstan
 growmod.formula <- function(formula,
                             data = NULL,
                             model = 'hillslope',
@@ -246,9 +245,8 @@ growmod.formula <- function(formula,
   mod
 }
 
-#' @rdname growmod
+#' @rdname growmod-fit
 #' @export
-#' @import rstan
 growmod.default <- function(size,
                             index,
                             block,
