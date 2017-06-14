@@ -58,7 +58,7 @@ growmod_data <- function(data_set,
       }
     } else {
       out$age_holdout <- test_data$index
-      out$block_holdout <- test_data$block
+      out$block_holdout <- as.integer(as.factor(test_data$block))
       if (!is.null(data_set$predictors)) {
         if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
           for (i in 1:num_params) {
@@ -254,8 +254,8 @@ growmod_data <- function(data_set,
                                          Boundary.knots = c(min(data_set$index),
                                                             max(data_set$index)))
       }
-      age_index_pred <- match(index_pred, sort(unique(index_pred)))
-      out$block_holdout <- rep(1, length(out$index_pred))
+      out$age_index_pred <- match(index_pred, sort(unique(index_pred)))
+      out$block_holdout <- rep(1, length(out$age_index_pred))
       if (!is.null(data_set$predictors)) {
         for (i in 1:num_params) {
           x_tmp <- get(paste0('x', i))[1:length(unique(out$block_holdout)), ]
@@ -281,7 +281,7 @@ growmod_data <- function(data_set,
       }
       out$b_spline_pred <- spline_pred
       out$age_index_pred <- match(test_data$index, sort(unique(test_data$index)))
-      out$block_holdout <- test_data$block
+      out$block_holdout <- as.integer(as.factor(test_data$block))
       if (!is.null(data_set$predictors)) {
         if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
           for (i in 1:num_params) {
@@ -304,5 +304,10 @@ growmod_data <- function(data_set,
     out$n_block_pred <- length(unique(out$block_holdout))
     out$n_age_pred <- length(unique(out$age_index_pred))
   }
+  if (!is.null(out$age_holdout)) {
+    out$age_holdout <- matrix(out$age_holdout, ncol = 1)
+  }
+  print(out$n_pred)
+  print(out$age_holdout)
   out
 }

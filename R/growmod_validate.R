@@ -67,10 +67,15 @@ validate.growmod <- function(x,
     }
   } else {
     # UPDATE THIS TO ADDRESS MODEL VARIANTS
-    if ((n_cv == 'loo') & !is.null(x$data_set$block_data)) {
-      n_cv <- x$data_set$n_block
+    if (n_cv == 'loo') {
+      if (length(x$data_set$block_data)) {
+        n_cv <- x$data_set$n_block
+      } else {
+        n_cv <- x$data_set$n
+      }
     } else {
       if (is.numeric(n_cv)) {
+        n_cv <- ifelse(n_cv > x$data_set$n, n, n_cv)
         cat(paste0('Performing ', n_cv, '-fold cross validation\n'))
       } else {
         stop('n_cv must specify a number of folds or be set to "loo" for model validation',
@@ -91,10 +96,6 @@ validate.growmod <- function(x,
     rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
     md_cv <- mean((size_real - size_pred))
   } else {
-    # this assumes block_data are available
-    if (n_cv > x$data_set$n_block) {
-      n_cv <- x$data_set$n_block
-    }
     mod <- lapply(1:n_cv, stan_cv_internal,
                   mod_compiled,
                   x$data_set,
@@ -142,55 +143,7 @@ validate.growmod_multi <- function(x,
   mod_cv <- vector('list', length(x))
   names(mod_cv) <- sapply(x, function(x) x$model)
   for (i in seq(along = x)) {
-    # generate model file
-    mod_compiled <- stan_model(file = x[[i]]$mod_file)
-    
-    # set sampling details
-    if (is.null(n_iter)) {
-      n_iter <- x[[i]]$n_iter
-    }
-    if (is.null(n_burnin)) {
-      n_burnin <- x[[i]]$n_burnin
-    }
-    if (is.null(n_thin)) {
-      n_thin <- x[[i]]$n_thin
-    }
-    if (is.null(n_chains)) {
-      n_chains <- x[[i]]$n_chains
-    }
-    
-    # run cv in loop
-    if (!is.null(test_data)) {
-      # fit to train data
-    } else {
-      mod <- lapply(1:n_cv, stan_cv_internal,
-                    mod_compiled,
-                    x[[i]]$data_set,
-                    x[[i]]$predictors,
-                    x[[i]]$model,
-                    n_cv,
-                    n_iter,
-                    n_burnin,
-                    n_thin,
-                    n_chains,
-                    x[[i]]$spline_params,
-                    x[[i]]$stan_cores,
-                    ...)
-      
-      # prepare outputs
-      out_full <- do.call('rbind', mod)
-      size_real <- out_full$size_real
-      size_pred <- out_full$size_pred
-      r2_cv <- round(cor(size_real, size_pred) ** 2, 3)
-      rmsd_cv <- round(sqrt(mean((size_real - size_pred) ** 2)), 3)
-      md_cv <- round(mean((size_real - size_pred)), 3)
-      mod_cv[[i]] <- list(size_real = size_real,
-                          size_pred = size_pred,
-                          r2 = r2_cv,
-                          rmsd = rmsd_cv,
-                          md = md_cv,
-                          model = x[[i]]$model)
-    }
+    mod_cv[[i]] <- validate(x[[i]])
   }
   class(mod_cv) <- 'growmod_cv_multi'
   mod_cv
@@ -209,9 +162,9 @@ stan_cv_internal <- function(i,
                              spline_params,
                              stan_cores,
                              ...) {
-  ## NEED a version for random loo and random k-fold
-  # structured loo or structured k-fold
-  if (!is.null(data$block_data)) {
+  # defaults to structured loo or structured k-fold if blocks included in model
+  if (length(data$block_data)) {
+    n_cv <- ifelse(n_cv > data$n_block, data$n_block, n_cv)
     if (n_cv == data$n_block) {
       block_id <- i
       cv_id <- which(data$block_data == i)
@@ -233,7 +186,17 @@ stan_cv_internal <- function(i,
       }
     }
   } else {
-    # model without blocks
+    if (n_cv == data$n) {
+      cv_id <- i
+    } else {
+      n_holdout <- floor(data$n / n_cv)
+      n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
+      if (i < n_cv) {
+        cv_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
+      } else {
+        cv_id <- ((i - 1) * n_holdout + 1):data$n
+      }
+    }
   }
   if (model != 'spline') {
     mod_params <- get(paste0(model, '_param_fetch'))()
@@ -302,9 +265,7 @@ stan_cv_internal <- function(i,
                           spline_params = spline_params,
                           n_plot = 10,
                           test_data = test_data)
-  
-  print(data_cv)
-  
+
   # fit model just to training set
   stan_mod <- sampling(object = mod_compiled,
                        data = data_cv,

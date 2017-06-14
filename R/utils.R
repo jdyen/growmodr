@@ -79,10 +79,6 @@ check_preds <- function(predictors,
       predictors_clean <- predictors
     }
   } else {
-    if (!is.null(block_data)) {
-      cat('Note: model has no predictors and will assume that each block
-          has an independent growth curve.\n')
-    }
     predictors_clean <- NULL
     npred <- NULL
     nblock_pred <- NULL

@@ -34,7 +34,7 @@ gen_mod_file <- function(model,
         int<lower=0> n_plot;
         int<lower=0> n_pred;
         vector[n_plot] age_plot;
-        vector[n_pred] age_holdout;
+        matrix[n_pred, 1] age_holdout;
     }
         
         parameters {
@@ -97,13 +97,13 @@ gen_mod_file <- function(model,
       mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1'
       mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i][1] * h1'
       mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i][1] * h1'
-      mu_pred <- 'mu_pred[i] = b_spline_pred[age_holdout[i]][1] * h1_holdout'
+      mu_pred <- 'mu_pred[i] = b_spline_pred[age_holdout[i, 1]][1] * h1_holdout'
       for (i in 1:num_param) {
         if (i > 1) {
           mu_var <- paste0(mu_var, ' + b_spline[age_index[i]][', i, '] * h', i)
           mu_var_plot <- paste0(mu_var_plot, ' + b_spline_plot[i][', i, '] * h', i)
           mu_var_agr <- paste0(mu_var_agr, ' + b_spline_deriv[i][', i, '] * h', i)
-          mu_pred <- paste0(mu_pred, ' + b_spline_pred[age_holdout[i]][', i, '] * h', i, '_holdout')
+          mu_pred <- paste0(mu_pred, ' + b_spline_pred[age_holdout[i, 1]][', i, '] * h', i, '_holdout')
         }
         h_var <- paste0(h_var, 'real h', i, ';\n  ')
         h_prior <- paste0(h_prior, 'h', i, '~ normal(0.0, 2.0);\n  ')
@@ -127,7 +127,7 @@ gen_mod_file <- function(model,
             int<lower=0> n_plot;
             int<lower=0> n_pred;
             vector[n_plot] age_plot;
-            int<lower=0> age_holdout[n_pred];
+            int<lower=0> age_holdout[n_pred, 1];
             row_vector[n_k] b_spline_plot[n_plot];
             row_vector[n_k] b_spline_pred[n_age_pred];
             row_vector[n_k] b_spline_deriv[n_plot];
@@ -232,7 +232,7 @@ gen_mod_file <- function(model,
           x_var_pred,
           'vector<lower=0>[n] size_data;
       vector[n] age;
-      vector[n_pred] age_holdout;
+      matrix[n_pred, 1] age_holdout;
       int<lower=0, upper=n_block> block_data[n];
       int<lower=0, upper=n_block_pred> block_holdout[n_pred];
       int<lower=0> n_plot;
@@ -363,7 +363,7 @@ gen_mod_file <- function(model,
   int<lower=0> n_k;
   int<lower=0> age_index[n];
   int<lower=0> age_index_pred[n_pred];
-  int<lower=0, upper=n_block> block_data[n]
+  int<lower=0, upper=n_block> block_data[n];
   int<lower=0, upper=n_block_pred> block_holdout[n_pred];\n',
           x_var,
           x_var_pred,
@@ -423,8 +423,8 @@ gen_mod_file <- function(model,
           'for (i in 1:n_plot)
         for (j in 1:n_block)
         size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
-        for (i in 1:n_pred)
-          mu_pred[i] = ', mu_pred, ';\n',
+        for (i in 1:n_pred)\n',
+          mu_pred,
         ' for (i in 1:n_pred)
           size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
@@ -461,7 +461,7 @@ gen_mod_file <- function(model,
           psi_var <- paste0(psi_var, 'vector[n_block] psi', i, ';\n  ')
           h_prior <- paste0(h_prior, 'h', i, ' ~ normal(psi', i, ', sd_h', i, ');\n  ')
           sdh_prior <- paste0(sdh_prior, 'sd_h', i, ' ~ normal(0.0, 2.0);\n  ')
-          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(paste0(psi_mean', i, 'block_sd', i, ');\n  ')
+          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(psi_mean', i, ', block_sd', i, ');\n  ')
           block_sd <- paste0(block_sd, 'real<lower=0> block_sd', i, ';\n  ')
           psi_mean <- paste0(psi_mean, 'real psi_mean', i, ';\n  ')
           psi_mean_prior <- paste0(psi_mean_prior, 'psi_mean', i, ' ~ normal(0.0, 2.0);\n  ')
@@ -481,6 +481,7 @@ gen_mod_file <- function(model,
         int<lower=0, upper=n_block_pred> block_holdout[n_pred];
         int<lower=0> n_plot;
         vector[n_plot] age_plot;
+        matrix[n_pred, 1] age_holdout;
     }
         
         parameters {
@@ -576,7 +577,7 @@ gen_mod_file <- function(model,
           psi_var <- paste0(psi_var, 'vector[n_block] psi', i, ';\n  ')
           h_prior <- paste0(h_prior, 'for (j in 1:n_block)\n h', i, '[j] ~ normal(psi', i, '[j], sd_h', i, ');\n  ')
           sdh_prior <- paste0(sdh_prior, 'sd_h', i, ' ~ normal(0.0, 2.0);\n  ')
-          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(paste0(psi_mean', i, 'block_sd', i, ');\n  ')
+          psi_reg_var <- paste0(psi_reg_var, 'psi', i, ' ~ normal(psi_mean', i, ', block_sd', i, ');\n  ')
           block_sd <- paste0(block_sd, 'real<lower=0> block_sd', i, ';\n  ')
           psi_mean <- paste0(psi_mean, 'real psi_mean', i, ';\n  ')
           psi_mean_prior <- paste0(psi_mean_prior, 'psi_mean', i, ' ~ normal(0.0, 2.0);\n  ')
@@ -658,8 +659,8 @@ gen_mod_file <- function(model,
           'for (i in 1:n_plot)
             for (j in 1:n_block)
             size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
-          for (i in 1:n_pred)
-            mu_pred[i] = ', mu_pred, ';\n',
+          for (i in 1:n_pred)\n',
+          mu_pred,
           ' for (i in 1:n_pred)
             size_pred[i] = exp(mu_pred[i]);
           for (i in 1:n)

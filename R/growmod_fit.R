@@ -185,11 +185,17 @@ growmod.formula <- function(formula,
   
   # check if a blocking variable has been provided
   if (length(all_vars) == 1) {
-    cat('model has no blocking variable and will assume that all data points are
-         samples from a single growth curve.')
+    cat('Note: model has no blocking variable and will assume that all data points are
+         samples from a single growth curve.\n')
     block_var <- NULL
     block_data <- NULL
   } else {
+    if (is.null(predictors)) {
+      if (!is.null(block_data)) {
+        cat('Note: model has no predictors and will assume that each block
+            has an independent growth curve.\n')
+      }
+    }
     block_var <- all_vars[2]
     if (!is.null(data)) {
       if (exists(block_var, data)) {
