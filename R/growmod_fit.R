@@ -9,6 +9,7 @@ NULL
 #' @rdname growmod
 #' @export
 #' @import rstan
+#' @import loo
 #' 
 #' @param formula list containing data on size, age, species, and traits
 #' @param data list containing data on size, age, species, and traits
