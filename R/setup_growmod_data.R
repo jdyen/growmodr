@@ -45,7 +45,7 @@ growmod_data <- function(data_set,
     }
     if (is.null(test_data)) {
       out$age_holdout <- rnorm(5)
-      out$block_holdout <- rep(1, out$n_pred)
+      out$block_holdout <- rep(1, length(out$age_holdout))
       if (!is.null(data_set$predictors)) {
         for (i in 1:num_params) {
           out <- append(out, list(get(paste0('x', i))[1:length(out$age_holdout), ]))
@@ -54,7 +54,7 @@ growmod_data <- function(data_set,
       }
     } else {
       out$age_holdout <- test_data$age
-      out$block_holdout <- test_data$block_holdout
+      out$block_holdout <- test_data$block
       if (!is.null(data_set$predictors)) {
         if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
           for (i in 1:num_params) {
@@ -74,6 +74,7 @@ growmod_data <- function(data_set,
       }
     }
     out$n_pred <- length(out$age_holdout)
+    out$n_block_pred <- length(unique(out$block_holdout))
   } else {
     if (!is.null(data_set$predictors)) {
       if (is.data.frame(data_set$predictors) | is.matrix(data_set$predictors)) {
@@ -183,7 +184,6 @@ growmod_data <- function(data_set,
                                          derivs = 1)
       }
     }
-    
     if (spline_params$spline_type == 'bspline') {
       if (n.int.knots > 0) {
         knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
@@ -197,6 +197,7 @@ growmod_data <- function(data_set,
                                  x = sort(unique(data_set$index)),
                                  ord = bs.order,
                                  derivs = 0)[, -1, drop = FALSE]
+      knots_store <- knots_set
     } else {
       if (n.int.knots > 0) {
         knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = 100),
@@ -209,6 +210,7 @@ growmod_data <- function(data_set,
                                       knots = knots_set,
                                       degree = (bs.order - 1),
                                       Boundary.knots = c(min(data_set$index), max(data_set$index)))
+      knots_store <- knots_set
     }
     offset_mod <- 0.0
     out <- with(data_set, list(n = length(size),
@@ -234,6 +236,65 @@ growmod_data <- function(data_set,
         names(out)[length(out)] <- paste0('n_x', i)
       }
     }
+    if (is.null(test_data)) {
+      index_pred <- out$age_index[1:3]
+      if (spline_params$spline_type == 'bspline') {
+        spline_pred <- splineDesign(knots_store,
+                                    x = sort(unique(index_pred)),
+                                    ord = bs.order,
+                                    derivs = 0)[, -1, drop = FALSE]
+      } else {
+        spline_pred <- splines2::iSpline(sort(unique(index_pred)),
+                                         knots = knots_store,
+                                         degree = (bs.order - 1),
+                                         Boundary.knots = c(min(data_set$index),
+                                                            max(data_set$index)))
+      }
+      age_index_pred <- match(index_pred, sort(unique(index_pred)))
+      out$block_holdout <- rep(1, length(out$index_pred))
+      if (!is.null(data_set$predictors)) {
+        for (i in 1:num_params) {
+          out <- append(out, list(get(paste0('x', i))[1:length(out$age_holdout), ]))
+          names(out)[length(out)] <- paste0('x', i, '_pred')
+        }        
+      }
+    } else {
+      if (spline_params$spline_type == 'bspline') {
+        spline_pred <- splineDesign(knots_store,
+                                    x = sort(unique(test_data$index)),
+                                    ord = bs.order,
+                                    derivs = 0)[, -1, drop = FALSE]
+      } else {
+        spline_pred <- splines2::iSpline(sort(unique(test_data$index)),
+                                         knots = knots_store,
+                                         degree = (bs.order - 1),
+                                         Boundary.knots = c(min(data_set$index),
+                                                            max(data_set$index)))
+      }
+      out$b_spline_pred <- spline_pred
+      out$age_index_pred <- match(test_data$index, sort(unique(test_data$index)))
+      out$block_holdout <- test_data$block
+      if (!is.null(data_set$predictors)) {
+        if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
+          for (i in 1:num_params) {
+            assign(paste0('x', i, '_pred'), cbind(rep(1, nrow(test_data$predictors)),
+                                                  test_data$predictors))
+          }
+        } else {
+          for (i in 1:num_params) {
+            assign(paste0('x', i, '_pred'), cbind(rep(1, nrow(test_data$predictors[[i]])),
+                                                  test_data$predictors[[i]]))
+          }
+        }
+        for (i in 1:num_params) {
+          out <- append(out, list(get(paste0('x', i, '_pred'))))
+          names(out)[length(out)] <- paste0('x', i, '_pred')
+        }        
+      }
+    }
+    out$n_pred <- length(out$age_holdout)
+    out$n_block_pred <- length(unique(out$block_holdout))
+    out$n_age_pred <- length(unique(out$age_index_pred))
   }
   out
 }
