@@ -2,9 +2,6 @@
 #' @title Validate growth models fitted with growmod
 #' @description Validate a fitted growth model using cross validation
 #'     or by specifying your own test data set
-NULL
-
-#' @rdname growmod-validate
 #' @export
 validate <- function(x, ...) {
   UseMethod('validate')

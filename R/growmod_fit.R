@@ -4,9 +4,6 @@
 #' @title Fitting growth models using growmod
 #' @description Fit a growth model to data on sizes through time. Currently
 #'   uses Stan to fit models for one of twelve common growth curves.
-NULL
-
-#' @rdname growmod-fit
 #' @export
 #' @import rstan
 #' @import loo
