@@ -4,7 +4,6 @@ growmod_data <- function(data_set,
                          num_params,
                          spline_params,
                          n_plot = 100,
-                         train_data = NULL,
                          test_data = NULL) {
   if (model != 'spline') {
     if (!is.null(data_set$predictors)) {
@@ -44,10 +43,35 @@ growmod_data <- function(data_set,
         names(out)[length(out)] <- paste0('n_x', i)
       }
     }
-    if (is.null(train_data) & is.null(test_data)) {
+    if (is.null(test_data)) {
       out$age_holdout <- rnorm(5)
+      out$block_holdout <- rep(1, out$n_pred)
+      if (!is.null(data_set$predictors)) {
+        for (i in 1:num_params) {
+          out <- append(out, list(get(paste0('x', i))[1:length(out$age_holdout), ]))
+          names(out)[length(out)] <- paste0('x', i, '_pred')
+        }        
+      }
     } else {
-      out$age_holdout <- out$train_data$age
+      out$age_holdout <- test_data$age
+      out$block_holdout <- test_data$block_holdout
+      if (!is.null(data_set$predictors)) {
+        if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
+          for (i in 1:num_params) {
+            assign(paste0('x', i, '_pred'), cbind(rep(1, nrow(test_data$predictors)),
+                                                  test_data$predictors))
+          }
+        } else {
+          for (i in 1:num_params) {
+            assign(paste0('x', i, '_pred'), cbind(rep(1, nrow(test_data$predictors[[i]])),
+                                                  test_data$predictors[[i]]))
+          }
+        }
+        for (i in 1:num_params) {
+          out <- append(out, list(get(paste0('x', i, '_pred'))))
+          names(out)[length(out)] <- paste0('x', i, '_pred')
+        }        
+      }
     }
     out$n_pred <- length(out$age_holdout)
   } else {
