@@ -1,10 +1,16 @@
-#' @rdname growmod
+#' @name growmod-methods
+#' @title Methods for fitted growth models
+#' @description Compare, plot, summarise, and print models fitted using
+#'   the growmod R package
+NULL
+
+#' @rdname growmod-methods
 #' @export
 compare <- function(x, ...) {
   UseMethod('compare')
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 compare.growmod <- function(..., x) {
   dots <- list(...)
@@ -33,7 +39,7 @@ compare.growmod <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 compare.growmod_cv <- function(..., x) {
   dots <- list(...)
@@ -60,7 +66,7 @@ compare.growmod_cv <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 compare.growmod_multi <- function(..., x) {
   dots <- list(...)
@@ -97,7 +103,7 @@ compare.growmod_multi <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 compare.growmod_cv_multi <- function(..., x) {
   dots <- list(...)
@@ -132,7 +138,7 @@ compare.growmod_cv_multi <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 plot.growmod <- function(x, ...) {
   mod_tmp <- x$stan_summary
@@ -162,7 +168,7 @@ plot.growmod <- function(x, ...) {
   }
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 plot.growmod_cv <- function(x, ...) {
   min_val <- min(0, min(x$size_real), min(x$size_pred))
@@ -182,7 +188,7 @@ plot.growmod_cv <- function(x, ...) {
          col = 'gray40', lwd = 2)
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
@@ -230,7 +236,7 @@ plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   par(mfrow = old_mfrow)  
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 plot.growmod_cv_multi <- function(x, ...) {
   old_mfrow <- par()$mfrow
@@ -242,7 +248,7 @@ plot.growmod_cv_multi <- function(x, ...) {
   par(mfrow = old_mfrow)  
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 summary.growmod <- function(x, ...) {
   print_out <- c(x$r2, x$rmsd, x$md, round(x$loo$looic, 2), round(x$waic$waic, 2))
@@ -252,49 +258,49 @@ summary.growmod <- function(x, ...) {
   ## state number of obs, number of blocks, return model call (perhaps formatted)
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 summary.growmod_cv <- function(x, ...) {
   
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 summary.growmod_multi <- function(x, ...) {
   
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 summary.growmod_cv_multi <- function(x, ...) {
   
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 print.growmod <- function(x, ...) {
   compare(x, ...)
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 print.growmod_cv <- function(x, ...) {
   compare(x, ...)
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 print.growmod_multi <- function(x, ...) {
   compare(x, ...)
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 print.growmod_cv_multi <- function(x, ...) {
   compare(x, ...)
 }
 
-#' @rdname growmod
+#' @rdname growmod-methods
 #' @export
 predict.growmod <- function(object, newdata, ...) {
   # switch for methods with and without blocks and predictors
