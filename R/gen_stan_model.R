@@ -95,20 +95,18 @@ gen_mod_file <- function(model,
       h_holdout <- NULL
       h_pred <- NULL
       mu_var <- 'mu[i] = b_spline[age_index[i]][1] * h1'
-      mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i][1] * h1'
-      mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i][1] * h1'
-      mu_pred <- 'mu_pred[i] = b_spline_pred[age_holdout[i, 1]][1] * h1_holdout'
+      mu_var_plot <- 'mu_plot_growth[i] = b_spline_plot[i, 1][1] * h1'
+      mu_var_agr <- 'mu_plot_agr[i] = b_spline_deriv[i, 1][1] * h1'
+      mu_pred <- 'mu_pred[i] = b_spline_pred[age_index_pred[i]][1] * h1'
       for (i in 1:num_param) {
         if (i > 1) {
           mu_var <- paste0(mu_var, ' + b_spline[age_index[i]][', i, '] * h', i)
-          mu_var_plot <- paste0(mu_var_plot, ' + b_spline_plot[i][', i, '] * h', i)
-          mu_var_agr <- paste0(mu_var_agr, ' + b_spline_deriv[i][', i, '] * h', i)
-          mu_pred <- paste0(mu_pred, ' + b_spline_pred[age_holdout[i, 1]][', i, '] * h', i, '_holdout')
+          mu_var_plot <- paste0(mu_var_plot, ' + b_spline_plot[i, 1][', i, '] * h', i)
+          mu_var_agr <- paste0(mu_var_agr, ' + b_spline_deriv[i, 1][', i, '] * h', i)
+          mu_pred <- paste0(mu_pred, ' + b_spline_pred[age_index_pred[i]][', i, '] * h', i)
         }
         h_var <- paste0(h_var, 'real h', i, ';\n  ')
         h_prior <- paste0(h_prior, 'h', i, '~ normal(0.0, 2.0);\n  ')
-        h_holdout <- paste0(h_holdout, 'real<lower=0> h', i, '_holdout;\n')
-        h_pred <- paste0(h_pred, 'h', i, '_holdout = h', i, ';\n')
       }
       mu_var <- paste0(mu_var, ';\n  ')
       mu_var_plot <- paste0(mu_var_plot, ';\n  ')
@@ -117,42 +115,40 @@ gen_mod_file <- function(model,
       cat(
         'data {
             int<lower=0> n;
+            int<lower=0> n_pred;
             vector<lower=0>[n] size_data;
             vector[n] age;
             int<lower=0> n_age;
             int<lower=0> n_age_pred;
             int<lower=0> n_k;
             int<lower=0> age_index[n];
+            int<lower=0> age_index_pred[n_pred];
             row_vector[n_k] b_spline[n_age];
-            int<lower=0> n_plot;
-            int<lower=0> n_pred;
-            vector[n_plot] age_plot;
-            int<lower=0> age_holdout[n_pred, 1];
-            row_vector[n_k] b_spline_plot[n_plot];
             row_vector[n_k] b_spline_pred[n_age_pred];
-            row_vector[n_k] b_spline_deriv[n_plot];
+            int<lower=0> n_plot;
+            vector[n_plot] age_plot;
+            row_vector[n_k] b_spline_plot[n_plot, 1];
+            row_vector[n_k] b_spline_deriv[n_plot, 1];
         }
             
-            parameters {
-            real<lower=0> sigma_obs;\n',
-        h_var,
+        parameters {
+          real<lower=0> sigma_obs;\n',
+          h_var,
         '}
             
-            transformed parameters {
-            vector[n] mu;\n',
-        h_holdout,
-        '  for (i in 1:n)\n',
-        mu_var,
-        h_pred,
+        transformed parameters {
+          vector[n] mu;
+          for (i in 1:n)\n',
+              mu_var,
         '}
             
-            model {
+        model {
             log(size_data) ~ normal(mu, sigma_obs);
             sigma_obs ~ normal(0, 2);\n',
         h_prior,
         '}
             
-            generated quantities {
+        generated quantities {
             vector[n_plot] mu_plot_growth;
             vector[n_plot] mu_plot_agr;
             vector[n_pred] mu_pred;
@@ -583,7 +579,7 @@ gen_mod_file <- function(model,
           psi_mean_prior <- paste0(psi_mean_prior, 'psi_mean', i, ' ~ normal(0.0, 2.0);\n  ')
           block_sd_prior <- paste0(block_sd_prior, 'block_sd', i, ' ~ normal(0.0, 2.0);\n  ')
           h_var_pred <- paste0(h_var_pred, 'vector[n_block_pred] h', i, '_holdout;\n  ')
-          h_prior_pred <- paste0(h_prior_pred, 'for (j in 1:n_block_pred)\n h', i, '_holdout[j] ~ normal(psi_mean', i, '[j], sd_h', i, ');\n  ')
+          h_prior_pred <- paste0(h_prior_pred, 'for (j in 1:n_block_pred)\n h', i, '_holdout[j] ~ normal(psi_mean', i, ', sd_h', i, ');\n  ')
         }
         mu_var <- paste0(mu_var, ';\n  ')
         mu_var_plot <- paste0(mu_var_plot, ';\n  ')

@@ -190,12 +190,6 @@ growmod.formula <- function(formula,
     block_var <- NULL
     block_data <- NULL
   } else {
-    if (is.null(predictors)) {
-      if (!is.null(block_data)) {
-        cat('Note: model has no predictors and will assume that each block
-            has an independent growth curve.\n')
-      }
-    }
     block_var <- all_vars[2]
     if (!is.null(data)) {
       if (exists(block_var, data)) {
@@ -207,6 +201,12 @@ growmod.formula <- function(formula,
       } else {
         stop(paste0(block_var, ' not found'),
              call. = FALSE)
+      }
+    }
+    if (is.null(predictors)) {
+      if (!is.null(block_data)) {
+        cat('Note: model has no predictors and will assume that each block
+            has an independent growth curve.\n')
       }
     }
   }

@@ -1,6 +1,6 @@
 # simulate growth data
 
-#' @name growth_data_sim
+#' @name growmod_sim
 #' @title Simulate growth curve data from a chosen growth curve
 #' @description As above
 #' @export
@@ -24,7 +24,7 @@
 #'                               true_model = 'hillslope')
 #' }
 #'
-growth_data_sim <- function(n = 100,
+growmod_sim <- function(n = 100,
                             nblock = 5,
                             age_range = c(0, 20),
                             include_predictors = TRUE,

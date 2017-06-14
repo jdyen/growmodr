@@ -99,7 +99,7 @@ growmod_data <- function(data_set,
     n.int.knots <- spline_params$n_knots
     bs.order <- spline_params$degree + 1
     age_index <- match(data_set$index, sort(unique(data_set$index)))
-    if (!is.null(data_set$block)) {
+    if (length(data_set$block)) {
       max.vals <- tapply(data_set$index, data_set$block, max)
       basis.func <- array(NA, dim = c(n_plot, length(unique(data_set$block)), (n.int.knots + bs.order - 1)))
       basis.func2 <- array(NA, dim = c(n_plot, length(unique(data_set$block)), (n.int.knots + bs.order - 1)))
@@ -107,7 +107,7 @@ growmod_data <- function(data_set,
         if (spline_params$spline_type == 'bspline') {
           if (n.int.knots > 0) {
             knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
-                                quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+                                quantile(seq(min(data_set$index), max(data_set$index), length = n_plot),
                                          exp(seq.int(from = log(0.001), to = log(1),
                                                      length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])))
           } else {
@@ -118,7 +118,7 @@ growmod_data <- function(data_set,
                                             ord = bs.order,
                                             derivs = 0)[, -1, drop = FALSE]
           basis.func2[, i, ] <- splineDesign(knots_set,
-                                             x = seq(min(data_set$index), max.vals[i], length = 100),
+                                             x = seq(min(data_set$index), max.vals[i], length = n_plot),
                                              ord = bs.order,
                                              derivs = 1)[, -1, drop = FALSE]
         } else {
@@ -127,7 +127,7 @@ growmod_data <- function(data_set,
                     call. = FALSE)
           }
           if (n.int.knots > 0) {
-            knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+            knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = n_plot),
                                   exp(seq.int(from = log(0.001), to = log(1),
                                               length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])
           } else {
@@ -137,7 +137,7 @@ growmod_data <- function(data_set,
                                                  knots = knots_set,
                                                  degree = (bs.order - 1),
                                                  Boundary.knots = c(min(data_set$index), max(data_set$index)))
-          basis.func2[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = 100),
+          basis.func2[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
                                                   knots = knots_set,
                                                   degree = (bs.order - 1),
                                                   Boundary.knots = c(min(data_set$index), max(data_set$index)),
@@ -146,52 +146,52 @@ growmod_data <- function(data_set,
       }
     } else {
       max.vals <- max(data_set$index)
-      basis.func <- array(NA, dim = c(n_plot, (n.int.knots + bs.order - 1)))
-      basis.func2 <- array(NA, dim = c(n_plot, (n.int.knots + bs.order - 1)))
+      basis.func <- array(NA, dim = c(n_plot, 1, (n.int.knots + bs.order - 1)))
+      basis.func2 <- array(NA, dim = c(n_plot, 1, (n.int.knots + bs.order - 1)))
       if (spline_params$spline_type == 'bspline') {
         if (n.int.knots > 0) {
           knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
-                              quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+                              quantile(seq(min(data_set$index), max(data_set$index), length = n_plot),
                                        exp(seq.int(from = log(0.001), to = log(1),
                                                    length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])))
         } else {
           knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order)))
         }
-        basis.func <- splineDesign(knots_set,
-                                   x = seq(min(data_set$index), max.vals, length = n_plot),
-                                   ord = bs.order,
-                                   derivs = 0)[, -1, drop = FALSE]
-        basis.func2 <- splineDesign(knots_set,
-                                    x = seq(min(data_set$index), max.vals, length = 100),
-                                    ord = bs.order,
-                                    derivs = 1)[, -1, drop = FALSE]
+        basis.func[, 1, ] <- splineDesign(knots_set,
+                                          x = seq(min(data_set$index), max.vals, length = n_plot),
+                                          ord = bs.order,
+                                          derivs = 0)[, -1, drop = FALSE]
+        basis.func2[, 1, ] <- splineDesign(knots_set,
+                                           x = seq(min(data_set$index), max.vals, length = n_plot),
+                                           ord = bs.order,
+                                           derivs = 1)[, -1, drop = FALSE]
       } else {
         if (spline_params$spline_type != 'ispline') {
           warning(paste0(spline_params$spline_type, ' is not a known spline model; ispline used by default.'),
                   call. = FALSE)
         }
         if (n.int.knots > 0) {
-          knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+          knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = n_plot),
                                 exp(seq.int(from = log(0.001), to = log(1),
                                             length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])
         } else {
           knots_set <- NULL
         }
-        basis.func <- splines2::iSpline(seq(min(data_set$index), max.vals, length = n_plot),
-                                        knots = knots_set,
-                                        degree = (bs.order - 1),
-                                        Boundary.knots = c(min(data_set$index), max(data_set$index)))
-        basis.func2 <- splines2::iSpline(seq(min(data_set$index), max.vals, length = 100),
-                                         knots = knots_set,
-                                         degree = (bs.order - 1),
-                                         Boundary.knots = c(min(data_set$index), max(data_set$index)),
-                                         derivs = 1)
+        basis.func[, 1, ] <- splines2::iSpline(seq(min(data_set$index), max.vals, length = n_plot),
+                                               knots = knots_set,
+                                               degree = (bs.order - 1),
+                                               Boundary.knots = c(min(data_set$index), max(data_set$index)))
+        basis.func2[, 1, ] <- splines2::iSpline(seq(min(data_set$index), max.vals, length = n_plot),
+                                                knots = knots_set,
+                                                degree = (bs.order - 1),
+                                                Boundary.knots = c(min(data_set$index), max(data_set$index)),
+                                                derivs = 1)
       }
     }
     if (spline_params$spline_type == 'bspline') {
       if (n.int.knots > 0) {
         knots_set <- sort(c(rep(c(min(data_set$index), max(data_set$index)), bs.order),
-                            quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+                            quantile(seq(min(data_set$index), max(data_set$index), length = n_plot),
                                      exp(seq.int(from = log(0.001), to = log(1),
                                                  length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])))
       } else {
@@ -204,7 +204,7 @@ growmod_data <- function(data_set,
       knots_store <- knots_set
     } else {
       if (n.int.knots > 0) {
-        knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = 100),
+        knots_set <- quantile(seq(min(data_set$index), max(data_set$index), length = n_plot),
                               exp(seq.int(from = log(0.001), to = log(1),
                                           length.out = (n.int.knots + 2L)))[-c(1, (n.int.knots + 2L))])
       } else {
@@ -241,7 +241,7 @@ growmod_data <- function(data_set,
       }
     }
     if (is.null(test_data)) {
-      index_pred <- out$age_index[1:3]
+      index_pred <- out$age[1:10]
       if (spline_params$spline_type == 'bspline') {
         spline_pred <- splineDesign(knots_store,
                                     x = sort(unique(index_pred)),
@@ -254,6 +254,7 @@ growmod_data <- function(data_set,
                                          Boundary.knots = c(min(data_set$index),
                                                             max(data_set$index)))
       }
+      out$b_spline_pred <- spline_pred
       out$age_index_pred <- match(index_pred, sort(unique(index_pred)))
       out$block_holdout <- rep(1, length(out$age_index_pred))
       if (!is.null(data_set$predictors)) {
@@ -300,14 +301,12 @@ growmod_data <- function(data_set,
         }        
       }
     }
-    out$n_pred <- length(out$age_holdout)
+    out$n_pred <- length(out$age_index_pred)
     out$n_block_pred <- length(unique(out$block_holdout))
     out$n_age_pred <- length(unique(out$age_index_pred))
   }
   if (!is.null(out$age_holdout)) {
     out$age_holdout <- matrix(out$age_holdout, ncol = 1)
   }
-  print(out$n_pred)
-  print(out$age_holdout)
   out
 }
