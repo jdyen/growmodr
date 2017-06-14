@@ -48,12 +48,16 @@ growmod_data <- function(data_set,
       out$block_holdout <- rep(1, length(out$age_holdout))
       if (!is.null(data_set$predictors)) {
         for (i in 1:num_params) {
-          out <- append(out, list(get(paste0('x', i))[1:length(out$age_holdout), ]))
+          x_tmp <- get(paste0('x', i))[1:length(unique(out$block_holdout)), ]
+          if (!is.matrix(x_tmp)) {
+            x_tmp <- matrix(x_tmp, nrow = length(unique(out$block_holdout)))
+          }
+          out <- append(out, list(x_tmp))
           names(out)[length(out)] <- paste0('x', i, '_pred')
         }        
       }
     } else {
-      out$age_holdout <- test_data$age
+      out$age_holdout <- test_data$index
       out$block_holdout <- test_data$block
       if (!is.null(data_set$predictors)) {
         if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
@@ -254,7 +258,11 @@ growmod_data <- function(data_set,
       out$block_holdout <- rep(1, length(out$index_pred))
       if (!is.null(data_set$predictors)) {
         for (i in 1:num_params) {
-          out <- append(out, list(get(paste0('x', i))[1:length(out$age_holdout), ]))
+          x_tmp <- get(paste0('x', i))[1:length(unique(out$block_holdout)), ]
+          if (!is.matrix(x_tmp)) {
+            x_tmp <- matrix(x_tmp, nrow = length(unique(out$block_holdout)))
+          }
+          out <- append(out, list(x_tmp))
           names(out)[length(out)] <- paste0('x', i, '_pred')
         }        
       }

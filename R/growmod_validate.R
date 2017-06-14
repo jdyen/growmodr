@@ -9,9 +9,27 @@ validate <- function(x, ...) {
 
 #' @rdname growmod
 #' @export
+validate.formula <- function(formula,
+                             data = NULL,
+                             model = 'hillslope',
+                             n_cv = NULL,
+                             test_data = NULL,
+                             n_iter = 5000,
+                             n_burnin = floor(n_iter / 2),
+                             n_thin = 1,
+                             n_chains = 4,
+                             stan_cores = 1,
+                             spline_params = list(degree = 8,
+                                                  n_knots = 10,
+                                                  spline_type = 'ispline'),
+                             ...) {
+  ## ADD THIS
+}
+
+#' @rdname growmod
+#' @export
 validate.growmod <- function(x,
                              n_cv = NULL,
-                             train_data = NULL,
                              test_data = NULL,
                              n_iter = NULL,
                              n_burnin = NULL,
@@ -38,24 +56,14 @@ validate.growmod <- function(x,
   if (is.null(n_chains)) {
     n_chains <- x$n_chains
   }
-
+  
   # check for type of CV
   if (is.null(n_cv)) {
-    if (is.null(test_data) & is.null(train_data)) {
-      stop('Either the number of folds (n_cv) or train_data and test_data must be provided
+    if (is.null(test_data)) {
+      stop('Either the number of folds (n_cv) or test_data must be provided
            for model validation', call. = FALSE)
     } else {
-      if (is.null(test_data)) {
-        stop('test_data must be provided for model validation with train_data',
-             call. = FALSE)
-      } else {
-        if (is.null(train_data)) {
-          stop('train_data must be provided for model validation with test_data',
-               call. = FALSE)
-        } else {
-          cat('Performing model validation based on train_data and test_data\n')
-        }
-      }
+      cat('Performing model validation based on test_data\n')
     }
   } else {
     # UPDATE THIS TO ADDRESS MODEL VARIANTS
@@ -73,18 +81,6 @@ validate.growmod <- function(x,
   
   # run cv in loop
   if (!is.null(test_data)) {
-    # fit to train data
-    out_tmp <- growmod_pred(x$model,
-                            train_data,
-                            test_data,
-                            n_iter,
-                            n_burnin,
-                            n_thin,
-                            n_chains,
-                            x$spline_params,
-                            x$stan_cores,
-                            ...)
-    
     # predict to test data
     pred_test <- predict(mod_cv, test_data = test_data)
     
@@ -252,6 +248,9 @@ stan_cv_internal <- function(i,
   if (!is.null(predictors)) {
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       predictors_tmp <- predictors[-block_id, ]
+      if (!is.matrix(predictors_tmp)) {
+        predictors_tmp <- matrix(predictors_tmp, nrow = 1)
+      }
       if (length(block_id) == 1) {
         predictors_tmp_test <- matrix(predictors[block_id, ], nrow = 1)
       } else {
@@ -263,6 +262,9 @@ stan_cv_internal <- function(i,
         predictors_tmp_test <- vector('list', length = length(predictors))
         for (j in seq(along = predictors)) {
           predictors_tmp[[j]] <- predictors[[j]][-block_id, ]
+          if (!is.matrix(predictors_tmp[[j]])) {
+            predictors_tmp[[j]] <- matrix(predictors_tmp[[j]], nrow = 1)
+          }
           if (length(block_id) == 1) {
             predictors_tmp_test[[j]] <- matrix(predictors[[j]][block_id, ], nrow = 1)
           } else {
@@ -281,15 +283,27 @@ stan_cv_internal <- function(i,
                           num_params = num_params,
                           n = length(data$size_data[-cv_id]),
                           nblock = length(unique(data$block_data[-cv_id])))
+  pred_set_test <- check_preds(predictors = predictors_tmp_test,
+                               model = model,
+                               block_data = data$block_data[cv_id],
+                               num_params = num_params,
+                               n = length(data$size_data[cv_id]),
+                               nblock = length(unique(data$block_data[cv_id])))
   data_tmp <- list(size = data$size_data[-cv_id],
                    index = data$age[-cv_id],
                    block = data$block_data[-cv_id],
                    predictors = pred_set)
+  test_data <- list(index = data$age[cv_id],
+                    block = data$block_data[cv_id],
+                    predictors = pred_set_test)
   data_cv <- growmod_data(data_set = data_tmp,
                           model = model,
                           num_params = num_params,
                           spline_params = spline_params,
-                          n_plot = 10)
+                          n_plot = 10,
+                          test_data = test_data)
+  
+  print(data_cv)
   
   # fit model just to training set
   stan_mod <- sampling(object = mod_compiled,
@@ -301,43 +315,12 @@ stan_cv_internal <- function(i,
                        cores = stan_cores,
                        ...)
   
-  # calculate out-of-sample predictions
-  pred_test <- check_preds(predictors = predictors_tmp_test,
-                           model = model,
-                           block_data = data$block_data[cv_id],
-                           num_params = num_params,
-                           n = length(data$size_data[cv_id]),
-                           nblock = length(unique(data$block_data[cv_id])))
-  test_data <- list(size = data$size_data[cv_id],
-                    index = data$age[cv_id],
-                    block = data$block_data[cv_id],
-                    predictors = pred_test)
-  data_tmp_test <- growmod_data(data_set = test_data,
-                                model = model,
-                                num_params = num_params,
-                                spline_params = spline_params,
-                                n_plot = 10)
-  
+  # extract out-of-sample predictions
+  size_real <- data$size_data[cv_id]
+  cv_tmp <- summary(stan_mod, par = 'size_pred')$summary[, 'mean']
+
   # need to switch for model type (no blocks, with blocks, with predictors)
-  ### POSSIBLY can just use values of data_tmp_test to work out model type?
-  h_est <- matrix(NA, nrow = length(unique(test_data$block)), ncol = num_params)
-  for (j in 1:num_params) {
-    param_tmp <- get_posterior_mean(stan_mod, pars = paste0('b', j))
-    param_tmp <- param_tmp[, ncol(param_tmp)]
-    pred_tmp <- as.matrix(data_tmp_test[which(names(data_tmp_test) == paste0('x', j))][[1]])
-    if (nrow(pred_tmp) == 1) {
-      pred_tmp <- as.numeric(pred_tmp)
-    }
-    print(pred_tmp)
-    print(class(pred_tmp))
-    print(param_tmp)
-    h_est[, j] <- pred_tmp %*% param_tmp
-  }
-  cv_tmp <- calc_growth_curve(model = model,
-                              index = test_data$index,
-                              block = test_data$block,
-                              params = h_est)
-  out <- data.frame(size_pred = cv_tmp, size_real = test_data$size)
+  out <- data.frame(size_pred = cv_tmp, size_real = size_real)
   out
 }
 
