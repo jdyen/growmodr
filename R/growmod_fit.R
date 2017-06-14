@@ -10,18 +10,18 @@ NULL
 #' @export
 #' @import rstan
 #' 
-#' @param x list containing data on size, age, species, and traits
 #' @param formula list containing data on size, age, species, and traits
+#' @param data list containing data on size, age, species, and traits
+#' @param model growth model form to be fitted
 #' @param size list containing data on size, age, species, and traits
 #' @param index list containing data on size, age, species, and traits
 #' @param block list containing data on size, age, species, and traits
 #' @param predictors list containing data on size, age, species, and traits
-#' @param data list containing data on size, age, species, and traits
-#' @param model growth model form to be fitted
 #' @param n_iter number of HMC iterations to run for stan model
 #' @param n_burnin number of HMC iterations to run for stan model
 #' @param n_thin thinning rate for HMC chains
 #' @param n_chains number of HMC chains
+#' @param stan_cores number of local cores to use in stan model fitting
 #' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
 #' @param \dots parameters to be passed to stan model call
 #' 
@@ -37,7 +37,7 @@ NULL
 #'   # simulate some data
 #'   data_sim <- growth_data_sim(n = 100,
 #'                               nblock = 5,
-#'                               age_range = c(0, 1),
+#'                               age_range = c(0, 50),
 #'                               include_predictors = TRUE,
 #'                               true_model = 'hillslope')
 #'

@@ -1,5 +1,4 @@
-### DO WE NEED TO REFIT MODELS SPECIALLY WITH HOLDOUT DATA OR CAN WE JUST STORE PARAMS
-## AND USE predict.growmod?
+# functions for cross validation
 
 #' @rdname growmod
 #' @export
@@ -24,6 +23,7 @@ validate.formula <- function(formula,
                                                   spline_type = 'ispline'),
                              ...) {
   ## ADD THIS
+  NULL
 }
 
 #' @rdname growmod
