@@ -5,11 +5,12 @@
 #' @description As above
 #' @export
 #' 
-#' @param n
-#' @param nblock
-#' @param age_range
-#' @param include_predictors
-#' @param true_model
+#' @param n number of simulated growth curves
+#' @param nblock number of blocks (e.g. species) to include in simulated data
+#' @param age_range range of ages for simulated data
+#' @param include_predictors logical; should growth curve parameters depend on predictor
+#'      variables that are specific to each block?
+#' @param true_model the true growth curve model to use when simulating growth curves
 #' 
 #' @details Does XYZ
 #' 
@@ -25,10 +26,10 @@
 #' }
 #'
 growmod_sim <- function(n = 100,
-                            nblock = 5,
-                            age_range = c(0, 20),
-                            include_predictors = TRUE,
-                            true_model = 'hillslope') {
+                        nblock = 5,
+                        age_range = c(0, 20),
+                        include_predictors = TRUE,
+                        true_model = 'hillslope') {
   # simulate data
   block_size <- rep(floor(n / nblock), nblock)
   if (sum(block_size) != n) {
