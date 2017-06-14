@@ -48,7 +48,7 @@ devtools::install_github("jdyen/growmod")
 *****
 
 ## Usage
-Once growmod has been installed there is one main function to use: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block)`. `growmod` also accepts an argument, predictors, which includes predictor variables relevant to each block in the model fitting. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be size ~ (age | species), predictors = traits, and could be used to predict growth curves for any given species based on its trait values.
+Once growmod has been installed there is one main function to use: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block / predictor)`. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be `size ~ (age | species / traits)`, and could be used to predict growth curves for any given species based on its trait values.
 
 Mathematical and statistical details of the models in growmod are in:
 
