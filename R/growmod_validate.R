@@ -88,8 +88,21 @@ validate.growmod <- function(x,
   
   # run cv in loop
   if (!is.null(test_data)) {
+    # test the test_data for completeness here
+    
     # predict to test data
-    pred_test <- predict(mod_cv, test_data = test_data)
+    train_data <- list(data_set = x$data_set,
+                       predictors = x$predictors)
+    pred_test <- predict_internal(mod_compiled = mod_compiled,
+                                  train_data = train_data,
+                                  test_data = test_data,
+                                  model = x$model,
+                                  n_iter = n_iter,
+                                  n_burnin = n_burnin,
+                                  n_thin = n_thin,
+                                  n_chains = n_chains,
+                                  spline_params = x$spline_params,
+                                  stan_cores = x$stan_cores)
     
     # prepare outputs
     size_real <- test_data$size_data
@@ -121,7 +134,8 @@ validate.growmod <- function(x,
     md_cv <- round(mean((size_real - size_pred)), 3)
   }
   mod_cv <- list(size_real = size_real,
-                 size_pred = size_pred,
+                 size_pred = size_pred,s
+                 
                  r2 = r2_cv,
                  rmsd = rmsd_cv,
                  md = md_cv,
@@ -299,5 +313,54 @@ stan_cv_internal <- function(i,
   # need to switch for model type (no blocks, with blocks, with predictors)
   out <- data.frame(size_pred = cv_tmp, size_real = size_real)
   out
+}
+
+predict_internal <- function(mod_compiled, train_data, test_data,
+                             model,
+                             n_iter, n_burnin, n_thin, n_chains,
+                             spline_params,
+                             stan_cores) {
+  if (model != 'spline') {
+    mod_params <- get(paste0(model, '_param_fetch'))()
+    num_params <- mod_params$num_par
+  } else {
+    num_params <- spline_params$n_knots + spline_params$degree
+  }
+  pred_set <- check_preds(predictors = train_data$predictors,
+                          model = model,
+                          block_data = train_data$data_set$block_data,
+                          num_params = num_params,
+                          n = length(train_data$data_set$size_data),
+                          nblock = length(unique(train_data$data_set$block_data)))
+  pred_set_test <- check_preds(predictors = test_data$predictors,
+                               model = model,
+                               block_data = test_data$block_data,
+                               num_params = num_params,
+                               n = length(test_data$size_data),
+                               nblock = length(unique(test_data$block_data)))
+  data_tmp <- list(size = train_data$data_set$size_data,
+                   index = train_data$data_set$age,
+                   block = train_data$data_set$block_data,
+                   predictors = pred_set)
+  test_data_tmp <- list(index = test_data$age,
+                        block = test_data$block_data,
+                        predictors = pred_set_test)
+  data_cv <- growmod_data(data_set = data_tmp,
+                          model = model,
+                          num_params = num_params,
+                          spline_params = spline_params,
+                          n_plot = 10,
+                          test_data = test_data_tmp)
+  
+  # fit model just to training set
+  stan_mod <- sampling(object = mod_compiled,
+                       data = data_cv,
+                       chains = n_chains,
+                       iter = n_iter,
+                       warmup = n_burnin,
+                       thin = n_thin,
+                       cores = stan_cores,
+                       ...)
+  
 }
 

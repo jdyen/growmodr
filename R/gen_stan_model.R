@@ -7,6 +7,7 @@ gen_mod_file <- function(model,
   if (include_pred & !include_block) {
     stop('model cannot have predictor variables without a blocking variable.',
          call. = FALSE)
+    ## OR can it? Could be predictors at individual level
   }
   if (!include_block) {
     if (model != 'spline') {
