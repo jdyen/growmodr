@@ -236,11 +236,9 @@ growmod.formula <- function(formula,
                          n_chains = n_chains,
                          stan_cores = stan_cores,
                          spline_params = spline_params,
+                         call = match.call(),
+                         formula = form_tmp,
                          ...)
-  
-  # add formula and call to fitted model
-  mod$formula <- form_tmp
-  mod$call <- match.call()
   
   # return outputs
   mod
@@ -259,6 +257,8 @@ growmod.default <- function(size,
                             n_chains,
                             stan_cores,
                             spline_params,
+                            call,
+                            formula,
                             ...) {
   # basic checks
   n <- length(size)
@@ -437,6 +437,10 @@ growmod.default <- function(size,
                 n_thin = n_thin,
                 n_chains = n_chains)
     
+    # add formula and call to fitted model
+    mod$formula <- form_tmp
+    mod$call <- match.call()
+    
     # set model class for single growth curve model
     class(mod) <- 'growmod'
   } else {
@@ -482,7 +486,8 @@ growmod.default <- function(size,
                        waic = waic,
                        stan_summary = summary(stan_mod)$summary,
                        data_set = data_set[[i]],
-                       model = model,
+                       predictors = predictors,
+                       model = model[i],
                        stanmod = stanmod,
                        spline_params = spline_params,
                        stan_cores = stan_cores,
@@ -493,6 +498,11 @@ growmod.default <- function(size,
 
       # set model class for single growth curve model
       class(mod[[i]]) <- 'growmod'
+
+      # add formula and call to fitted model
+      mod[[i]]$formula <- formula
+      mod[[i]]$call <- call
+      
     }
     
     # set model class for multiple growth curve models

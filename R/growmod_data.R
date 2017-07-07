@@ -59,7 +59,7 @@ growmod_data <- function(data_set,
     } else {
       out$age_holdout <- test_data$index
       out$block_holdout <- as.integer(as.factor(test_data$block))
-      if (!is.null(data_set$predictors)) {
+      if (!is.null(test_data$predictors)) {
         if (is.data.frame(test_data$predictors) | is.matrix(test_data$predictors)) {
           for (i in 1:num_params) {
             assign(paste0('x', i, '_pred'), cbind(rep(1, nrow(test_data$predictors)),

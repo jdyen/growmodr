@@ -87,7 +87,6 @@ validate.growmod <- function(x,
       cat('Performing model validation based on', deparse(substitute(test_data)),'\n')
     }
   } else {
-    # UPDATE THIS TO ADDRESS MODEL VARIANTS
     if (n_cv == 'loo') {
       if (length(x$data_set$block_data)) {
         n_cv <- x$data_set$n_block
@@ -235,7 +234,7 @@ validate.growmod <- function(x,
 #' @rdname growmod-validate
 #' @export
 validate.growmod_multi <- function(x,
-                                   n_cv,
+                                   n_cv = NULL,
                                    train_data = NULL,
                                    test_data = NULL,
                                    n_iter = NULL,
@@ -247,7 +246,17 @@ validate.growmod_multi <- function(x,
   mod_cv <- vector('list', length(x))
   names(mod_cv) <- sapply(x, function(x) x$model)
   for (i in seq(along = x)) {
-    mod_cv[[i]] <- validate(x[[i]])
+    cat(paste0('Validating model ', i, ' of ', length(x), '.\n'))
+    if (!is.null(n_cv)) {
+      mod_cv[[i]] <- validate(x[[i]], n_cv = n_cv)
+    } else {
+      if (!is.null(test_data)) {
+        mod_cv[[i]] <- validate(x[[i]], test_data = test_data)
+      } else {
+        stop('n_cv or test_data must be provided for model validation',
+             call. = FALSE)
+      }
+    }
   }
   class(mod_cv) <- 'growmod_cv_multi'
   mod_cv
@@ -323,9 +332,7 @@ stan_cv_internal <- function(i,
     num_params <- spline_params$n_knots + spline_params$degree
   }
 
-  ## NEED to check dimension of predictors -- could be n rows rather htan nblock rows
-  ## (might be easier to do this above through
-  #    definition of block_id to avoid changing block_id section here)
+  # check predictors
   if (!is.null(predictors)) {
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       predictors_tmp <- predictors[-block_id, ]
@@ -384,7 +391,7 @@ stan_cv_internal <- function(i,
                           n_plot = 10,
                           test_data = test_data)
 
-  # fit model just to training set
+  # fit model and sample predicted values
   stan_mod <- sampling(object = mod_compiled,
                        data = data_cv,
                        chains = n_chains,

@@ -143,12 +143,36 @@ compare.growmod_cv_multi <- function(..., x) {
 plot.growmod <- function(x, ...) {
   mod_tmp <- x$stan_summary
   data_tmp <- x$data_set
-  for (i in 1:data_tmp$n_block) {
-    row_id <- grep(paste0('plot\\[[[:digit:]]*,', i, '\\]'), rownames(mod_tmp))
+  if (length(data_tmp$block_data)) {
+    for (i in 1:data_tmp$n_block) {
+      row_id <- grep(paste0('plot\\[[[:digit:]]*,', i, '\\]'), rownames(mod_tmp))
+      plot_data <- mod_tmp[row_id, c('mean', '2.5%', '50%', '97.5%')]
+      x_plot <- data_tmp$age_plot
+      y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])),
+                  max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])))
+      plot(plot_data[, 1] ~ x_plot,
+           type = 'l',
+           las = 1,
+           bty = 'l',
+           xlab = 'Time',
+           ylab = 'Height',
+           ylim = y_lims)
+      polygon(c(x_plot, rev(x_plot)),
+              c(plot_data[, 2], rev(plot_data[, 4])),
+              col = 'grey65',
+              border = NA)
+      lines(plot_data[, 1] ~ x_plot, lty = 1, lwd = 1.2)
+      lines(plot_data[, 3] ~ x_plot, lty = 2, lwd = 1.2)
+      points(data_tmp$size_data[which(data_tmp$block_data == i)] ~ data_tmp$age[which(data_tmp$block_data == i)],
+             pch = 16)
+      mtext(paste0('Block ', i), side = 3, line = 1, adj = 0)
+    }
+  } else {
+    row_id <- grep(paste0('plot\\['), rownames(mod_tmp))
     plot_data <- mod_tmp[row_id, c('mean', '2.5%', '50%', '97.5%')]
     x_plot <- data_tmp$age_plot
-    y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])),
-                max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])))
+    y_lims <- c(min(c(plot_data, data_tmp$size_data)),
+                max(c(plot_data, data_tmp$size_data)))
     plot(plot_data[, 1] ~ x_plot,
          type = 'l',
          las = 1,
@@ -162,9 +186,8 @@ plot.growmod <- function(x, ...) {
             border = NA)
     lines(plot_data[, 1] ~ x_plot, lty = 1, lwd = 1.2)
     lines(plot_data[, 3] ~ x_plot, lty = 2, lwd = 1.2)
-    points(data_tmp$size_data[which(data_tmp$block_data == i)] ~ data_tmp$age[which(data_tmp$block_data == i)],
+    points(data_tmp$size_data ~ data_tmp$age,
            pch = 16)
-    mtext(paste0('Block ', i), side = 3, line = 1, adj = 0)
   }
 }
 
@@ -192,7 +215,8 @@ plot.growmod_cv <- function(x, ...) {
 #' @export
 plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
-  if (group_blocks) {
+  noblock_mod <- any(sapply(x, function(x) length(x$data_set$block_data)) == 0)
+  if ((group_blocks) & (!noblock_mod)) {
     num_plots <- length(x)
     extract_summary <- lapply(x, function(x) x$stan_summary)
     extract_data <- lapply(x, function(x) x$data_set)
@@ -227,8 +251,12 @@ plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
       }
     }
   } else {
-    num_plots <- x[[1]]$data_set$n_block
     for (i in seq_along(x)) {
+      if (length(x[[i]]$data_set$block_data)) {
+        num_plots <- x[[i]]$data_set$n_block
+      } else {
+        num_plots <- 1
+      }
       par(mfrow = c(round(sqrt(num_plots)), ceiling(num_plots / round(sqrt(num_plots)))))
       plot(x[[i]])
     }
