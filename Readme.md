@@ -50,17 +50,45 @@ devtools::install_github("jdyen/growmod")
 ## Usage
 Once `growmod` has been installed there is one function to fit several different growth models: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block / predictor)`. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be `size ~ (age | species / traits)`, and could be used to predict growth curves for any given species based on its trait values.
 
-A fitted growth model is a `growmod` object and can be validated using the `validate` function. This function can perform cross-validation on a fitted model or can be used to validate a fitted growth model against a holdout data set.
+A fitted growth model is a `growmod` object and can be validated using the `validate` function. This function can used to cross-validate a fitted model or can be used to validate a fitted growth model against a holdout data set.
+
+A typical workflow for fitting a growth model with `growmod` would look something like:
+```
+# load growmod package
+library(growmod)
+
+# load or simulate data
+data <- growmod_sim()
+
+# fit growth model
+mod <- growmod(size ~ (index | block / predictors),
+               data = data,
+               n_iter = 5000,
+               n_chains = 4)
+
+# summarise fitted model
+summary(mod)
+plot(mod)
+
+# validate fitted model using leave-one-out cross validation
+mod_val <- validate(mod, n_cv = 'loo')
+
+# summarise cross-validation performance
+summary(mod_val)
+plot(mod_val)
+```
+
+ 
 
 Mathematical and statistical details of the models in growmod are in:
 
-Thomas F, et al. (in prep.)
+Thomas, F.M., Yen, J.D.L. and Vesk, P.A. (in prep.) Which nonlinear model? Using cross-validation to evaluate growth models in ecology.
 
 Several applications of growth curve modelling to ecology are:
 
-Thomas F and Vesk P (2017)
+Thomas, F.M. and Vesk, P.A. (2017) Are trait-growth models transferable? Predicting multi-species growth trajectories between ecosystems using plant functional traits. PLoS ONE 12(5): e0176959.
 
-Thomas F and Vesk P (2017)
+Thomas, F.M. and Vesk, P.A. (to appear) Height growth in woody plants examined with a trait-based model. Austral Ecology.
 
 Models fitted using `growmod` are of class `growmod` and have several S3 methods available: `print`, `summary`, `plot`. Models validated using `validate` are of class `growmod_cv` and have `print`, `summary`, and `plot` methods available. 
 
