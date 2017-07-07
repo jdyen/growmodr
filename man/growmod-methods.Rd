@@ -19,7 +19,10 @@
 \alias{print.growmod_cv}
 \alias{print.growmod_multi}
 \alias{print.growmod_cv_multi}
-\alias{predict.growmod}
+\alias{fitted.growmod}
+\alias{fitted.growmod_cv}
+\alias{residuals.growmod}
+\alias{residuals.growmod_cv}
 \title{Methods for fitted growth models}
 \usage{
 compare(x, ...)
@@ -56,9 +59,73 @@ plot.growmod_cv_multi(x, ...)
 
 \method{print}{growmod_cv_multi}(x, ...)
 
-\method{predict}{growmod}(object, newdata, ...)
+\method{fitted}{growmod}(x, ...)
+
+\method{fitted}{growmod_cv}(x, ...)
+
+\method{residuals}{growmod}(x, ...)
+
+\method{residuals}{growmod_cv}(x, ...)
+}
+\arguments{
+\item{x}{fitted growmod, growmod_cv, growmod_multi, or growmod_cv_multi object}
+
+\item{\dots}{parameters to be passed to the relevant internal methods}
 }
 \description{
-Compare, plot, summarise, and print models fitted using
-  the growmod R package
+Methods to print, summarise, compare, plot, and extract
+  details from fitted growmod models.
+}
+\examples{
+\dontrun {
+  # simulate some data
+  data_sim <- growth_data_sim(n = 100,
+                              nblock = 5,
+                              age_range = c(0, 50),
+                              include_predictors = TRUE,
+                              true_model = 'hillslope')
+
+  # fit the correct model
+  mod1 <- growmod(size ~ (age | block / predictors),
+                  data = data_sim,
+                  model = 'hillslope',
+                  n_iter = 1000,
+                  n_burnin = 500,
+                  n_chains = 2,
+                  stan_cores = 1)
+
+  # plot the fitted model
+  plot(mod1)
+  hist(residuals(mod1))
+  
+  # summarise the fitted model
+  summary(mod1)
+  
+  # print the fitted model
+  print(mod1)
+
+  # cross validate the fitted model
+  mod1_cv <- validate(mod1)
+  
+  # summarise the cross validation performance
+  summary(mod1_cv)
+                   
+  # fit an incorrect model
+  mod2 <- growmod(size ~ (age | block / predictors),
+                  data = data_sim,
+                  model = 'koblog',
+                  n_iter = 1000,
+                  n_burnin = 500,
+                  n_chains = 2,
+                  stan_cores = 1)
+
+  # compare the fitted models using summary measures of fit
+  compare(mod1, mod2)
+  
+  # compare the fitted models using cross validation
+  mod2_cv <- validate(mod2)
+  compare(mod1_cv, mod2_cv)
+  
+}
+
 }

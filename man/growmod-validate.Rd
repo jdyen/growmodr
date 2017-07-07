@@ -19,11 +19,77 @@ validate(x, ...)
 \method{validate}{growmod}(x, n_cv = NULL, test_data = NULL,
   n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL, ...)
 
-\method{validate}{growmod_multi}(x, n_cv, train_data = NULL,
+\method{validate}{growmod_multi}(x, n_cv = NULL, train_data = NULL,
   test_data = NULL, n_iter = NULL, n_burnin = NULL, n_thin = NULL,
   n_chains = NULL, ...)
+}
+\arguments{
+\item{\dots}{parameters to be passed to stan model call}
+
+\item{formula}{list containing data on size, age, species, and traits}
+
+\item{data}{list containing data on size, age, species, and traits}
+
+\item{model}{growth model form to be fitted}
+
+\item{n_cv}{number of cross validation folds}
+
+\item{test_data}{(optional) holdout data set for model validation; only used if \code{is.null(n_cv)}}
+
+\item{n_iter}{number of HMC iterations to run for stan model}
+
+\item{n_burnin}{number of HMC iterations to run for stan model}
+
+\item{n_thin}{thinning rate for HMC chains}
+
+\item{n_chains}{number of HMC chains}
+
+\item{stan_cores}{number of local cores to use in stan model fitting}
+
+\item{spline_params}{named list of settings for spline model (degree, n_knots, spline_type)}
+}
+\value{
+\code{mod_cv} A fitted \code{growmod_cv} object containing
+  parameter estimates, validation statistics, and the original
+  data set used to fit the model. 
+  \item{size_real}{observed size data}
+  \item{size_pred}{predicted size data under cross validation or holdout tests}
+  \item{r2}{r-squared based on Pearson's r between observed and predicted size data}
+  \item{rmsd}{root-mean-squared deviance of the validated model}
+  \item{md}{mean deviance of the validated model}
+  \item{model}{growth model used in model fitting}
+  \item{val_type}{type of validation used: cross validation or holdout data set}
 }
 \description{
 Validate a fitted growth model using cross validation
     or by specifying your own test data set
+}
+\details{
+\code{validate} takes a formula or fitted growmod object as arguments
+  and validates the fitted Stan model for a chosen growth curve. The growth
+  model is refitted from scratch if not already defined.
+}
+\examples{
+\dontrun {
+  # simulate some data
+  data_sim <- growth_data_sim(n = 100,
+                              nblock = 5,
+                              age_range = c(0, 50),
+                              include_predictors = TRUE,
+                              true_model = 'hillslope')
+
+  # fit the correct model
+  mod <- growmod(size ~ (age | block / predictors),
+                 data = data_sim,
+                 model = 'hillslope',
+                 n_iter = 1000,
+                 n_burnin = 500,
+                 n_chains = 2,
+                 stan_cores = 1)
+  
+  # validate fitted model
+  mod_val <- validate(mod, n_cv = 'loo')
+  
+}
+
 }

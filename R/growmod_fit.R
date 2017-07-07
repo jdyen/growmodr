@@ -28,7 +28,26 @@
 #' 
 #' @return \code{mod} A fitted \code{growmod} object containing
 #'   parameter estimates, validation statistics, and the original
-#'   data set used to fit the model. 
+#'   data set used to fit the model.
+#'   \item{fitted}{fitted size values}
+#'   \item{r2}{r-squared based on Pearson's r between observed and fitted size data}
+#'   \item{rmsd}{root-mean-squared deviance of the fitted model}
+#'   \item{md}{mean deviance of the fitted model}
+#'   \item{loo}{leave-one-out information criterion (deviance-based approximation to leave-one-out cross validation)}
+#'   \item{waic}{Watanabe-Akaike (widely applicable) information criterion}
+#'   \item{stan_summary}{summary of HMC samples for each parameter}
+#'   \item{data_set}{full data set used in model fitting}
+#'   \item{predictors}{predictor variables used in model fitting}
+#'   \item{model}{growth model used in model fitting}
+#'   \item{stanmod}{written Stan model}
+#'   \item{spline_params}{parameters for spline model}
+#'   \item{stan_cores}{number of cores used by Stan}
+#'   \item{n_iter}{number of HMC iterations (burnin + sampling)}
+#'   \item{n_burnin}{number of HMC iterations to discard before storing samples}
+#'   \item{n_thin}{thinning rate for HMC chains (store every n_thin iterations)}
+#'   \item{n_chains}{number of HMC chains}
+#'   \item{formula}{model formula}
+#'   \item{call}{original model call}
 #'
 #' @examples
 #' \dontrun {

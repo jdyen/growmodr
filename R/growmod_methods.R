@@ -1,7 +1,64 @@
 #' @name growmod-methods
 #' @title Methods for fitted growth models
-#' @description Compare, plot, summarise, and print models fitted using
-#'   the growmod R package
+#' @description Methods to print, summarise, compare, plot, and extract
+#'   details from fitted growmod models.
+#' @export
+#' @import loo
+#' 
+#' @param x fitted growmod, growmod_cv, growmod_multi, or growmod_cv_multi object
+#' @param \dots parameters to be passed to the relevant internal methods
+#' @examples
+#' \dontrun {
+#'   # simulate some data
+#'   data_sim <- growth_data_sim(n = 100,
+#'                               nblock = 5,
+#'                               age_range = c(0, 50),
+#'                               include_predictors = TRUE,
+#'                               true_model = 'hillslope')
+#'
+#'   # fit the correct model
+#'   mod1 <- growmod(size ~ (age | block / predictors),
+#'                   data = data_sim,
+#'                   model = 'hillslope',
+#'                   n_iter = 1000,
+#'                   n_burnin = 500,
+#'                   n_chains = 2,
+#'                   stan_cores = 1)
+#'
+#'   # plot the fitted model
+#'   plot(mod1)
+#'   hist(residuals(mod1))
+#'   
+#'   # summarise the fitted model
+#'   summary(mod1)
+#'   
+#'   # print the fitted model
+#'   print(mod1)
+#'
+#'   # cross validate the fitted model
+#'   mod1_cv <- validate(mod1)
+#'   
+#'   # summarise the cross validation performance
+#'   summary(mod1_cv)
+#'                    
+#'   # fit an incorrect model
+#'   mod2 <- growmod(size ~ (age | block / predictors),
+#'                   data = data_sim,
+#'                   model = 'koblog',
+#'                   n_iter = 1000,
+#'                   n_burnin = 500,
+#'                   n_chains = 2,
+#'                   stan_cores = 1)
+#'
+#'   # compare the fitted models using summary measures of fit
+#'   compare(mod1, mod2)
+#'   
+#'   # compare the fitted models using cross validation
+#'   mod2_cv <- validate(mod2)
+#'   compare(mod1_cv, mod2_cv)
+#'   
+#' }
+#' 
 NULL
 
 #' @rdname growmod-methods
@@ -372,4 +429,28 @@ print.growmod_multi <- function(x, ...) {
 #' @export
 print.growmod_cv_multi <- function(x, ...) {
   print(compare(x, ...))
+}
+
+#' @rdname growmod-methods
+#' @export
+fitted.growmod <- function(x, ...) {
+  x$fitted
+}
+
+#' @rdname growmod-methods
+#' @export
+fitted.growmod_cv <- function(x, ...) {
+  x$size_pred
+}
+
+#' @rdname growmod-methods
+#' @export
+residuals.growmod <- function(x, ...) {
+  (x$data_set$size_data - x$fitted)
+}
+
+#' @rdname growmod-methods
+#' @export
+residuals.growmod_cv <- function(x, ...) {
+  (x$size_real - x$size_pred)
 }

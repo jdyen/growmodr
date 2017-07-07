@@ -21,18 +21,29 @@ variables that are specific to each block?}
 }
 \value{
 list containing simulated data
+  \item{size}{simulated size data}
+  \item{block}{block identifier}
+  \item{index}{index identifier (e.g. age)}
+  \item{predictors}{predictor variables if \code{include_predictors = TRUE}}
+  \item{coefs}{true coefficients used for simulated data}
 }
 \description{
-As above
+Simulate growth curve data for a given growth curve and
+  optionally include blocks within the data set (e.g. species) and 
+  predictor varibles that determine the growth parameters for each
+  block.
 }
 \details{
-Does XYZ
+Simulate growth curve data from a chosen growth curve model. This function
+  can simulate data from multiple separate blocks (e.g. growth curves for different
+  species) and optionally can include predictor variables (e.g. traits) that
+  determine the growth parameters for a given block.
 }
 \examples{
 \dontrun {
   sim_data <- growth_data_sim(n = 100,
                               nblock = 5,
-                              age_range = c(0, 1),
+                              age_range = c(0, 50),
                               include_predictors = TRUE,
                               true_model = 'hillslope')
 }

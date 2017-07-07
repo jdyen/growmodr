@@ -26,6 +26,13 @@
 #' @return \code{mod_cv} A fitted \code{growmod_cv} object containing
 #'   parameter estimates, validation statistics, and the original
 #'   data set used to fit the model. 
+#'   \item{size_real}{observed size data}
+#'   \item{size_pred}{predicted size data under cross validation or holdout tests}
+#'   \item{r2}{r-squared based on Pearson's r between observed and predicted size data}
+#'   \item{rmsd}{root-mean-squared deviance of the validated model}
+#'   \item{md}{mean deviance of the validated model}
+#'   \item{model}{growth model used in model fitting}
+#'   \item{val_type}{type of validation used: cross validation or holdout data set}
 #'
 #' @examples
 #' \dontrun {
