@@ -76,8 +76,26 @@ plot.growmod_cv_multi(x, ...)
 Methods to print, summarise, compare, plot, and extract
   details from fitted growmod models.
 }
+\details{
+
+}
+\section{Usage}{
+ \preformatted{
+
+compare(x, ...)
+plot(x)
+summary(x)
+print(x)
+fitted(x)
+residuals(x)
+
+}
+}
+
 \examples{
+
 \dontrun {
 
 }
+
 }

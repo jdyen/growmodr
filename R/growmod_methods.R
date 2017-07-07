@@ -1,7 +1,24 @@
 #' @name growmod-methods
+#' 
 #' @title Methods for fitted growth models
+#' 
 #' @description Methods to print, summarise, compare, plot, and extract
 #'   details from fitted growmod models.
+#' 
+#' @section Usage: \preformatted{
+#' 
+#' compare(x, ...)
+#' plot(x)
+#' summary(x)
+#' print(x)
+#' fitted(x)
+#' residuals(x)
+#' 
+#' }
+#' 
+#' @details 
+#' 
+#' @examples
 #' 
 NULL
 
