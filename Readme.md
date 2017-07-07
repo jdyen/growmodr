@@ -22,9 +22,9 @@ limitations under the License.
 *****
 
 ## Overview
-growmod is a collection of R functions for fitting regression models to growth curves.
+`growmod` is a collection of R functions for fitting regression models to growth curves.
 The emphasis is on easy model fitting and simple interfaces for extensive model comparison
-and model validation. All functions in growmod are written in R 3.4.0 and use Stan 2.12.0
+and model validation. All functions in `growmod` are written in R 3.4.0 and use Stan 2.12.0
 and rstan 2.15.1.
 
 Created 31 May 2017
@@ -48,7 +48,9 @@ devtools::install_github("jdyen/growmod")
 *****
 
 ## Usage
-Once growmod has been installed there is one main function to use: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block / predictor)`. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be `size ~ (age | species / traits)`, and could be used to predict growth curves for any given species based on its trait values.
+Once `growmod` has been installed there is one function to fit several different growth models: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block / predictor)`. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be `size ~ (age | species / traits)`, and could be used to predict growth curves for any given species based on its trait values.
+
+A fitted growth model is a `growmod` object and can be validated using the `validate` function. This function can perform cross-validation on a fitted model or can be used to validate a fitted growth model against a holdout data set.
 
 Mathematical and statistical details of the models in growmod are in:
 
