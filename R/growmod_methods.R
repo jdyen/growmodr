@@ -2,8 +2,6 @@
 #' @title Methods for fitted growth models
 #' @description Methods to print, summarise, compare, plot, and extract
 #'   details from fitted growmod models.
-#' @export
-#' @import loo
 #' 
 #' @param x fitted growmod, growmod_cv, growmod_multi, or growmod_cv_multi object
 #' @param \dots parameters to be passed to the relevant internal methods
