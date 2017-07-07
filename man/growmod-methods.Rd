@@ -72,45 +72,6 @@ plot.growmod_cv_multi(x, ...)
 
 \item{\dots}{additional fitted growmod objects}
 }
-\value{
-matrix of summary statistics for fitted growmod object
-
-matrix of summary statistics for fitted growmod_cv object
-
-matrix of summary statistics for fitted growmod_multi object
-
-matrix of summary statistics for fitted growmod_cv_multi object
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-\code{NULL}
-
-vector of fitted values from growmod model
-
-vector of predicted values from growmod_cv model
-
-vector of residual values from growmod model
-
-vector of residual values from growmod_cv model
-}
 \description{
 Methods to print, summarise, compare, plot, and extract
   details from fitted growmod models.

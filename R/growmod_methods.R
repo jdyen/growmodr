@@ -14,12 +14,11 @@ NULL
 #' \dontrun {
 #' 
 #' }
+#' 
 compare <- function(x, ...) {
   UseMethod('compare')
 }
 
-#' @return matrix of summary statistics for fitted growmod object
-#' 
 #' @rdname growmod-methods
 #' @export
 compare.growmod <- function(..., x) {
@@ -49,8 +48,6 @@ compare.growmod <- function(..., x) {
   print_out
 }
 
-#' @return matrix of summary statistics for fitted growmod_cv object
-#' 
 #' @rdname growmod-methods
 #' @export
 compare.growmod_cv <- function(..., x) {
@@ -78,8 +75,6 @@ compare.growmod_cv <- function(..., x) {
   print_out
 }
 
-#' @return matrix of summary statistics for fitted growmod_multi object
-#' 
 #' @rdname growmod-methods
 #' @export 
 compare.growmod_multi <- function(..., x) {
@@ -117,8 +112,6 @@ compare.growmod_multi <- function(..., x) {
   print_out
 }
 
-#' @return matrix of summary statistics for fitted growmod_cv_multi object
-#' 
 #' @rdname growmod-methods
 #' @export
 compare.growmod_cv_multi <- function(..., x) {
@@ -154,8 +147,6 @@ compare.growmod_cv_multi <- function(..., x) {
   print_out
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 plot.growmod <- function(x, ...) {
@@ -209,8 +200,6 @@ plot.growmod <- function(x, ...) {
   }
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 plot.growmod_cv <- function(x, ...) {
@@ -231,8 +220,6 @@ plot.growmod_cv <- function(x, ...) {
          col = 'gray40', lwd = 2)
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
@@ -286,8 +273,6 @@ plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   par(mfrow = old_mfrow)  
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 plot.growmod_cv_multi <- function(x, ...) {
@@ -300,8 +285,6 @@ plot.growmod_cv_multi <- function(x, ...) {
   par(mfrow = old_mfrow)  
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 summary.growmod <- function(x, ...) {
@@ -338,8 +321,6 @@ summary.growmod <- function(x, ...) {
   }
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 summary.growmod_cv <- function(x, ...) {
@@ -352,8 +333,6 @@ summary.growmod_cv <- function(x, ...) {
   print(print_out)
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 summary.growmod_multi <- function(x, ...) {
@@ -367,8 +346,6 @@ summary.growmod_multi <- function(x, ...) {
   }
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 summary.growmod_cv_multi <- function(x, ...) {
@@ -382,24 +359,18 @@ summary.growmod_cv_multi <- function(x, ...) {
   }
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 print.growmod <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 print.growmod_cv <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @return \code{NULL}
-#' 
 #' @rdname growmod-methods
 #' @export
 print.growmod_multi <- function(x, ...) {
@@ -412,32 +383,24 @@ print.growmod_cv_multi <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @return vector of fitted values from growmod model
-#' 
 #' @rdname growmod-methods
 #' @export
 fitted.growmod <- function(x, ...) {
   x$fitted
 }
 
-#' @return vector of predicted values from growmod_cv model
-#' 
 #' @rdname growmod-methods
 #' @export
 fitted.growmod_cv <- function(x, ...) {
   x$size_pred
 }
 
-#' @return vector of residual values from growmod model
-#' 
 #' @rdname growmod-methods
 #' @export
 residuals.growmod <- function(x, ...) {
   (x$data_set$size_data - x$fitted)
 }
 
-#' @return vector of residual values from growmod_cv model
-#' 
 #' @rdname growmod-methods
 #' @export
 residuals.growmod_cv <- function(x, ...) {
