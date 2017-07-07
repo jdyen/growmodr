@@ -19,11 +19,12 @@ validate(x, ...)
 \method{validate}{growmod}(x, n_cv = NULL, test_data = NULL,
   n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL, ...)
 
-\method{validate}{growmod_multi}(x, n_cv = NULL, train_data = NULL,
-  test_data = NULL, n_iter = NULL, n_burnin = NULL, n_thin = NULL,
-  n_chains = NULL, ...)
+\method{validate}{growmod_multi}(x, n_cv = NULL, test_data = NULL,
+  n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL, ...)
 }
 \arguments{
+\item{x}{fitted growmod or growmod_multi object}
+
 \item{\dots}{parameters to be passed to stan model call}
 
 \item{formula}{list containing data on size, age, species, and traits}

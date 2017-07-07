@@ -7,6 +7,7 @@
 #' @import loo
 #' 
 #' @param formula list containing data on size, age, species, and traits
+#' @param x fitted growmod or growmod_multi object
 #' @param data list containing data on size, age, species, and traits
 #' @param model growth model form to be fitted
 #' @param n_cv number of cross validation folds
@@ -289,7 +290,6 @@ validate.growmod <- function(x,
 #' @export
 validate.growmod_multi <- function(x,
                                    n_cv = NULL,
-                                   train_data = NULL,
                                    test_data = NULL,
                                    n_iter = NULL,
                                    n_burnin = NULL,
