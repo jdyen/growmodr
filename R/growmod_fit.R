@@ -455,7 +455,6 @@ growmod.default <- function(size,
       
       # fit model
       stanmod <- stan_model(file = mod_file)
-      print(data_set[[i]])
       stan_mod <- sampling(object = stanmod,
                            data = data_set[[i]],
                            chains = n_chains,
