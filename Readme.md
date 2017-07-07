@@ -62,7 +62,7 @@ Thomas F and Vesk P (2017)
 
 Thomas F and Vesk P (2017)
 
-Models fitted using `growmod` are of class grow_mod and have several S3 methods available: `print`, `summary`, `plot`, `coef`, `predict`, `fitted` and `residuals`. 
+Models fitted using `growmod` are of class `growmod` and have several S3 methods available: `print`, `summary`, `plot`. Models validated using `validate` are of class `growmod_cv` and have `print`, `summary`, and `plot` methods available. 
 
 *****
 

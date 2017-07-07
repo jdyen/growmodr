@@ -44,7 +44,7 @@ growmod_data <- function(data_set,
       }
     }
     if (is.null(test_data)) {
-      out$age_holdout <- rnorm(5)
+      out$age_holdout <- sample(out$age, size = 5, replace = TRUE)
       out$block_holdout <- rep(1, length(out$age_holdout))
       if (!is.null(data_set$predictors)) {
         for (i in 1:num_params) {
