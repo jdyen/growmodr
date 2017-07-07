@@ -470,9 +470,9 @@ growmod.default <- function(size,
       waic <- waic(log_lik_tmp)
       fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
       fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
-      r2 <- round(cor(fitted_vals, data_set$size_data) ** 2, 3)
-      rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
-      md <- round(mean((fitted_vals - data_set$size_data)), 3)
+      r2 <- round(cor(fitted_vals, data_set[[i]]$size_data) ** 2, 3)
+      rmsd <- round(sqrt(mean((fitted_vals - data_set[[i]]$size_data) ** 2)), 3)
+      md <- round(mean((fitted_vals - data_set[[i]]$size_data)), 3)
       
       mod[[i]] <- list(fitted = fitted_vals,
                        r2 = r2,
@@ -481,7 +481,7 @@ growmod.default <- function(size,
                        loo = loo,
                        waic = waic,
                        stan_summary = summary(stan_mod)$summary,
-                       data_set = data_set,
+                       data_set = data_set[[i]],
                        model = model,
                        stanmod = stanmod,
                        spline_params = spline_params,
