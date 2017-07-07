@@ -65,7 +65,7 @@ check_preds <- function(predictors,
         predictors_clean <- vector('list', length = length(predictors))
         for (j in seq(along = predictors_clean)) {
           predictors_clean[[j]] <- matrix(NA,
-                                          nrow = nrow(nblock),
+                                          nrow = nblock,
                                           ncol = ncol(predictors[[j]]))
           for (i in 1:ncol(predictors[[j]])) {
             predictors_clean[[j]][, i] <- tapply(predictors[[j]][, i],

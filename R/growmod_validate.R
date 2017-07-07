@@ -398,10 +398,10 @@ stan_cv_internal <- function(i,
         for (j in seq(along = predictors)) {
           predictors_tmp[[j]] <- predictors[[j]][-block_id, ]
           if (!is.matrix(predictors_tmp[[j]])) {
-            predictors_tmp[[j]] <- matrix(predictors_tmp[[j]], nrow = 1)
+            predictors_tmp[[j]] <- matrix(predictors_tmp[[j]], ncol = ncol(predictors[[j]]))
           }
           if (length(block_id) == 1) {
-            predictors_tmp_test[[j]] <- matrix(predictors[[j]][block_id, ], nrow = 1)
+            predictors_tmp_test[[j]] <- matrix(predictors[[j]][block_id, ], ncol = ncol(predictors[[j]]))
           } else {
             predictors_tmp_test[[j]] <- predictors[[j]][block_id, ]
           }

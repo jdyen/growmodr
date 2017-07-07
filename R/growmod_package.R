@@ -66,11 +66,17 @@
 #'   # TO BE ADDED
 #'   
 #'   # example of multiple models fitted in one call
-#'   # TO BE ADDED
+#'   mod_multi <- growmod(size ~ (age | block / predictors),
+#'                        data = data_sim,
+#'                        model = c('hillslope',
+#'                                  'koblog'),
+#'                        n_iter = 1000,
+#'                        n_burnin = 500,
+#'                        n_chains = 2,
+#'                        stan_cores = 1)
 #'   
 #'   # example of multiple models fitted in one call with different
 #'   #  predictors for each model and parameter
 #'   # TO BE ADDED
-#'   
 #' }
 NULL

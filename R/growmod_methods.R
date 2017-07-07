@@ -283,6 +283,9 @@ summary.growmod <- function(x, ...) {
   names(print_out) <- c('r2', 'rmsd', 'md', 'loo_ic', 'waic')
   mod_type <- x$model
   rhats <- x$stan_summary[, 'Rhat']
+  if (any(is.na(rhats))) {
+    rhats <- rhats[-which(is.na(rhats))]
+  }
   if (!is.null(x$predictors)) {
     cat(paste0('The ', x$model, ' model was fitted to growth data with ', 
                x$data_set$n, ' observations.\n',

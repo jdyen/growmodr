@@ -5,10 +5,12 @@
 #'   comparison tools (r2, WAIC, loo).
 #'   
 #' The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
-#'   and its associated methods. See the package vignettes and help
-#'   files for examples of fitting growth curves to data.
+#'   and its associated methods, particularly the \code{\link{validate}} method.
+#'   See the package vignettes and help files for examples of fitting growth
+#'   curves to data.
 #'   
-#' @references Thomas et al. (in prep.) PAPER.
+#' @references Thomas, F.M., Yen, J.D.L. and Vesk, P.A. (in prep.) Which nonlinear model?
+#'   Using cross-validation to evaluate growth models in ecology.
 #'   
 "_PACKAGE"
 #> [1] "_PACKAGE"
