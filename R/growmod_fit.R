@@ -289,9 +289,11 @@ growmod.default <- function(size,
     rows_to_rm <- c(rows_to_rm, which(is.na(index)))
     na_rem_list <- c(na_rem_list, 'index')
   }
-  if (any(is.na(block))) {
-    rows_to_rm <- c(rows_to_rm, which(is.na(block)))
-    na_rem_list <- c(na_rem_list, 'block')
+  if (!is.null(block)) {
+    if (any(is.na(block))) {
+      rows_to_rm <- c(rows_to_rm, which(is.na(block)))
+      na_rem_list <- c(na_rem_list, 'block')
+    }
   }
   if (length(rows_to_rm)) {
     size <- size[-rows_to_rm]
@@ -318,7 +320,7 @@ growmod.default <- function(size,
   } else {
     mod_params <- vector('list', length = length(model))
     for (i in seq(along = model)) {
-      if (model != 'spline') {
+      if (model[i] != 'spline') {
         mod_params[[i]] <- get(paste0(model[i], '_param_fetch'))()
       } else {
         mod_params[[i]] <- list(num_par = (spline_params$n_knots + spline_params$degree))
@@ -442,6 +444,8 @@ growmod.default <- function(size,
     names(mod) <- model
     
     for (i in seq(along = model)) {
+      cat(paste0('Fitting model ', i, ' of ', length(model), '.\n'))
+      
       # generate stan model
       mod_file <- gen_mod_file(model = model[i],
                                spline_params = spline_params,

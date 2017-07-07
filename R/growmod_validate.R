@@ -23,8 +23,28 @@ validate.formula <- function(formula,
                                                   n_knots = 10,
                                                   spline_type = 'ispline'),
                              ...) {
-  ## ADD THIS
-  NULL
+  mod <- growmod(formula,
+                 data = data,
+                 model = model,
+                 n_iter = n_iter,
+                 n_burnin = n_burnin,
+                 n_thin = n_thin,
+                 n_chains = n_chains,
+                 stan_cores = stan_cores,
+                 spline_params = spline_params,
+                 ...)
+  if (!is.null(n_cv)) {
+    mod_cv <- validate(mod, n_cv = n_cv)
+  } else {
+    if (!is.null(test_data)) {
+      mod_cv <- validate(mod, test_data = test_data)
+    } else {
+      stop('n_cv or test_data must be provided for model validation',
+           call. = FALSE)
+    }
+  }
+  class(mod_cv) <- 'growmod_cv'
+  mod_cv
 }
 
 #' @rdname growmod-validate

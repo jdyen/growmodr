@@ -221,23 +221,3 @@ weibull3_param_fetch <- function(include_block = TRUE) {
               mu_plot = mu_plot,
               mu_agr = mu_agr))
 }
-
-crazytest_param_fetch <- function(include_block = TRUE) {
-  num_par <- 5
-  if (include_block) {
-    mu <- 'h1[block_data[i]] + h2[block_data[i]] + h3[block_data[i]] * (age[i] - h4[block_data[i]]) + h5[block_data[i]]'
-    mu_holdout <- 'h1[block_holdout[i]] + h2[block_holdout[i]] + h3[block_holdout[i]] * (age_holdout[i, 1] - h4[block_holdout[i]]) + h5[block_holdout[i]]'
-    mu_plot <- 'h1[j] + h2[j] + h3[j] * (age_plot[i] - h4[j]) + h5[j]'
-    mu_agr <- 'h1[j] + h2[j] + h3[j] * (age_plot[i] - h4[j]) + h5[j]'
-  } else {
-    mu <- 'h1 + h2 + h3 * (age[i] - h4) + h5'
-    mu_holdout <- 'h1 + h2 + h3 * (age_holdout[i, 1] - h4) + h5'
-    mu_plot <- 'h1 + h2 + h3 * (age_plot[i] - h4) + h5'
-    mu_agr <- 'h1 + h2 + h3 * (age_plot[i] - h4) + h5'
-  }
-  return(list(num_par = num_par,
-              mu = mu,
-              mu_holdout = mu_holdout,
-              mu_plot = mu_plot,
-              mu_agr = mu_agr))
-}

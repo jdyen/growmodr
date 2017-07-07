@@ -7,7 +7,6 @@ gen_mod_file <- function(model,
   if (include_pred & !include_block) {
     stop('model cannot have predictor variables without a blocking variable.',
          call. = FALSE)
-    ## OR can it? Could be predictors at individual level
   }
   if (!include_block) {
     if (model != 'spline') {
@@ -80,9 +79,7 @@ gen_mod_file <- function(model,
           size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }
-        
-        ',
+        }\n\n',
         file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
     } else {
       if (!is.null(spline_params)) {
@@ -172,9 +169,7 @@ gen_mod_file <- function(model,
         size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
             log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-            }
-        
-        ',
+            }\n\n',
         file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
     }    
   } else {
@@ -290,9 +285,7 @@ gen_mod_file <- function(model,
           size_pred[i] = exp(mu_pred[i]);
           for (i in 1:n)
       log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-      }
-          
-          ',
+      }\n\n',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       } else {
         if (!is.null(spline_params)) {
@@ -426,9 +419,7 @@ gen_mod_file <- function(model,
           size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }
-          
-        ',
+        }\n\n',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       }
     } else {
@@ -535,9 +526,7 @@ gen_mod_file <- function(model,
           size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
         log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }
-          
-          ',
+        }\n\n',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       } else {
         if (!is.null(spline_params)) {
@@ -662,9 +651,7 @@ gen_mod_file <- function(model,
             size_pred[i] = exp(mu_pred[i]);
           for (i in 1:n)
             log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
-        }
-          
-          ',
+        }\n\n',
           file = ifelse(is.null(mod_file), mod_file <- paste0(tempfile(), '.stan'), mod_file))
       }
     }
