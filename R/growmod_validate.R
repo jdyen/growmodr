@@ -3,6 +3,53 @@
 #' @description Validate a fitted growth model using cross validation
 #'     or by specifying your own test data set
 #' @export
+#' @import rstan
+#' @import loo
+#' 
+#' @param formula list containing data on size, age, species, and traits
+#' @param data list containing data on size, age, species, and traits
+#' @param model growth model form to be fitted
+#' @param n_cv number of cross validation folds
+#' @param test_data (optional) holdout data set for model validation; only used if \code{is.null(n_cv)}
+#' @param n_iter number of HMC iterations to run for stan model
+#' @param n_burnin number of HMC iterations to run for stan model
+#' @param n_thin thinning rate for HMC chains
+#' @param n_chains number of HMC chains
+#' @param stan_cores number of local cores to use in stan model fitting
+#' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
+#' @param \dots parameters to be passed to stan model call
+#' 
+#' @details \code{validate} takes a formula or fitted growmod object as arguments
+#'   and validates the fitted Stan model for a chosen growth curve. The growth
+#'   model is refitted from scratch if not already defined.
+#' 
+#' @return \code{mod_cv} A fitted \code{growmod_cv} object containing
+#'   parameter estimates, validation statistics, and the original
+#'   data set used to fit the model. 
+#'
+#' @examples
+#' \dontrun {
+#'   # simulate some data
+#'   data_sim <- growth_data_sim(n = 100,
+#'                               nblock = 5,
+#'                               age_range = c(0, 50),
+#'                               include_predictors = TRUE,
+#'                               true_model = 'hillslope')
+#'
+#'   # fit the correct model
+#'   mod <- growmod(size ~ (age | block / predictors),
+#'                  data = data_sim,
+#'                  model = 'hillslope',
+#'                  n_iter = 1000,
+#'                  n_burnin = 500,
+#'                  n_chains = 2,
+#'                  stan_cores = 1)
+#'   
+#'   # validate fitted model
+#'   mod_val <- validate(mod, n_cv = 'loo')
+#'   
+#' }
+#' 
 validate <- function(x, ...) {
   UseMethod('validate')
 }

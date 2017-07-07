@@ -80,7 +80,14 @@
 #'   # TO BE ADDED
 #'   
 #'   # example of multiple models fitted in one call
-#'   # TO BE ADDED
+#'   mod_multi <- growmod(size ~ (age | block / predictors),
+#'                        data = data_sim,
+#'                        model = c('hillslope',
+#'                                  'koblog'),
+#'                        n_iter = 1000,
+#'                        n_burnin = 500,
+#'                        n_chains = 2,
+#'                        stan_cores = 1)
 #'   
 #'   # example of multiple models fitted in one call with different
 #'   #  predictors for each model and parameter
@@ -438,8 +445,8 @@ growmod.default <- function(size,
                 n_chains = n_chains)
     
     # add formula and call to fitted model
-    mod$formula <- form_tmp
-    mod$call <- match.call()
+    mod$formula <- formula
+    mod$call <- call
     
     # set model class for single growth curve model
     class(mod) <- 'growmod'

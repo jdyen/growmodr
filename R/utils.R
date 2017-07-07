@@ -53,9 +53,9 @@ check_preds <- function(predictors,
               call. = FALSE)
       if (is.matrix(predictors) | is.data.frame(predictors)) {
         predictors_clean <- matrix(NA,
-                                   nrow = nrow(nblock),
+                                   nrow = nblock,
                                    ncol = ncol(predictors))
-        for (i in 1:ncol(pred_list$predictors)) {
+        for (i in 1:ncol(predictors)) {
           predictors_clean[, i] <- tapply(predictors[, i],
                                           block_data,
                                           mean,
