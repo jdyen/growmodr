@@ -52,6 +52,8 @@ Once `growmod` has been installed there is one function to fit several different
 
 A fitted growth model is a `growmod` object and can be validated using the `validate` function. This function can used to cross-validate a fitted model or can be used to validate a fitted growth model against a holdout data set.
 
+Models fitted using `growmod` are of class `growmod` and have several S3 methods available: `print`, `summary`, `plot`. Models validated using `validate` are of class `growmod_cv` and have `print`, `summary`, and `plot` methods available. 
+
 A typical workflow for fitting a growth model with `growmod` would look something like:
 ```
 # load growmod package
@@ -78,8 +80,7 @@ summary(mod_val)
 plot(mod_val)
 ```
 
- 
-
+## Further reading
 Mathematical and statistical details of the models in growmod are in:
 
 Thomas, F.M., Yen, J.D.L. and Vesk, P.A. (in prep.) Which nonlinear model? Using cross-validation to evaluate growth models in ecology.
@@ -89,8 +90,6 @@ Several applications of growth curve modelling to ecology are:
 Thomas, F.M. and Vesk, P.A. (2017) Are trait-growth models transferable? Predicting multi-species growth trajectories between ecosystems using plant functional traits. PLoS ONE 12(5): e0176959.
 
 Thomas, F.M. and Vesk, P.A. (to appear) Height growth in woody plants examined with a trait-based model. Austral Ecology.
-
-Models fitted using `growmod` are of class `growmod` and have several S3 methods available: `print`, `summary`, `plot`. Models validated using `validate` are of class `growmod_cv` and have `print`, `summary`, and `plot` methods available. 
 
 *****
 
