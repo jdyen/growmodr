@@ -254,55 +254,91 @@ summary.growmod <- function(x, ...) {
   print_out <- c(x$r2, x$rmsd, x$md, round(x$loo$looic, 2), round(x$waic$waic, 2))
   names(print_out) <- c('r2', 'rmsd', 'md', 'loo_ic', 'waic')
   mod_type <- x$model
-  ## pull out rhats and print warning if some >1.1
-  ## state number of obs, number of blocks, return model call (perhaps formatted)
+  rhats <- x$stan_summary[, 'Rhat']
+  if (!is.null(x$predictors)) {
+    cat(paste0('The ', x$model, ' model was fitted to growth data with ', 
+               x$data_set$n, ' observations.\n',
+               'This model had ', x$data_set$n_block,
+               ' blocking variables and ', ncol(x$predictors), ' predictor variables.\n\n'))
+  } else {
+    if (length(x$data_set$block_data)) {
+      cat(paste0('The ', x$model, ' model was fitted to growth data with ', 
+                 x$data_set$n, ' observations.\n',
+                 'This model had ', x$data_set$n_block,
+                 ' blocking variables but did not include any predictor variables.\n\n'))
+    } else {
+      cat(paste0('The ', x$model, ' model was fitted to growth data with ', 
+                 x$data_set$n, ' observations.\n',
+                 'This model had no blocking variables or predictor variables.\n\n'))
+    }
+  }
+  cat('The model call was:\n')
+  print(x$call)
+  cat('\nThe fitted model had the following summary statistics:\n')
+  print(print_out)
+  if (any(rhats > 1.1)) {
+    cat('\nNote: some Rhats were greater than 1.1; consider increasing n_iter.\n')
+  }
 }
 
 #' @rdname growmod-methods
 #' @export
 summary.growmod_cv <- function(x, ...) {
-  
+  print_out <- c(x$r2, x$rmsd, x$md)
+  names(print_out) <- c('r2', 'rmsd', 'md')
+  mod_type <- x$model
+  cat(paste0('The ', x$model, ' model was validated with ', 
+             x$val_type, '.\n\n'))
+  cat('The fitted model had the following summary statistics:\n')
+  print(print_out)
 }
 
 #' @rdname growmod-methods
 #' @export
 summary.growmod_multi <- function(x, ...) {
-  
+  cat(paste0(length(x), ' models were fitted to growth data.\n\n'))
+  for (i in seq_along(x)) {
+    cat(paste0('Summary of model ', i, ':\n'))
+    summary(x[[i]])
+    if (i < length(x)) {
+      cat('\n\n')
+    }
+  }
 }
 
 #' @rdname growmod-methods
 #' @export
 summary.growmod_cv_multi <- function(x, ...) {
-  
+  cat(paste0(length(x), ' models were validated with cross validation or a holdout data set.\n\n'))
+  for (i in seq_along(x)) {
+    cat(paste0('Summary of model ', i, ':\n'))
+    summary(x[[i]])
+    if (i < length(x)) {
+      cat('\n\n')
+    }
+  }
 }
 
 #' @rdname growmod-methods
 #' @export
 print.growmod <- function(x, ...) {
-  compare(x, ...)
+  print(compare(x, ...))
 }
 
 #' @rdname growmod-methods
 #' @export
 print.growmod_cv <- function(x, ...) {
-  compare(x, ...)
+  print(compare(x, ...))
 }
 
 #' @rdname growmod-methods
 #' @export
 print.growmod_multi <- function(x, ...) {
-  compare(x, ...)
+  print(compare(x, ...))
 }
 
 #' @rdname growmod-methods
 #' @export
 print.growmod_cv_multi <- function(x, ...) {
-  compare(x, ...)
-}
-
-#' @rdname growmod-methods
-#' @export
-predict.growmod <- function(object, newdata, ...) {
-  # switch for methods with and without blocks and predictors
-  NULL  
+  print(compare(x, ...))
 }

@@ -64,7 +64,7 @@ validate.growmod <- function(x,
       stop('Either the number of folds (n_cv) or test_data must be provided
            for model validation', call. = FALSE)
     } else {
-      cat('Performing model validation based on test_data\n')
+      cat('Performing model validation based on', deparse(substitute(test_data)),'\n')
     }
   } else {
     # UPDATE THIS TO ADDRESS MODEL VARIANTS
@@ -88,11 +88,76 @@ validate.growmod <- function(x,
   
   # run cv in loop
   if (!is.null(test_data)) {
-    # test the test_data for completeness here
+    all_vars <- all.vars(x$formula[[length(x$formula)]])
+    index_var <- all_vars[1]
+    size_resp <- all.vars(x$formula)[1]
+
+    # check for size data in test_data
+    if (exists(size_resp, test_data)) {
+      size_data <- get(size_resp, test_data)
+    } else {
+      stop(paste0(size_resp, ' not found in', deparse(substitute(test_data))),
+           call. = FALSE)
+    }
+
+    # check for index variable in test_data
+    if (exists(index_var, test_data)) {
+      index_data <- get(index_var, test_data)
+    } else {
+      stop(paste0(index_var, ' not found in', deparse(substitute(test_data))),
+           call. = FALSE)
+    }
+
+    # check for predictors
+    if (length(all_vars) == 3) {
+      pred_var <- all_vars[3]
+      if (exists(pred_var, test_data)) {
+        predictors <- get(pred_var, test_data)
+      } else {
+        stop(paste0(pred_var, ' not found in', deparse(substitute(test_data))),
+             call. = FALSE)
+      }
+    } else {
+      predictors <- NULL
+    }
+    
+    # check if a blocking variable has been provided
+    if (length(all_vars) == 1) {
+      block_var <- NULL
+      block_data <- NULL
+    } else {
+      block_var <- all_vars[2]
+      if (exists(block_var, test_data)) {
+        block_data <- get(block_var, test_data)
+      } else {
+        stop(paste0(block_var, ' not found in', deparse(substitute(test_data))),
+             call. = FALSE)
+      }
+    }
+    n <- length(size_data)
+    if (!is.null(block_data)) {
+      nblock <- length(unique(block_data))
+    }
+    
+    # check all data for errors
+    if (length(index_data) != n) {
+      stop(paste0(index_var, ' should be the same length as ', size_resp, '.'),
+           call. = FALSE)
+    }
+    if (!is.null(block_var)) {
+      if (length(block_data) != n) {
+        stop(paste0(block_var, ' should be the same length as ', size_resp, '.'),
+             call. = FALSE)
+      }
+    }
     
     # predict to test data
     train_data <- list(data_set = x$data_set,
                        predictors = x$predictors)
+    test_data <- list(size = size_data,
+                      index = index_data,
+                      block = block_data,
+                      predictors = predictors)
     pred_test <- predict_internal(mod_compiled = mod_compiled,
                                   train_data = train_data,
                                   test_data = test_data,
@@ -102,14 +167,16 @@ validate.growmod <- function(x,
                                   n_thin = n_thin,
                                   n_chains = n_chains,
                                   spline_params = x$spline_params,
-                                  stan_cores = x$stan_cores)
+                                  stan_cores = x$stan_cores,
+                                  ...)
     
     # prepare outputs
-    size_real <- test_data$size_data
+    size_real <- test_data$size
     size_pred <- pred_test
     r2_cv <- cor(size_real, size_pred) ** 2
     rmsd_cv <- sqrt(mean((size_real - size_pred) ** 2))
     md_cv <- mean((size_real - size_pred))
+    type <- 'a holdout data set'
   } else {
     mod <- lapply(1:n_cv, stan_cv_internal,
                   mod_compiled,
@@ -132,14 +199,15 @@ validate.growmod <- function(x,
     r2_cv <- round(cor(size_real, size_pred) ** 2, 3)
     rmsd_cv <- round(sqrt(mean((size_real - size_pred) ** 2)), 3)
     md_cv <- round(mean((size_real - size_pred)), 3)
+    type <- paste0(n_cv, '-fold cross validation')
   }
   mod_cv <- list(size_real = size_real,
-                 size_pred = size_pred,s
-                 
+                 size_pred = size_pred,
                  r2 = r2_cv,
                  rmsd = rmsd_cv,
                  md = md_cv,
-                 model = x$model)
+                 model = x$model,
+                 val_type = type)
   class(mod_cv) <- 'growmod_cv'
   mod_cv
 }
@@ -319,7 +387,8 @@ predict_internal <- function(mod_compiled, train_data, test_data,
                              model,
                              n_iter, n_burnin, n_thin, n_chains,
                              spline_params,
-                             stan_cores) {
+                             stan_cores,
+                             ...) {
   if (model != 'spline') {
     mod_params <- get(paste0(model, '_param_fetch'))()
     num_params <- mod_params$num_par
@@ -334,16 +403,16 @@ predict_internal <- function(mod_compiled, train_data, test_data,
                           nblock = length(unique(train_data$data_set$block_data)))
   pred_set_test <- check_preds(predictors = test_data$predictors,
                                model = model,
-                               block_data = test_data$block_data,
+                               block_data = test_data$block,
                                num_params = num_params,
-                               n = length(test_data$size_data),
-                               nblock = length(unique(test_data$block_data)))
+                               n = length(test_data$size),
+                               nblock = length(unique(test_data$block)))
   data_tmp <- list(size = train_data$data_set$size_data,
                    index = train_data$data_set$age,
                    block = train_data$data_set$block_data,
                    predictors = pred_set)
-  test_data_tmp <- list(index = test_data$age,
-                        block = test_data$block_data,
+  test_data_tmp <- list(index = test_data$index,
+                        block = test_data$block,
                         predictors = pred_set_test)
   data_cv <- growmod_data(data_set = data_tmp,
                           model = model,
@@ -362,5 +431,9 @@ predict_internal <- function(mod_compiled, train_data, test_data,
                        cores = stan_cores,
                        ...)
   
+  # return size_pred
+  size_pred <- summary(stan_mod, par = 'size_pred')$summary[, 'mean']
+
+  size_pred
 }
 

@@ -120,7 +120,7 @@ growmod.formula <- function(formula,
       if (exists(size_resp, data, parent.frame())) {
         size_data <- get(size_resp, data, parent.frame())
       } else {
-        stop(paste0(size_resp, data, ' not found'),
+        stop(paste0(size_resp, ' not found'),
              call. = FALSE)
       }
     }
@@ -237,6 +237,10 @@ growmod.formula <- function(formula,
                          stan_cores = stan_cores,
                          spline_params = spline_params,
                          ...)
+  
+  # add formula and call to fitted model
+  mod$formula <- form_tmp
+  mod$call <- match.call()
   
   # return outputs
   mod
