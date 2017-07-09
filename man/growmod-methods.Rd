@@ -43,13 +43,13 @@ plot.growmod_multi(x, group_blocks = TRUE, ...)
 
 plot.growmod_cv_multi(x, ...)
 
-\method{summary}{growmod}(x, ...)
+summary.growmod(x, ...)
 
-\method{summary}{growmod_cv}(x, ...)
+summary.growmod_cv(x, ...)
 
-\method{summary}{growmod_multi}(x, ...)
+summary.growmod_multi(x, ...)
 
-\method{summary}{growmod_cv_multi}(x, ...)
+summary.growmod_cv_multi(x, ...)
 
 \method{print}{growmod}(x, ...)
 
