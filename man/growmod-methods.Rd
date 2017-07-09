@@ -3,69 +3,9 @@
 \name{growmod-methods}
 \alias{growmod-methods}
 \alias{compare}
-\alias{compare.growmod}
-\alias{compare.growmod_cv}
-\alias{compare.growmod_multi}
-\alias{compare.growmod_cv_multi}
-\alias{plot.growmod}
-\alias{plot.growmod_cv}
-\alias{plot.growmod_multi}
-\alias{plot.growmod_cv_multi}
-\alias{summary.growmod}
-\alias{summary.growmod_cv}
-\alias{summary.growmod_multi}
-\alias{summary.growmod_cv_multi}
-\alias{print.growmod}
-\alias{print.growmod_cv}
-\alias{print.growmod_multi}
-\alias{print.growmod_cv_multi}
-\alias{fitted.growmod}
-\alias{fitted.growmod_cv}
-\alias{residuals.growmod}
-\alias{residuals.growmod_cv}
 \title{Methods for fitted growth models}
 \usage{
 compare(x, ...)
-
-\method{compare}{growmod}(..., x)
-
-\method{compare}{growmod_cv}(..., x)
-
-\method{compare}{growmod_multi}(..., x)
-
-\method{compare}{growmod_cv_multi}(..., x)
-
-plot.growmod(x, ...)
-
-plot.growmod_cv(x, ...)
-
-plot.growmod_multi(x, group_blocks = TRUE, ...)
-
-plot.growmod_cv_multi(x, ...)
-
-summary.growmod(x, ...)
-
-summary.growmod_cv(x, ...)
-
-summary.growmod_multi(x, ...)
-
-summary.growmod_cv_multi(x, ...)
-
-\method{print}{growmod}(x, ...)
-
-\method{print}{growmod_cv}(x, ...)
-
-\method{print}{growmod_multi}(x, ...)
-
-\method{print}{growmod_cv_multi}(x, ...)
-
-\method{fitted}{growmod}(x, ...)
-
-\method{fitted}{growmod_cv}(x, ...)
-
-\method{residuals}{growmod}(x, ...)
-
-\method{residuals}{growmod_cv}(x, ...)
 }
 \arguments{
 \item{x}{fitted growmod, growmod_cv, growmod_multi, or growmod_cv_multi object}

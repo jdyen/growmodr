@@ -465,6 +465,7 @@ stan_cv_internal <- function(i,
   out
 }
 
+## CAN we export this method? Or a simplified version?
 predict_internal <- function(mod_compiled, train_data, test_data,
                              model,
                              n_iter, n_burnin, n_thin, n_chains,

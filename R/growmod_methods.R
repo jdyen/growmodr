@@ -36,7 +36,6 @@ compare <- function(x, ...) {
   UseMethod('compare')
 }
 
-#' @rdname growmod-methods
 compare.growmod <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -64,7 +63,6 @@ compare.growmod <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod-methods
 compare.growmod_cv <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -90,7 +88,6 @@ compare.growmod_cv <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod-methods
 compare.growmod_multi <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -126,7 +123,6 @@ compare.growmod_multi <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod-methods
 compare.growmod_cv_multi <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -160,7 +156,7 @@ compare.growmod_cv_multi <- function(..., x) {
   print_out
 }
 
-#' @rdname growmod-methods
+## NEED to link this to the plot generic
 plot.growmod <- function(x, ...) {
   mod_tmp <- x$stan_summary
   data_tmp <- x$data_set
@@ -212,7 +208,6 @@ plot.growmod <- function(x, ...) {
   }
 }
 
-#' @rdname growmod-methods
 plot.growmod_cv <- function(x, ...) {
   min_val <- min(0, min(x$size_real), min(x$size_pred))
   max_val <- max(max(x$size_real), max(x$size_pred))
@@ -231,7 +226,6 @@ plot.growmod_cv <- function(x, ...) {
          col = 'gray40', lwd = 2)
 }
 
-#' @rdname growmod-methods
 plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
   noblock_mod <- any(sapply(x, function(x) length(x$data_set$block_data)) == 0)
@@ -283,7 +277,6 @@ plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   par(mfrow = old_mfrow)  
 }
 
-#' @rdname growmod-methods
 plot.growmod_cv_multi <- function(x, ...) {
   old_mfrow <- par()$mfrow
   num_plots <- length(x)
@@ -294,9 +287,8 @@ plot.growmod_cv_multi <- function(x, ...) {
   par(mfrow = old_mfrow)  
 }
 
-#' @rdname growmod-methods
+## NEED to link this to the summary S3 method in docs
 summary.growmod <- function(x, ...) {
-  ## UPDATE WITH STUFF FROM COMPARE FUN TO DEAL WITH DOTS
   print_out <- c(x$r2, x$rmsd, x$md, round(x$loo$looic, 2), round(x$waic$waic, 2))
   names(print_out) <- c('r2', 'rmsd', 'md', 'loo_ic', 'waic')
   mod_type <- x$model
@@ -330,7 +322,6 @@ summary.growmod <- function(x, ...) {
   }
 }
 
-#' @rdname growmod-methods
 summary.growmod_cv <- function(x, ...) {
   print_out <- c(x$r2, x$rmsd, x$md)
   names(print_out) <- c('r2', 'rmsd', 'md')
@@ -341,7 +332,6 @@ summary.growmod_cv <- function(x, ...) {
   print(print_out)
 }
 
-#' @rdname growmod-methods
 summary.growmod_multi <- function(x, ...) {
   cat(paste0(length(x), ' models were fitted to growth data.\n\n'))
   for (i in seq_along(x)) {
@@ -353,7 +343,6 @@ summary.growmod_multi <- function(x, ...) {
   }
 }
 
-#' @rdname growmod-methods
 summary.growmod_cv_multi <- function(x, ...) {
   cat(paste0(length(x), ' models were validated with cross validation or a holdout data set.\n\n'))
   for (i in seq_along(x)) {
@@ -365,42 +354,73 @@ summary.growmod_cv_multi <- function(x, ...) {
   }
 }
 
-#' @rdname growmod-methods
 print.growmod <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @rdname growmod-methods
 print.growmod_cv <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @rdname growmod-methods
 print.growmod_multi <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @rdname growmod-methods
 print.growmod_cv_multi <- function(x, ...) {
   print(compare(x, ...))
 }
 
-#' @rdname growmod-methods
 fitted.growmod <- function(x, ...) {
   x$fitted
 }
 
-#' @rdname growmod-methods
 fitted.growmod_cv <- function(x, ...) {
   x$size_pred
 }
 
-#' @rdname growmod-methods
+fitted.growmod_multi <- function(x, ...) {
+  out <- vector('list', length = length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- x[[i]]$fitted
+  }
+  out
+}
+
+fitted.growmod_cv_multi <- function(x, ...) {
+  out <- vector('list', length = length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- x[[i]]$size_pred
+  }
+  out
+}
+
 residuals.growmod <- function(x, ...) {
   (x$data_set$size_data - x$fitted)
 }
 
-#' @rdname growmod-methods
 residuals.growmod_cv <- function(x, ...) {
   (x$size_real - x$size_pred)
 }
+
+residuals.growmod_multi <- function(x, ...) {
+  ## COULD turn into matrix if all same length
+  out <- vector('list', length = length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- x[[i]]$data_set$size_data - x[[i]]$fitted
+  }
+  out
+}
+
+residuals.growmod_cv_multi <- function(x, ...) {
+  out <- vector('list', length = length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- x[[i]]$size_real - x[[i]]$size_pred
+  }
+  out
+}
+
+## PREDICT METHOD
+# need three mod types: preds, blocks, noblocks
+# default to fitted vals if no newdata provided
+# newdata = list? Need to check newdata with fitted model
+#
