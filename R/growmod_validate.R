@@ -116,6 +116,7 @@ validate.growmod <- function(x,
   if (!is.null(x$stanmod)) {
     mod_compiled <- x$stanmod
   } else {
+    cat('Compiling Stan model; this could take a minute or two\n')
     mod_compiled <- stan_model(file = x$mod_file)
   }
   

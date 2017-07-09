@@ -424,7 +424,9 @@ growmod.default <- function(size,
                              include_block = !is.null(block))
     
     # fit model
+    cat('Compiling Stan model; this could take a minute or two\n')
     stanmod <- stan_model(file = mod_file)
+    cat('\n\n\n', file = mod_file)
     stan_mod <- sampling(object = stanmod,
                          data = data_set,
                          chains = n_chains,
