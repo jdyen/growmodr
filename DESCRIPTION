@@ -23,6 +23,8 @@ LazyData: true
 Depends:
     R (>= 3.0)
 Imports:
+    Rcpp,
+    rstan,
     loo,
     methods,
     splines,
