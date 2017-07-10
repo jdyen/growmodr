@@ -21,17 +21,15 @@ BugReports: https://github.com/jdyen/growmod/issues
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 3.0),
-    Rcpp,
-LinkingTo: Rcpp
+    R (>= 3.0)
 Imports:
     loo,
-    Rcpp,
     methods,
     splines,
     graphics,
     stats,
     splines2
+importFrom(Rcpp, evalCpp, cpp_object_initializer)
 RoxygenNote: 6.0.1
 
 
