@@ -6,7 +6,6 @@
 #'   uses Stan to fit models for one of twelve common growth curves.
 #' @export
 #' @import rstan
-#' @importFrom Rcpp evalCpp 
 #' @import loo
 #' @import methods
 #' @import splines
@@ -62,6 +61,7 @@
 #'   \item{call}{original model call}
 #'
 #' @examples
+#' \dontrun{
 #'   # simulate some data
 #'   data_sim <- growmod_sim(n = 100,
 #'                           nblock = 5,
@@ -89,8 +89,6 @@
 #'
 #'   # cross validate the fitted model
 #'   mod1_cv <- validate(mod1, n_cv = 'loo')
-#'
-#' \dontrun{
 #'                    
 #'   # fit an incorrect model
 #'   mod2 <- growmod(size ~ (index | block / predictors),

@@ -3,6 +3,7 @@
 #' growmod: Growth Curve Modelling and Validation with Stan
 #' @name growmod-package
 #' @docType package
+#' @aliases growmod-package
 #'
 #' @author Jian Yen, \email{jdl.yen@gmail.com}
 #' @author Freya Thomas

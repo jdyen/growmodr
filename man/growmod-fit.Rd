@@ -89,6 +89,7 @@ Fit a growth model to data on sizes through time. Currently
   to new blocks (see examples, below).
 }
 \examples{
+\dontrun{
   # simulate some data
   data_sim <- growmod_sim(n = 100,
                           nblock = 5,
@@ -116,8 +117,6 @@ Fit a growth model to data on sizes through time. Currently
 
   # cross validate the fitted model
   mod1_cv <- validate(mod1, n_cv = 'loo')
-
-\dontrun{
                    
   # fit an incorrect model
   mod2 <- growmod(size ~ (index | block / predictors),
