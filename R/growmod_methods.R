@@ -1,41 +1,44 @@
-#' @name growmod-methods
-#' 
-#' @title Methods for fitted growth models
-#' 
-#' @description Methods to print, summarise, compare, plot, and extract
-#'   details from fitted growmod models.
-#' 
-#' @section Usage: \preformatted{
-#' 
-#' compare(x, ...)
-#' plot(x)
-#' summary(x)
-#' print(x)
-#' fitted(x)
-#' residuals(x)
-#' 
-#' }
-#' 
-#' @details 
-#' 
-#' @examples
-#' 
-NULL
-
-#' @rdname growmod-methods
+#' Comparison method for \code{"growmod"} objects
+#' @param x an object of class \code{"growmod"}, \code{"growmod_cv"},
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#' @param \dots additional objects of class \code{"growmod"}, \code{"growmod_cv"},
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#' @return NULL
 #' @export
-#' @title Compare multiple fitted growth models or multiple validated growth models
-#' @param x fitted growmod, growmod_cv, growmod_multi, or growmod_cv_multi object
-#' @param \dots additional fitted growmod objects
+#' 
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #' 
+#' # simulate some data
+#' data_test <- growmod_sim()
+#'
+#' # fit a growmod model
+#' mod1 <- growmod(size ~ (age | block / predictors),
+#'                 data = data_sim,
+#'                 model = 'hillslope',
+#'                 n_iter = 100,
+#'                 n_burnin = 50,
+#'                 n_chains = 1,
+#'                 stan_cores = 1)
+#'
+#' # fit a second model
+#' mod2 <- growmod(size ~ (age | block / predictors),
+#'                 data = data_sim,
+#'                 model = 'koblog',
+#'                 n_iter = 100,
+#'                 n_burnin = 50,
+#'                 n_chains = 1,
+#'                 stan_cores = 1)
+#'
+#' # compare the two fitted models
+#' compare(mod1, mod2)
 #' }
-#' 
+#'
 compare <- function(x, ...) {
   UseMethod('compare')
 }
 
+#' @describeIn compare compare fitted \code{"growmod"} models
 compare.growmod <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -63,6 +66,7 @@ compare.growmod <- function(..., x) {
   print_out
 }
 
+#' @describeIn compare compare fitted \code{"growmod_cv"} models
 compare.growmod_cv <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -88,6 +92,7 @@ compare.growmod_cv <- function(..., x) {
   print_out
 }
 
+#' @describeIn compare compare fitted \code{"growmod_multi"} models
 compare.growmod_multi <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -123,6 +128,7 @@ compare.growmod_multi <- function(..., x) {
   print_out
 }
 
+#' @describeIn compare compare fitted \code{"growmod_cv_multi"} models
 compare.growmod_cv_multi <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
@@ -156,7 +162,40 @@ compare.growmod_cv_multi <- function(..., x) {
   print_out
 }
 
-## NEED to link this to the plot generic
+#' Plot method for \code{"growmod"} objects
+#' @param x an object of class \code{"growmod"}, \code{"growmod_cv"},
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#' @param \dots additional objects of class \code{"growmod"}, \code{"growmod_cv"},
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#' @param group_blocks (logical; default equals TRUE) for \code{"growmod_multi"}
+#'   or \code{"growmod_cv_multi"} objects; specify whether to plot each block
+#'   in its own plot (default) or each model in its own plot
+#' @return NULL
+#' 
+#' @import stats
+#' @import graphics
+#' 
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' 
+#' # simulate some data
+#' data_test <- growmod_sim()
+#'
+#' # fit a growmod model
+#' mod1 <- growmod(size ~ (age | block / predictors),
+#'                 data = data_sim,
+#'                 model = 'hillslope',
+#'                 n_iter = 100,
+#'                 n_burnin = 50,
+#'                 n_chains = 1,
+#'                 stan_cores = 1)
+#'
+#' # plot the fitted model
+#' plot(mod1)
+#' }
+#'
 plot.growmod <- function(x, ...) {
   mod_tmp <- x$stan_summary
   data_tmp <- x$data_set
@@ -208,6 +247,7 @@ plot.growmod <- function(x, ...) {
   }
 }
 
+#' @describeIn plot.growmod plot fitted \code{"growmod_cv"} models
 plot.growmod_cv <- function(x, ...) {
   min_val <- min(0, min(x$size_real), min(x$size_pred))
   max_val <- max(max(x$size_real), max(x$size_pred))
@@ -226,6 +266,7 @@ plot.growmod_cv <- function(x, ...) {
          col = 'gray40', lwd = 2)
 }
 
+#' @describeIn plot.growmod plot fitted \code{"growmod_multi"} models
 plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
   noblock_mod <- any(sapply(x, function(x) length(x$data_set$block_data)) == 0)
@@ -277,6 +318,7 @@ plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
   par(mfrow = old_mfrow)  
 }
 
+#' @describeIn plot.growmod plot fitted \code{"growmod_cv_multi"} models
 plot.growmod_cv_multi <- function(x, ...) {
   old_mfrow <- par()$mfrow
   num_plots <- length(x)
@@ -287,7 +329,7 @@ plot.growmod_cv_multi <- function(x, ...) {
   par(mfrow = old_mfrow)  
 }
 
-## NEED to link this to the summary S3 method in docs
+# summary method for growmod objects
 summary.growmod <- function(x, ...) {
   print_out <- c(x$r2, x$rmsd, x$md, round(x$loo$looic, 2), round(x$waic$waic, 2))
   names(print_out) <- c('r2', 'rmsd', 'md', 'loo_ic', 'waic')
@@ -354,6 +396,7 @@ summary.growmod_cv_multi <- function(x, ...) {
   }
 }
 
+# Print method for growmod objects
 print.growmod <- function(x, ...) {
   print(compare(x, ...))
 }
@@ -403,18 +446,33 @@ residuals.growmod_cv <- function(x, ...) {
 }
 
 residuals.growmod_multi <- function(x, ...) {
-  ## COULD turn into matrix if all same length
-  out <- vector('list', length = length(x))
-  for (i in seq_along(x)) {
-    out[[i]] <- x[[i]]$data_set$size_data - x[[i]]$fitted
+  x_len <- sapply(x, length)
+  if (length(unique(x_len)) == 1) {
+    out <- matrix(NA, nrow = length(x[[1]]$fitted), ncol = x_len[1])
+    for (i in seq_along(x)) {
+      out[, i] <- x[[i]]$data_set$size_data - x[[i]]$fitted
+    }
+  } else {
+    out <- vector('list', length = length(x))
+    for (i in seq_along(x)) {
+      out[[i]] <- x[[i]]$data_set$size_data - x[[i]]$fitted
+    }
   }
   out
 }
 
 residuals.growmod_cv_multi <- function(x, ...) {
-  out <- vector('list', length = length(x))
-  for (i in seq_along(x)) {
-    out[[i]] <- x[[i]]$size_real - x[[i]]$size_pred
+  x_len <- sapply(x, length)
+  if (length(unique(x_len)) == 1) {
+    out <- matrix(NA, nrow = length(x[[1]]$fitted), ncol = x_len[1])
+    for (i in seq_along(x)) {
+      out[, i] <- x[[i]]$size_real - x[[i]]$size_pred
+    }
+  } else {
+    out <- vector('list', length = length(x))
+    for (i in seq_along(x)) {
+      out[[i]] <- x[[i]]$size_real - x[[i]]$size_pred
+    }
   }
   out
 }

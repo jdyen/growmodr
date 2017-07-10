@@ -1,4 +1,6 @@
 # prepare data sets for stan models
+#' @import splines
+#' @importFrom splines2 iSpline
 growmod_data <- function(data_set,
                          model,
                          num_params,

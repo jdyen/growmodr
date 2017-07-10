@@ -5,6 +5,7 @@
 #' @export
 #' @import rstan
 #' @import loo
+#' @import stats
 #' 
 #' @param formula list containing data on size, age, species, and traits
 #' @param x fitted growmod or growmod_multi object
@@ -36,7 +37,7 @@
 #'   \item{val_type}{type of validation used: cross validation or holdout data set}
 #'
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #'   # simulate some data
 #'   data_sim <- growth_data_sim(n = 100,
 #'                               nblock = 5,
@@ -465,7 +466,6 @@ stan_cv_internal <- function(i,
   out
 }
 
-## CAN we export this method? Or a simplified version?
 predict_internal <- function(mod_compiled, train_data, test_data,
                              model,
                              n_iter, n_burnin, n_thin, n_chains,

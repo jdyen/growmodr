@@ -7,6 +7,9 @@
 #' @export
 #' @import rstan
 #' @import loo
+#' @import methods
+#' @import splines
+#' @import stats
 #' 
 #' @param formula list containing data on size, age, species, and traits
 #' @param data list containing data on size, age, species, and traits
@@ -21,6 +24,8 @@
 #' @param n_chains number of HMC chains
 #' @param stan_cores number of local cores to use in stan model fitting
 #' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
+#' @param call model call passed from \code{growmod.formula}
+#' @param formula model formula passed from \code{growmod.formula}
 #' @param \dots parameters to be passed to stan model call
 #' 
 #' @details \code{growmod} takes a formula or data vectors as arguments
@@ -50,7 +55,7 @@
 #'   \item{call}{original model call}
 #'
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #'   # simulate some data
 #'   data_sim <- growth_data_sim(n = 100,
 #'                               nblock = 5,
@@ -96,7 +101,19 @@
 #'   compare(mod1_cv, mod2_cv)
 #'   
 #'   # example of different predictor sets for each parameter
-#'   # TO BE ADDED
+#'   data_sim2 <- with(data_sim, list(block = block,
+#'                                    size = size,
+#                                     index = index,
+#                                     predictors = list(cbind(predictors[, 1], predictors[, 2]),
+#                                                       cbind(predictors[, 1]),
+#                                                       cbind(predictors[, 2]))))
+#'   mod3 <- growmod(size ~ (age | block / predictors),
+#'                   data = data_sim2,
+#'                   model = 'koblog',
+#'                   n_iter = 1000,
+#'                   n_burnin = 500,
+#'                   n_chains = 2,
+#'                   stan_cores = 1)
 #'   
 #'   # example of multiple models fitted in one call
 #'   mod_multi <- growmod(size ~ (age | block / predictors),
@@ -107,10 +124,6 @@
 #'                        n_burnin = 500,
 #'                        n_chains = 2,
 #'                        stan_cores = 1)
-#'   
-#'   # example of multiple models fitted in one call with different
-#'   #  predictors for each model and parameter
-#'   # TO BE ADDED
 #'   
 #' }
 #' 
@@ -251,7 +264,7 @@ growmod.formula <- function(formula,
   }
   
   # fit model
-  mod <- growmod.default(size = size_data,
+  mod <- growmod.default(x = size_data,
                          index = index_data,
                          block = block_data,
                          predictors = predictors,
@@ -272,7 +285,7 @@ growmod.formula <- function(formula,
 
 #' @rdname growmod-fit
 #' @export
-growmod.default <- function(size,
+growmod.default <- function(x,
                             index,
                             block,
                             predictors,
@@ -283,10 +296,15 @@ growmod.default <- function(size,
                             n_chains,
                             stan_cores,
                             spline_params,
-                            call,
-                            formula,
+                            call = NULL,
+                            formula = NULL,
                             ...) {
   # basic checks
+  if (!is.vector(x)) {
+    stop('x should be a vector of size data.',
+         call. = FALSE)
+  }
+  size <- x
   n <- length(size)
   if (!is.null(block)) {
     nblock <- length(unique(block))

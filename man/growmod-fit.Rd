@@ -15,7 +15,8 @@ growmod(x, ...)
   = "ispline"), ...)
 
 \method{growmod}{default}(size, index, block, predictors, model, n_iter,
-  n_burnin, n_thin, n_chains, stan_cores, spline_params, call, formula, ...)
+  n_burnin, n_thin, n_chains, stan_cores, spline_params, call = NULL,
+  formula = NULL, ...)
 }
 \arguments{
 \item{\dots}{parameters to be passed to stan model call}
@@ -45,6 +46,10 @@ growmod(x, ...)
 \item{block}{list containing data on size, age, species, and traits}
 
 \item{predictors}{list containing data on size, age, species, and traits}
+
+\item{call}{model call passed from \code{growmod.formula}}
+
+\item{formula}{model formula passed from \code{growmod.formula}}
 }
 \value{
 \code{mod} A fitted \code{growmod} object containing
@@ -79,7 +84,7 @@ Fit a growth model to data on sizes through time. Currently
   and constructs and fits a Stan model for a chosen growth curve.
 }
 \examples{
-\dontrun {
+\dontrun{
   # simulate some data
   data_sim <- growth_data_sim(n = 100,
                               nblock = 5,
@@ -125,7 +130,15 @@ Fit a growth model to data on sizes through time. Currently
   compare(mod1_cv, mod2_cv)
   
   # example of different predictor sets for each parameter
-  # TO BE ADDED
+  data_sim2 <- with(data_sim, list(block = block,
+                                   size = size,
+  mod3 <- growmod(size ~ (age | block / predictors),
+                  data = data_sim2,
+                  model = 'koblog',
+                  n_iter = 1000,
+                  n_burnin = 500,
+                  n_chains = 2,
+                  stan_cores = 1)
   
   # example of multiple models fitted in one call
   mod_multi <- growmod(size ~ (age | block / predictors),
@@ -136,10 +149,6 @@ Fit a growth model to data on sizes through time. Currently
                        n_burnin = 500,
                        n_chains = 2,
                        stan_cores = 1)
-  
-  # example of multiple models fitted in one call with different
-  #  predictors for each model and parameter
-  # TO BE ADDED
   
 }
 

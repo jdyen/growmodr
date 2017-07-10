@@ -17,7 +17,7 @@
 #' @docType package
 #' 
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #'   # simulate some data
 #'   data_sim <- growth_data_sim(n = 100,
 #'                               nblock = 5,

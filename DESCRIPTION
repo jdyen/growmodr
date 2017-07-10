@@ -3,10 +3,6 @@ Type: Package
 Title: Hierarchical Growth Curve Modelling and Validation with Stan
 Version: 0.0.1
 Date: 2017-07-07
-Authors@R: c(
-    person("Jian", "Yen", role = c("aut", "cre"), email = "jdl.yen@gmail.com"),
-    person("Freya", "Thomas", role = c("aut"))
-    )
 Author: Jian Yen (aut, cre),
     Freya Thomas (aut)
 Maintainer: Jian Yen <jdl.yen@gmail.com>
@@ -16,7 +12,7 @@ Description: R package to fit growth models to data on size at age. Supports
     for each species in a data set), and hierarchical models of growth curves
     where curve parameters depend on a predictor variable (e.g. a species's
     traits). Includes methods for model validation, comparison, and plotting.
-License: Apache License 2.0
+License: file LICENSE
 URL: https://github.com/jdyen/growmod
 BugReports: https://github.com/jdyen/growmod/issues
 Encoding: UTF-8

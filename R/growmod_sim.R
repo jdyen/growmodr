@@ -6,6 +6,9 @@
 #'   optionally include blocks within the data set (e.g. species) and 
 #'   predictor varibles that determine the growth parameters for each
 #'   block.
+#'   
+#' @import stats
+#' 
 #' @export
 #' 
 #' @param n number of simulated growth curves
@@ -28,13 +31,11 @@
 #'   \item{coefs}{true coefficients used for simulated data}
 #' 
 #' @examples 
-#' \dontrun {
-#'   sim_data <- growth_data_sim(n = 100,
+#' sim_data <- growth_data_sim(n = 100,
 #'                               nblock = 5,
 #'                               age_range = c(0, 50),
 #'                               include_predictors = TRUE,
 #'                               true_model = 'hillslope')
-#' }
 #'
 growmod_sim <- function(n = 100,
                         nblock = 5,
