@@ -118,7 +118,7 @@ validate.growmod <- function(x,
     mod_compiled <- x$stanmod
   } else {
     cat('Compiling Stan model; this could take a minute or two\n')
-    mod_compiled <- stan_model(file = x$mod_file)
+    mod_compiled <- rstan::stan_model(file = x$mod_file)
   }
   
   # set sampling details
@@ -448,18 +448,18 @@ stan_cv_internal <- function(i,
                           test_data = test_data)
 
   # fit model and sample predicted values
-  stan_mod <- sampling(object = mod_compiled,
-                       data = data_cv,
-                       chains = n_chains,
-                       iter = n_iter,
-                       warmup = n_burnin,
-                       thin = n_thin,
-                       cores = stan_cores,
-                       ...)
+  stan_mod <- rstan::sampling(object = mod_compiled,
+                              data = data_cv,
+                              chains = n_chains,
+                              iter = n_iter,
+                              warmup = n_burnin,
+                              thin = n_thin,
+                              cores = stan_cores,
+                              ...)
   
   # extract out-of-sample predictions
   size_real <- data$size_data[cv_id]
-  cv_tmp <- summary(stan_mod, par = 'size_pred')$summary[, 'mean']
+  cv_tmp <- rstan::summary(stan_mod, par = 'size_pred')$summary[, 'mean']
 
   # need to switch for model type (no blocks, with blocks, with predictors)
   out <- data.frame(size_pred = cv_tmp, size_real = size_real)
@@ -505,17 +505,17 @@ predict_internal <- function(mod_compiled, train_data, test_data,
                           test_data = test_data_tmp)
   
   # fit model just to training set
-  stan_mod <- sampling(object = mod_compiled,
-                       data = data_cv,
-                       chains = n_chains,
-                       iter = n_iter,
-                       warmup = n_burnin,
-                       thin = n_thin,
-                       cores = stan_cores,
-                       ...)
+  stan_mod <- rstan::sampling(object = mod_compiled,
+                              data = data_cv,
+                              chains = n_chains,
+                              iter = n_iter,
+                              warmup = n_burnin,
+                              thin = n_thin,
+                              cores = stan_cores,
+                              ...)
   
   # return size_pred
-  size_pred <- summary(stan_mod, par = 'size_pred')$summary[, 'mean']
+  size_pred <- rstan::summary(stan_mod, par = 'size_pred')$summary[, 'mean']
 
   size_pred
 }

@@ -4,6 +4,9 @@
 #' @title Fitting growth models using growmod
 #' @description Fit a growth model to data on sizes through time. Currently
 #'   uses Stan to fit models for one of twelve common growth curves.
+#'   
+#' @aliases growmod-fit growmod
+#'
 #' @export
 #' @import rstan
 #' @import loo
@@ -448,21 +451,21 @@ growmod.default <- function(x,
     
     # fit model
     cat('Compiling Stan model; this could take a minute or two\n')
-    stanmod <- stan_model(file = mod_file)
-    stan_mod <- sampling(object = stanmod,
-                         data = data_set,
-                         chains = n_chains,
-                         iter = n_iter,
-                         warmup = n_burnin,
-                         thin = n_thin,
-                         cores = stan_cores,
-                         ...)
+    stanmod <- rstan::stan_model(file = mod_file)
+    stan_mod <- rstan::sampling(object = stanmod,
+                                data = data_set,
+                                chains = n_chains,
+                                iter = n_iter,
+                                warmup = n_burnin,
+                                thin = n_thin,
+                                cores = stan_cores,
+                                ...)
     
     # summarise fitted stan model
-    log_lik_tmp <- extract_log_lik(stan_mod)
-    loo <- loo(log_lik_tmp)
-    waic <- waic(log_lik_tmp)
-    fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
+    log_lik_tmp <- loo::extract_log_lik(stan_mod)
+    loo <- loo::loo(log_lik_tmp)
+    waic <- loo::waic(log_lik_tmp)
+    fitted_vals_tmp <- exp(rstan::get_posterior_mean(stan_mod, pars = 'mu'))
     fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
     r2 <- round(cor(fitted_vals, data_set$size_data) ** 2, 3)
     rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
@@ -475,7 +478,7 @@ growmod.default <- function(x,
                 md = md,
                 loo = loo,
                 waic = waic,
-                stan_summary = summary(stan_mod)$summary,
+                stan_summary = rstan::summary(stan_mod)$summary,
                 data_set = data_set,
                 predictors = pred_set,
                 model = model,
@@ -508,21 +511,21 @@ growmod.default <- function(x,
                                include_block = !is.null(block))
       
       # fit model
-      stanmod <- stan_model(file = mod_file)
-      stan_mod <- sampling(object = stanmod,
-                           data = data_set[[i]],
-                           chains = n_chains,
-                           iter = n_iter,
-                           warmup = n_burnin,
-                           thin = n_thin,
-                           cores = stan_cores,
-                           ...)
+      stanmod <- rstan::stan_model(file = mod_file)
+      stan_mod <- rstan::sampling(object = stanmod,
+                                  data = data_set[[i]],
+                                  chains = n_chains,
+                                  iter = n_iter,
+                                  warmup = n_burnin,
+                                  thin = n_thin,
+                                  cores = stan_cores,
+                                  ...)
       
       # summarise fitted stan model
-      log_lik_tmp <- extract_log_lik(stan_mod)
-      loo <- loo(log_lik_tmp)
-      waic <- waic(log_lik_tmp)
-      fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
+      log_lik_tmp <- loo::extract_log_lik(stan_mod)
+      loo <- loo::loo(log_lik_tmp)
+      waic <- loo::waic(log_lik_tmp)
+      fitted_vals_tmp <- exp(rstan::get_posterior_mean(stan_mod, pars = 'mu'))
       fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
       r2 <- round(cor(fitted_vals, data_set[[i]]$size_data) ** 2, 3)
       rmsd <- round(sqrt(mean((fitted_vals - data_set[[i]]$size_data) ** 2)), 3)
@@ -534,7 +537,7 @@ growmod.default <- function(x,
                        md = md,
                        loo = loo,
                        waic = waic,
-                       stan_summary = summary(stan_mod)$summary,
+                       stan_summary = rstan::summary(stan_mod)$summary,
                        data_set = data_set[[i]],
                        predictors = pred_set,
                        model = model[i],
