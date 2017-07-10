@@ -3,6 +3,8 @@
 \docType{package}
 \name{growmod-package}
 \alias{growmod-package}
+\alias{growmod}
+\alias{growmod-package}
 \title{growmod: Growth Curve Modelling and Validation with Stan}
 \description{
 R package to fit growth models to data on size at age. Supports
