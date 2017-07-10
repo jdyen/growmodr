@@ -71,7 +71,7 @@ Validate a fitted growth model using cross validation
   model is refitted from scratch if not already defined.
 }
 \examples{
-\dontrun {
+\dontrun{
   # simulate some data
   data_sim <- growth_data_sim(n = 100,
                               nblock = 5,

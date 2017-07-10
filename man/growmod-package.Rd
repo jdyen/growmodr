@@ -25,7 +25,7 @@ The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
   curves to data.
 }
 \examples{
-\dontrun {
+\dontrun{
   # simulate some data
   data_sim <- growth_data_sim(n = 100,
                               nblock = 5,

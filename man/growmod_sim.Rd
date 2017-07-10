@@ -40,12 +40,10 @@ Simulate growth curve data from a chosen growth curve model. This function
   determine the growth parameters for a given block.
 }
 \examples{
-\dontrun {
-  sim_data <- growth_data_sim(n = 100,
+sim_data <- growth_data_sim(n = 100,
                               nblock = 5,
                               age_range = c(0, 50),
                               include_predictors = TRUE,
                               true_model = 'hillslope')
-}
 
 }

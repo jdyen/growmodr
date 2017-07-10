@@ -14,9 +14,9 @@ growmod(x, ...)
   stan_cores = 1, spline_params = list(degree = 8, n_knots = 10, spline_type
   = "ispline"), ...)
 
-\method{growmod}{default}(size, index, block, predictors, model, n_iter,
-  n_burnin, n_thin, n_chains, stan_cores, spline_params, call = NULL,
-  formula = NULL, ...)
+\method{growmod}{default}(x, index, block, predictors, model, n_iter, n_burnin,
+  n_thin, n_chains, stan_cores, spline_params, call = NULL, formula = NULL,
+  ...)
 }
 \arguments{
 \item{\dots}{parameters to be passed to stan model call}
@@ -39,8 +39,6 @@ growmod(x, ...)
 
 \item{spline_params}{named list of settings for spline model (degree, n_knots, spline_type)}
 
-\item{size}{list containing data on size, age, species, and traits}
-
 \item{index}{list containing data on size, age, species, and traits}
 
 \item{block}{list containing data on size, age, species, and traits}
@@ -48,6 +46,8 @@ growmod(x, ...)
 \item{predictors}{list containing data on size, age, species, and traits}
 
 \item{call}{model call passed from \code{growmod.formula}}
+
+\item{size}{list containing data on size, age, species, and traits}
 
 \item{formula}{model formula passed from \code{growmod.formula}}
 }
