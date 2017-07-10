@@ -1,5 +1,3 @@
-# package file
-
 #' growmod: Growth Curve Modelling and Validation with Stan
 #' @name growmod-package
 #' @docType package

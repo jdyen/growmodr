@@ -2,9 +2,18 @@
 % Please edit documentation in R/growmod_methods.R
 \name{summary.growmod}
 \alias{summary.growmod}
+\alias{summary.growmod_cv}
+\alias{summary.growmod_multi}
+\alias{summary.growmod_cv_multi}
 \title{Summary method for \code{"growmod"} objects}
 \usage{
 \method{summary}{growmod}(object, ...)
+
+\method{summary}{growmod_cv}(object, ...)
+
+\method{summary}{growmod_multi}(object, ...)
+
+\method{summary}{growmod_cv_multi}(object, ...)
 }
 \arguments{
 \item{object}{an object of class \code{"growmod"}, \code{"growmod_cv"},
@@ -15,6 +24,15 @@
 \description{
 Summary method for \code{"growmod"} objects
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{summary}: summarise fitted \code{"growmod_cv"} models
+
+\item \code{summary}: summarise fitted \code{"growmod_multi"} models
+
+\item \code{summary}: summarise fitted \code{"growmod_cv_multi"} models
+}}
+
 \examples{
 \dontrun{
 

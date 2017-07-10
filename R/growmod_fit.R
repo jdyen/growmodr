@@ -9,6 +9,7 @@
 #'
 #' @export
 #' @import rstan
+#' @import Rcpp
 #' @import loo
 #' @import methods
 #' @import splines

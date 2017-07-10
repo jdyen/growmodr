@@ -2,9 +2,18 @@
 % Please edit documentation in R/growmod_methods.R
 \name{plot.growmod}
 \alias{plot.growmod}
+\alias{plot.growmod_cv}
+\alias{plot.growmod_multi}
+\alias{plot.growmod_cv_multi}
 \title{Plot method for \code{"growmod"} objects}
 \usage{
 \method{plot}{growmod}(x, y, ...)
+
+\method{plot}{growmod_cv}(x, y, ...)
+
+\method{plot}{growmod_multi}(x, y, group_blocks = TRUE, ...)
+
+\method{plot}{growmod_cv_multi}(x, y, ...)
 }
 \arguments{
 \item{x}{an object of class \code{"growmod"}, \code{"growmod_cv"},
@@ -22,6 +31,15 @@ in its own plot (default) or each model in its own plot}
 \description{
 Plot method for \code{"growmod"} objects
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{plot}: plot fitted \code{"growmod_cv"} models
+
+\item \code{plot}: plot fitted \code{"growmod_multi"} models
+
+\item \code{plot}: plot fitted \code{"growmod_cv_multi"} models
+}}
+
 \examples{
 \dontrun{
 

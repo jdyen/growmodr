@@ -21,7 +21,7 @@ BugReports: https://github.com/jdyen/growmod/issues
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 3.0),
+    R (>= 3.02),
     Rcpp,
     methods
 Imports:
