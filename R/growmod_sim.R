@@ -31,11 +31,11 @@
 #'   \item{coefs}{true coefficients used for simulated data}
 #' 
 #' @examples 
-#' sim_data <- growth_data_sim(n = 100,
-#'                               nblock = 5,
-#'                               age_range = c(0, 50),
-#'                               include_predictors = TRUE,
-#'                               true_model = 'hillslope')
+#' sim_data <- growmod_sim(n = 100,
+#'                         nblock = 5,
+#'                         age_range = c(0, 50),
+#'                         include_predictors = TRUE,
+#'                         true_model = 'hillslope')
 #'
 growmod_sim <- function(n = 100,
                         nblock = 5,

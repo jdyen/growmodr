@@ -26,7 +26,7 @@ compare(x, ...)
 \code{"growmod_multi"} or \code{"growmod_cv_multi}}
 }
 \description{
-Comparison method for \code{"growmod"} objects
+Compare multiple fitted growmod models
 }
 \section{Methods (by class)}{
 \itemize{
@@ -46,7 +46,7 @@ Comparison method for \code{"growmod"} objects
 data_test <- growmod_sim()
 
 # fit a growmod model
-mod1 <- growmod(size ~ (age | block / predictors),
+mod1 <- growmod(size ~ (index | block / predictors),
                 data = data_sim,
                 model = 'hillslope',
                 n_iter = 100,
@@ -55,7 +55,7 @@ mod1 <- growmod(size ~ (age | block / predictors),
                 stan_cores = 1)
 
 # fit a second model
-mod2 <- growmod(size ~ (age | block / predictors),
+mod2 <- growmod(size ~ (index | block / predictors),
                 data = data_sim,
                 model = 'koblog',
                 n_iter = 100,

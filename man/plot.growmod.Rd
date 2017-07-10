@@ -45,7 +45,7 @@ Plot method for \code{"growmod"} objects
 data_test <- growmod_sim()
 
 # fit a growmod model
-mod1 <- growmod(size ~ (age | block / predictors),
+mod1 <- growmod(size ~ (index | block / predictors),
                 data = data_sim,
                 model = 'hillslope',
                 n_iter = 100,

@@ -11,10 +11,9 @@
 #' @import splines
 #' @import stats
 #' 
-#' @param formula list containing data on size, age, species, and traits
+#' @param x model formula (see details) or vector of size data
 #' @param data list containing data on size, age, species, and traits
 #' @param model growth model form to be fitted
-#' @param size list containing data on size, age, species, and traits
 #' @param index list containing data on size, age, species, and traits
 #' @param block list containing data on size, age, species, and traits
 #' @param predictors list containing data on size, age, species, and traits
@@ -25,11 +24,17 @@
 #' @param stan_cores number of local cores to use in stan model fitting
 #' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
 #' @param call model call passed from \code{growmod.formula}
-#' @param formula model formula passed from \code{growmod.formula}
 #' @param \dots parameters to be passed to stan model call
 #' 
 #' @details \code{growmod} takes a formula or data vectors as arguments
-#'   and constructs and fits a Stan model for a chosen growth curve.
+#'   and constructs and fits a Stan model for a chosen growth curve. The formula
+#'   syntax is standard across all growmod models. A growmod formula specifies the
+#'   size variable as a response and an index variable (e.g. age) as a predictor.
+#'   A growmod formula can specify blocks in the data; the syntax for this is as
+#'   if setting a random effect for the index. If specified, a separate growth curve
+#'   will be fitted for each block. In addition, a growmod formula can include
+#'   predictor variables within blocks, which allows prediction of growth curves
+#'   to new blocks (see examples, below).
 #' 
 #' @return \code{mod} A fitted \code{growmod} object containing
 #'   parameter estimates, validation statistics, and the original
@@ -55,21 +60,20 @@
 #'   \item{call}{original model call}
 #'
 #' @examples
-#' \dontrun{
 #'   # simulate some data
-#'   data_sim <- growth_data_sim(n = 100,
-#'                               nblock = 5,
-#'                               age_range = c(0, 50),
-#'                               include_predictors = TRUE,
-#'                               true_model = 'hillslope')
+#'   data_sim <- growmod_sim(n = 100,
+#'                           nblock = 5,
+#'                           age_range = c(0, 50),
+#'                           include_predictors = TRUE,
+#'                           true_model = 'hillslope')
 #'
 #'   # fit the correct model
-#'   mod1 <- growmod(size ~ (age | block / predictors),
+#'   mod1 <- growmod(size ~ (index | block / predictors),
 #'                   data = data_sim,
 #'                   model = 'hillslope',
-#'                   n_iter = 1000,
-#'                   n_burnin = 500,
-#'                   n_chains = 2,
+#'                   n_iter = 100,
+#'                   n_burnin = 50,
+#'                   n_chains = 1,
 #'                   stan_cores = 1)
 #'
 #'   # plot the fitted model
@@ -83,9 +87,11 @@
 #'
 #'   # cross validate the fitted model
 #'   mod1_cv <- validate(mod1)
+#'
+#' \dontrun{
 #'                    
 #'   # fit an incorrect model
-#'   mod2 <- growmod(size ~ (age | block / predictors),
+#'   mod2 <- growmod(size ~ (index | block / predictors),
 #'                   data = data_sim,
 #'                   model = 'koblog',
 #'                   n_iter = 1000,
@@ -107,7 +113,7 @@
 #                                     predictors = list(cbind(predictors[, 1], predictors[, 2]),
 #                                                       cbind(predictors[, 1]),
 #                                                       cbind(predictors[, 2]))))
-#'   mod3 <- growmod(size ~ (age | block / predictors),
+#'   mod3 <- growmod(size ~ (index | block / predictors),
 #'                   data = data_sim2,
 #'                   model = 'koblog',
 #'                   n_iter = 1000,
@@ -116,7 +122,7 @@
 #'                   stan_cores = 1)
 #'   
 #'   # example of multiple models fitted in one call
-#'   mod_multi <- growmod(size ~ (age | block / predictors),
+#'   mod_multi <- growmod(size ~ (index | block / predictors),
 #'                        data = data_sim,
 #'                        model = c('hillslope',
 #'                                  'koblog'),
@@ -124,7 +130,6 @@
 #'                        n_burnin = 500,
 #'                        n_chains = 2,
 #'                        stan_cores = 1)
-#'   
 #' }
 #' 
 growmod <- function(x, ...) {
@@ -133,7 +138,7 @@ growmod <- function(x, ...) {
 
 #' @rdname growmod-fit
 #' @export
-growmod.formula <- function(formula,
+growmod.formula <- function(x,
                             data = NULL,
                             model = 'hillslope',
                             n_iter = 5000,

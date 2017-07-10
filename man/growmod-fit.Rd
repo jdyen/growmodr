@@ -48,8 +48,6 @@ growmod(x, ...)
 \item{call}{model call passed from \code{growmod.formula}}
 
 \item{size}{list containing data on size, age, species, and traits}
-
-\item{formula}{model formula passed from \code{growmod.formula}}
 }
 \value{
 \code{mod} A fitted \code{growmod} object containing
@@ -84,16 +82,15 @@ Fit a growth model to data on sizes through time. Currently
   and constructs and fits a Stan model for a chosen growth curve.
 }
 \examples{
-\dontrun{
   # simulate some data
-  data_sim <- growth_data_sim(n = 100,
-                              nblock = 5,
-                              age_range = c(0, 50),
-                              include_predictors = TRUE,
-                              true_model = 'hillslope')
+  data_sim <- growmod_sim(n = 100,
+                          nblock = 5,
+                          age_range = c(0, 50),
+                          include_predictors = TRUE,
+                          true_model = 'hillslope')
 
   # fit the correct model
-  mod1 <- growmod(size ~ (age | block / predictors),
+  mod1 <- growmod(size ~ (index | block / predictors),
                   data = data_sim,
                   model = 'hillslope',
                   n_iter = 1000,
@@ -114,7 +111,7 @@ Fit a growth model to data on sizes through time. Currently
   mod1_cv <- validate(mod1)
                    
   # fit an incorrect model
-  mod2 <- growmod(size ~ (age | block / predictors),
+  mod2 <- growmod(size ~ (index | block / predictors),
                   data = data_sim,
                   model = 'koblog',
                   n_iter = 1000,
@@ -132,7 +129,7 @@ Fit a growth model to data on sizes through time. Currently
   # example of different predictor sets for each parameter
   data_sim2 <- with(data_sim, list(block = block,
                                    size = size,
-  mod3 <- growmod(size ~ (age | block / predictors),
+  mod3 <- growmod(size ~ (index | block / predictors),
                   data = data_sim2,
                   model = 'koblog',
                   n_iter = 1000,
@@ -141,7 +138,7 @@ Fit a growth model to data on sizes through time. Currently
                   stan_cores = 1)
   
   # example of multiple models fitted in one call
-  mod_multi <- growmod(size ~ (age | block / predictors),
+  mod_multi <- growmod(size ~ (index | block / predictors),
                        data = data_sim,
                        model = c('hillslope',
                                  'koblog'),
@@ -149,7 +146,5 @@ Fit a growth model to data on sizes through time. Currently
                        n_burnin = 500,
                        n_chains = 2,
                        stan_cores = 1)
-  
-}
 
 }

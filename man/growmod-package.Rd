@@ -27,14 +27,14 @@ The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
 \examples{
 \dontrun{
   # simulate some data
-  data_sim <- growth_data_sim(n = 100,
-                              nblock = 5,
-                              age_range = c(0, 50),
-                              include_predictors = TRUE,
-                              true_model = 'hillslope')
+  data_sim <- growmod_sim(n = 100,
+                          nblock = 5,
+                          age_range = c(0, 50),
+                          include_predictors = TRUE,
+                          true_model = 'hillslope')
 
   # fit the correct model
-  mod1 <- growmod(size ~ (age | block / predictors),
+  mod1 <- growmod(size ~ (index | block / predictors),
                   data = data_sim,
                   model = 'hillslope',
                   n_iter = 1000,
@@ -55,7 +55,7 @@ The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
   mod1_cv <- validate(mod1)
                    
   # fit an incorrect model
-  mod2 <- growmod(size ~ (age | block / predictors),
+  mod2 <- growmod(size ~ (index | block / predictors),
                   data = data_sim,
                   model = 'koblog',
                   n_iter = 1000,
@@ -74,7 +74,7 @@ The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
   # TO BE ADDED
   
   # example of multiple models fitted in one call
-  mod_multi <- growmod(size ~ (age | block / predictors),
+  mod_multi <- growmod(size ~ (index | block / predictors),
                        data = data_sim,
                        model = c('hillslope',
                                  'koblog'),
@@ -83,9 +83,6 @@ The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
                        n_chains = 2,
                        stan_cores = 1)
   
-  # example of multiple models fitted in one call with different
-  #  predictors for each model and parameter
-  # TO BE ADDED
 }
 }
 \references{

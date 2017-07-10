@@ -73,14 +73,14 @@ Validate a fitted growth model using cross validation
 \examples{
 \dontrun{
   # simulate some data
-  data_sim <- growth_data_sim(n = 100,
-                              nblock = 5,
-                              age_range = c(0, 50),
-                              include_predictors = TRUE,
-                              true_model = 'hillslope')
+  data_sim <- growmod_sim(n = 100,
+                          nblock = 5,
+                          age_range = c(0, 50),
+                          include_predictors = TRUE,
+                          true_model = 'hillslope')
 
   # fit the correct model
-  mod <- growmod(size ~ (age | block / predictors),
+  mod <- growmod(size ~ (index | block / predictors),
                  data = data_sim,
                  model = 'hillslope',
                  n_iter = 1000,
