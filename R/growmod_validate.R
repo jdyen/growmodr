@@ -6,7 +6,7 @@
 #' @import rstan
 #' @import loo
 #' @import stats
-#' @useDynLib growmod, .registraton = TRUE
+#' @useDynLib growmod, .registration = TRUE
 #' 
 #' @param formula list containing data on size, age, species, and traits
 #' @param x fitted growmod or growmod_multi object
