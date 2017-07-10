@@ -29,7 +29,6 @@ Imports:
     graphics,
     stats,
     splines2
-importFrom(Rcpp, evalCpp, cpp_object_initializer)
 RoxygenNote: 6.0.1
 
 

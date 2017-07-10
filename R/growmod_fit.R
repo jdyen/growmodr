@@ -6,6 +6,7 @@
 #'   uses Stan to fit models for one of twelve common growth curves.
 #' @export
 #' @import rstan
+#' @importFrom Rcpp evalCpp 
 #' @import loo
 #' @import methods
 #' @import splines
