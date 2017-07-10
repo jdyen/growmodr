@@ -24,6 +24,7 @@
 #' @param stan_cores number of local cores to use in stan model fitting
 #' @param spline_params named list of settings for spline model (degree, n_knots, spline_type)
 #' @param call model call passed from \code{growmod.formula}
+#' @param formula model formula passed from \code{growmod.formula}
 #' @param \dots parameters to be passed to stan model call
 #' 
 #' @details \code{growmod} takes a formula or data vectors as arguments
@@ -86,7 +87,7 @@
 #'   print(mod1)
 #'
 #'   # cross validate the fitted model
-#'   mod1_cv <- validate(mod1)
+#'   mod1_cv <- validate(mod1, n_cv = 'loo')
 #'
 #' \dontrun{
 #'                    
@@ -151,7 +152,7 @@ growmod.formula <- function(x,
                                                  spline_type = 'ispline'),
                             ...) {
   # collate data from formula
-  form_tmp <- formula
+  form_tmp <- x
   all_vars <- all.vars(form_tmp[[length(form_tmp)]])
   index_var <- all_vars[1]
   size_resp <- all.vars(form_tmp)[1]

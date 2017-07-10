@@ -70,9 +70,6 @@ The main function you'll use in \pkg{growmod} is \code{\link{growmod}}
   mod2_cv <- validate(mod2)
   compare(mod1_cv, mod2_cv)
   
-  # example of different predictor sets for each parameter
-  # TO BE ADDED
-  
   # example of multiple models fitted in one call
   mod_multi <- growmod(size ~ (index | block / predictors),
                        data = data_sim,

@@ -9,7 +9,7 @@
 \usage{
 growmod(x, ...)
 
-\method{growmod}{formula}(formula, data = NULL, model = "hillslope",
+\method{growmod}{formula}(x, data = NULL, model = "hillslope",
   n_iter = 5000, n_burnin = floor(n_iter/2), n_thin = 1, n_chains = 4,
   stan_cores = 1, spline_params = list(degree = 8, n_knots = 10, spline_type
   = "ispline"), ...)
@@ -19,9 +19,9 @@ growmod(x, ...)
   ...)
 }
 \arguments{
-\item{\dots}{parameters to be passed to stan model call}
+\item{x}{model formula (see details) or vector of size data}
 
-\item{formula}{list containing data on size, age, species, and traits}
+\item{\dots}{parameters to be passed to stan model call}
 
 \item{data}{list containing data on size, age, species, and traits}
 
@@ -47,7 +47,7 @@ growmod(x, ...)
 
 \item{call}{model call passed from \code{growmod.formula}}
 
-\item{size}{list containing data on size, age, species, and traits}
+\item{formula}{model formula passed from \code{growmod.formula}}
 }
 \value{
 \code{mod} A fitted \code{growmod} object containing
@@ -79,7 +79,14 @@ Fit a growth model to data on sizes through time. Currently
 }
 \details{
 \code{growmod} takes a formula or data vectors as arguments
-  and constructs and fits a Stan model for a chosen growth curve.
+  and constructs and fits a Stan model for a chosen growth curve. The formula
+  syntax is standard across all growmod models. A growmod formula specifies the
+  size variable as a response and an index variable (e.g. age) as a predictor.
+  A growmod formula can specify blocks in the data; the syntax for this is as
+  if setting a random effect for the index. If specified, a separate growth curve
+  will be fitted for each block. In addition, a growmod formula can include
+  predictor variables within blocks, which allows prediction of growth curves
+  to new blocks (see examples, below).
 }
 \examples{
   # simulate some data
@@ -93,9 +100,9 @@ Fit a growth model to data on sizes through time. Currently
   mod1 <- growmod(size ~ (index | block / predictors),
                   data = data_sim,
                   model = 'hillslope',
-                  n_iter = 1000,
-                  n_burnin = 500,
-                  n_chains = 2,
+                  n_iter = 100,
+                  n_burnin = 50,
+                  n_chains = 1,
                   stan_cores = 1)
 
   # plot the fitted model
@@ -108,7 +115,9 @@ Fit a growth model to data on sizes through time. Currently
   print(mod1)
 
   # cross validate the fitted model
-  mod1_cv <- validate(mod1)
+  mod1_cv <- validate(mod1, n_cv = 'loo')
+
+\dontrun{
                    
   # fit an incorrect model
   mod2 <- growmod(size ~ (index | block / predictors),
@@ -146,5 +155,6 @@ Fit a growth model to data on sizes through time. Currently
                        n_burnin = 500,
                        n_chains = 2,
                        stan_cores = 1)
+}
 
 }

@@ -20,10 +20,10 @@ compare(x, ...)
 }
 \arguments{
 \item{x}{an object of class \code{"growmod"}, \code{"growmod_cv"},
-\code{"growmod_multi"} or \code{"growmod_cv_multi}}
+\code{"growmod_multi"} or \code{"growmod_cv_multi"}}
 
 \item{\dots}{additional objects of class \code{"growmod"}, \code{"growmod_cv"},
-\code{"growmod_multi"} or \code{"growmod_cv_multi}}
+\code{"growmod_multi"} or \code{"growmod_cv_multi"}}
 }
 \description{
 Compare multiple fitted growmod models

@@ -2,7 +2,7 @@
 
 #' growmod: Growth Curve Modelling and Validation with Stan
 #' @name growmod-package
-#' @aliases growmod-package
+#' @docType package
 #'
 #' @author Jian Yen, \email{jdl.yen@gmail.com}
 #' @author Freya Thomas
@@ -14,8 +14,6 @@
 #'        curves where curve parameters depend on a predictor variable (e.g., a
 #'        species's traits). Includes methods for model validation, comparison,
 #'        and plotting.
-#'
-#' @docType package
 #' 
 #' @examples
 #' \dontrun{
@@ -62,9 +60,6 @@
 #'   # compare the fitted models using cross validation
 #'   mod2_cv <- validate(mod2)
 #'   compare(mod1_cv, mod2_cv)
-#'   
-#'   # example of different predictor sets for each parameter
-#'   # TO BE ADDED
 #'   
 #'   # example of multiple models fitted in one call
 #'   mod_multi <- growmod(size ~ (index | block / predictors),

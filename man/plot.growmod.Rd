@@ -7,20 +7,22 @@
 \alias{plot.growmod_cv_multi}
 \title{Plot method for \code{"growmod"} objects}
 \usage{
-plot.growmod(x, ...)
+\method{plot}{growmod}(x, y, ...)
 
-plot.growmod_cv(x, ...)
+\method{plot}{growmod_cv}(x, y, ...)
 
-plot.growmod_multi(x, group_blocks = TRUE, ...)
+\method{plot}{growmod_multi}(x, y, group_blocks = TRUE, ...)
 
-plot.growmod_cv_multi(x, ...)
+\method{plot}{growmod_cv_multi}(x, y, ...)
 }
 \arguments{
 \item{x}{an object of class \code{"growmod"}, \code{"growmod_cv"},
-\code{"growmod_multi"} or \code{"growmod_cv_multi}}
+\code{"growmod_multi"} or \code{"growmod_cv_multi"}}
+
+\item{y}{unused default argument to plot function}
 
 \item{\dots}{additional objects of class \code{"growmod"}, \code{"growmod_cv"},
-\code{"growmod_multi"} or \code{"growmod_cv_multi}}
+\code{"growmod_multi"} or \code{"growmod_cv_multi"}}
 
 \item{group_blocks}{(logical; default equals TRUE) for \code{"growmod_multi"}
 or \code{"growmod_cv_multi"} objects; specify whether to plot each block
@@ -29,13 +31,13 @@ in its own plot (default) or each model in its own plot}
 \description{
 Plot method for \code{"growmod"} objects
 }
-\section{Functions}{
+\section{Methods (by generic)}{
 \itemize{
-\item \code{plot.growmod_cv}: plot fitted \code{"growmod_cv"} models
+\item \code{plot}: plot fitted \code{"growmod_cv"} models
 
-\item \code{plot.growmod_multi}: plot fitted \code{"growmod_multi"} models
+\item \code{plot}: plot fitted \code{"growmod_multi"} models
 
-\item \code{plot.growmod_cv_multi}: plot fitted \code{"growmod_cv_multi"} models
+\item \code{plot}: plot fitted \code{"growmod_cv_multi"} models
 }}
 
 \examples{

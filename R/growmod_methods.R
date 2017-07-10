@@ -3,9 +3,9 @@
 #' @description Compare multiple fitted growmod models
 #' 
 #' @param x an object of class \code{"growmod"}, \code{"growmod_cv"},
-#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi"}
 #' @param \dots additional objects of class \code{"growmod"}, \code{"growmod_cv"},
-#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi"}
 #' @return NULL
 #' @export
 #' 
@@ -170,10 +170,13 @@ compare.growmod_cv_multi <- function(..., x) {
 }
 
 #' Plot method for \code{"growmod"} objects
+#' @method plot growmod
+#'
 #' @param x an object of class \code{"growmod"}, \code{"growmod_cv"},
-#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi"}
+#' @param y unused default argument to plot function
 #' @param \dots additional objects of class \code{"growmod"}, \code{"growmod_cv"},
-#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi"}
 #' @param group_blocks (logical; default equals TRUE) for \code{"growmod_multi"}
 #'   or \code{"growmod_cv_multi"} objects; specify whether to plot each block
 #'   in its own plot (default) or each model in its own plot
@@ -203,7 +206,7 @@ compare.growmod_cv_multi <- function(..., x) {
 #' plot(mod1)
 #' }
 #'
-plot.growmod <- function(x, ...) {
+plot.growmod <- function(x, y, ...) {
   mod_tmp <- x$stan_summary
   data_tmp <- x$data_set
   if (length(data_tmp$block_data)) {
@@ -255,8 +258,9 @@ plot.growmod <- function(x, ...) {
 }
 
 #' @describeIn plot.growmod plot fitted \code{"growmod_cv"} models
+#' @method plot growmod_cv
 #' @export
-plot.growmod_cv <- function(x, ...) {
+plot.growmod_cv <- function(x, y, ...) {
   min_val <- min(0, min(x$size_real), min(x$size_pred))
   max_val <- max(max(x$size_real), max(x$size_pred))
   plot(x$size_real, x$size_pred,
@@ -275,8 +279,9 @@ plot.growmod_cv <- function(x, ...) {
 }
 
 #' @describeIn plot.growmod plot fitted \code{"growmod_multi"} models
+#' @method plot growmod_multi
 #' @export
-plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
+plot.growmod_multi <- function(x, y, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
   noblock_mod <- any(sapply(x, function(x) length(x$data_set$block_data)) == 0)
   if ((group_blocks) & (!noblock_mod)) {
@@ -328,8 +333,9 @@ plot.growmod_multi <- function(x, group_blocks = TRUE, ...) {
 }
 
 #' @describeIn plot.growmod plot fitted \code{"growmod_cv_multi"} models
+#' @method plot growmod_cv_multi
 #' @export
-plot.growmod_cv_multi <- function(x, ...) {
+plot.growmod_cv_multi <- function(x, y, ...) {
   old_mfrow <- par()$mfrow
   num_plots <- length(x)
   par(mfrow = c(round(sqrt(num_plots)), ceiling(num_plots / round(sqrt(num_plots)))))
@@ -340,8 +346,9 @@ plot.growmod_cv_multi <- function(x, ...) {
 }
 
 #' Summary method for \code{"growmod"} objects
+#' @method summary growmod
 #' @param object an object of class \code{"growmod"}, \code{"growmod_cv"},
-#'   \code{"growmod_multi"} or \code{"growmod_cv_multi}
+#'   \code{"growmod_multi"} or \code{"growmod_cv_multi"}
 #' @param \dots unused additional arguments
 #' @return NULL
 #' 
@@ -403,6 +410,7 @@ summary.growmod <- function(object, ...) {
 }
 
 #' @describeIn summary.growmod summarise fitted \code{"growmod_cv"} models
+#' @method summary growmod_cv
 #' @export
 summary.growmod_cv <- function(object, ...) {
   print_out <- c(object$r2, object$rmsd, object$md)
@@ -415,6 +423,7 @@ summary.growmod_cv <- function(object, ...) {
 }
 
 #' @describeIn summary.growmod summarise fitted \code{"growmod_multi"} models
+#' @method summary growmod_multi
 #' @export
 summary.growmod_multi <- function(object, ...) {
   cat(paste0(length(object), ' models were fitted to growth data.\n\n'))
@@ -428,6 +437,7 @@ summary.growmod_multi <- function(object, ...) {
 }
 
 #' @describeIn summary.growmod summarise fitted \code{"growmod_cv_multi"} models
+#' @method summary growmod_cv_multi
 #' @export
 summary.growmod_cv_multi <- function(object, ...) {
   cat(paste0(length(object), ' models were validated with cross validation or a holdout data set.\n\n'))
@@ -462,72 +472,72 @@ print.growmod_cv_multi <- function(x, ...) {
 }
 
 #' @export
-fitted.growmod <- function(x, ...) {
-  x$fitted
+fitted.growmod <- function(object, ...) {
+  object$fitted
 }
 
 #' @export
-fitted.growmod_cv <- function(x, ...) {
-  x$size_pred
+fitted.growmod_cv <- function(object, ...) {
+  object$size_pred
 }
 
 #' @export
-fitted.growmod_multi <- function(x, ...) {
-  out <- vector('list', length = length(x))
-  for (i in seq_along(x)) {
-    out[[i]] <- x[[i]]$fitted
+fitted.growmod_multi <- function(object, ...) {
+  out <- vector('list', length = length(object))
+  for (i in seq_along(object)) {
+    out[[i]] <- object[[i]]$fitted
   }
   out
 }
 
 #' @export
-fitted.growmod_cv_multi <- function(x, ...) {
-  out <- vector('list', length = length(x))
-  for (i in seq_along(x)) {
-    out[[i]] <- x[[i]]$size_pred
+fitted.growmod_cv_multi <- function(object, ...) {
+  out <- vector('list', length = length(object))
+  for (i in seq_along(object)) {
+    out[[i]] <- object[[i]]$size_pred
   }
   out
 }
 
 #' @export
-residuals.growmod <- function(x, ...) {
-  (x$data_set$size_data - x$fitted)
+residuals.growmod <- function(object, ...) {
+  (object$data_set$size_data - object$fitted)
 }
 
 #' @export
-residuals.growmod_cv <- function(x, ...) {
-  (x$size_real - x$size_pred)
+residuals.growmod_cv <- function(object, ...) {
+  (object$size_real - object$size_pred)
 }
 
 #' @export
-residuals.growmod_multi <- function(x, ...) {
-  x_len <- sapply(x, length)
+residuals.growmod_multi <- function(object, ...) {
+  x_len <- sapply(object, length)
   if (length(unique(x_len)) == 1) {
-    out <- matrix(NA, nrow = length(x[[1]]$fitted), ncol = x_len[1])
-    for (i in seq_along(x)) {
-      out[, i] <- x[[i]]$data_set$size_data - x[[i]]$fitted
+    out <- matrix(NA, nrow = length(object[[1]]$fitted), ncol = x_len[1])
+    for (i in seq_along(object)) {
+      out[, i] <- object[[i]]$data_set$size_data - object[[i]]$fitted
     }
   } else {
-    out <- vector('list', length = length(x))
-    for (i in seq_along(x)) {
-      out[[i]] <- x[[i]]$data_set$size_data - x[[i]]$fitted
+    out <- vector('list', length = length(object))
+    for (i in seq_along(object)) {
+      out[[i]] <- object[[i]]$data_set$size_data - object[[i]]$fitted
     }
   }
   out
 }
 
 #' @export
-residuals.growmod_cv_multi <- function(x, ...) {
-  x_len <- sapply(x, length)
+residuals.growmod_cv_multi <- function(object, ...) {
+  x_len <- sapply(object, length)
   if (length(unique(x_len)) == 1) {
-    out <- matrix(NA, nrow = length(x[[1]]$fitted), ncol = x_len[1])
-    for (i in seq_along(x)) {
-      out[, i] <- x[[i]]$size_real - x[[i]]$size_pred
+    out <- matrix(NA, nrow = length(object[[1]]$fitted), ncol = x_len[1])
+    for (i in seq_along(object)) {
+      out[, i] <- object[[i]]$size_real - object[[i]]$size_pred
     }
   } else {
-    out <- vector('list', length = length(x))
-    for (i in seq_along(x)) {
-      out[[i]] <- x[[i]]$size_real - x[[i]]$size_pred
+    out <- vector('list', length = length(object))
+    for (i in seq_along(object)) {
+      out[[i]] <- object[[i]]$size_real - object[[i]]$size_pred
     }
   }
   out
@@ -537,4 +547,4 @@ residuals.growmod_cv_multi <- function(x, ...) {
 # need three mod types: preds, blocks, noblocks
 # default to fitted vals if no newdata provided
 # newdata = list? Need to check newdata with fitted model
-#
+# make sure arguments are matched to generic
