@@ -1,43 +1,43 @@
 data {
-        int<lower=0> n;
-        int<lower=0> n_block;
-        int<lower=0> n_pred;
-        int<lower=0> n_block_pred;
-          vector<lower=0>[n] size_data;
-        vector[n] age;
-        int<lower=0, upper=n_block> block_data[n];
-        int<lower=0, upper=n_block_pred> block_holdout[n_pred];
-        int<lower=0> n_plot;
-        vector[n_plot] age_plot;
-        matrix[n_pred, 1] age_holdout;
-    }
+  int<lower=0> n;
+  int<lower=0> n_block;
+  int<lower=0> n_pred;
+  int<lower=0> n_block_pred;
+  vector<lower=0>[n] size_data;
+  vector[n] age;
+  int<lower=0, upper=n_block> block_data[n];
+  int<lower=0, upper=n_block_pred> block_holdout[n_pred];
+  int<lower=0> n_plot;
+  vector[n_plot] age_plot;
+  matrix[n_pred, 1] age_holdout;
+}
         
-        parameters {
-        real<lower=0> sigma_obs;
- real<lower=0> block_sd1;
+parameters {
+  real<lower=0> sigma_obs;
+  real<lower=0> block_sd1;
   real<lower=0> block_sd2;
   real<lower=0> block_sd3;
-   real psi_mean1;
+  real psi_mean1;
   real psi_mean2;
   real psi_mean3;
-   real<lower=0> sd_h1;
+  real<lower=0> sd_h1;
   real<lower=0> sd_h2;
   real<lower=0> sd_h3;
-   vector[n_block] psi1;
+  vector[n_block] psi1;
   vector[n_block] psi2;
   vector[n_block] psi3;
-   vector<lower=0>[n_block] h1;
+  vector<lower=0>[n_block] h1;
   vector<lower=0>[n_block] h2;
   vector<lower=0>[n_block] h3;
-   vector<lower=0>[n_block_pred] h1_holdout;
+  vector<lower=0>[n_block_pred] h1_holdout;
   vector<lower=0>[n_block_pred] h2_holdout;
   vector<lower=0>[n_block_pred] h3_holdout;
-   }
+}
         
         transformed parameters {
         vector[n] mu;
         for (i in 1:n)
-        mu[i] =  h1[block_data[i]] / (h2[block_data[i]] + (h3[block_data[i]] ^ age[i])) ;
+        mu[i] =  h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (log(age[i]) - h3[block_data[i]]))) ;
  }
         
         model {
@@ -74,18 +74,18 @@ data {
         
         for (i in 1:n_plot)
         for (j in 1:n_block)
-        mu_plot_growth[i, j] =  h1[j] / (h2[j] + (h3[j] ^ age_plot[i])) ;
+        mu_plot_growth[i, j] =  h1[j] / (1 + exp(-h2[j] * (log(age_plot[i]) - h3[j]))) ;
   for (i in 1:n_plot)
         for (j in 1:n_block)
         size_plot[i, j] = exp(mu_plot_growth[i, j]);
         for (i in 1:n_plot)
         for (j in 1:n_block)
-        mu_plot_agr[i, j] =  -h1[j] * (h3[j] ^ age_plot[i]) * log(h3[j]) / ((h2[j] + (h3[j] ^ age_plot[i])) ^ 2) ;
+        mu_plot_agr[i, j] =  mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (log(age_plot[i]) - h3[j]))) / (1 + exp(-h2[j] * (log(age_plot[i]) - h3[j])))) ;
   for (i in 1:n_plot)
         for (j in 1:n_block)
         size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
         for (i in 1:n_pred)
-          mu_pred[i] =  h1_holdout[block_holdout[i]] / (h2_holdout[block_holdout[i]] + (h3_holdout[block_holdout[i]] ^ age_holdout[i, 1])) ;
+          mu_pred[i] =  h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (log(age_holdout[i, 1]) - h3_holdout[block_holdout[i]]))) ;
   for (i in 1:n_pred)
           size_pred[i] = exp(mu_pred[i]);
         for (i in 1:n)
