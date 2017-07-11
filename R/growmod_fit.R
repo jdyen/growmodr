@@ -457,7 +457,7 @@ growmod.default <- function(x,
                       ifelse(is.null(predictors), 'nopred', 'pred'),
                       ifelse(is.null(block), 'onemod', 'blockmod'),
                       sep = '_')
-    stanmod <- get(paste0('model_', mod_name))
+    stanmod <- get(paste0(mod_name, '.stan'))
     stan_mod <- rstan::sampling(object = stanmod,
                                 data = data_set,
                                 chains = n_chains,
