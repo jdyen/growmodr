@@ -444,15 +444,20 @@ growmod.default <- function(x,
   # fit models; loop over multiple models if required
   if (length(model) == 1) {
     # generate stan model
-    mod_file <- gen_mod_file(model = model,
-                             spline_params = spline_params,
-                             mod_file = NULL,
-                             include_pred = !is.null(predictors),
-                             include_block = !is.null(block))
+    #mod_file <- gen_mod_file(model = model,
+    #                         spline_params = spline_params,
+    #                         mod_file = NULL,
+    #                         include_pred = !is.null(predictors),
+    #                         include_block = !is.null(block))
     
     # fit model
-    cat('Compiling Stan model; this could take a minute or two\n')
-    stanmod <- rstan::stan_model(file = mod_file)
+    #cat('Compiling Stan model; this could take a minute or two\n')
+    #stanmod <- rstan::stan_model(file = mod_file)
+    mod_name <- paste(model,
+                      ifelse(is.null(predictors), 'nopred', 'pred'),
+                      ifelse(is.null(block), 'onemod', 'blockmod'),
+                      sep = '_')
+    stanmod <- get(paste0('model_', mod_name))
     stan_mod <- rstan::sampling(object = stanmod,
                                 data = data_set,
                                 chains = n_chains,
