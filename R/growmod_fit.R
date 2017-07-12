@@ -498,7 +498,7 @@ growmod.default <- function(x,
     names(mod) <- model
     
     for (i in seq(along = model)) {
-      cat(paste0('Fitting model ', i, ' of ', length(model), '.\n'))
+      cat(paste0('Fitting', model[i],'model (model ', i, ' of ', length(model), ').\n'))
       
       # fit model
       mod_name <- paste(model,
