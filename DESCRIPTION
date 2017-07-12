@@ -22,12 +22,12 @@ Encoding: UTF-8
 LazyData: true
 Depends:
     R (>= 3.02),
-    Rcpp,
+    Rcpp (>= 0.12.0),
     methods
 Imports:
     rstan (>= 2.15.1),
     rstantools (>= 1.2.0),
-    loo,
+    loo (>= 1.1.0),
     splines,
     graphics,
     stats,
@@ -37,6 +37,7 @@ LinkingTo: StanHeaders (>= 2.15.0.1),
            BH (>= 1.62.0.1),
            Rcpp (>= 0.12.11),
            RcppEigen (>= 0.3.3.3.0)
+NeedsCompilation: yes
 RoxygenNote: 6.0.1
 
 
