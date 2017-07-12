@@ -443,21 +443,12 @@ growmod.default <- function(x,
   
   # fit models; loop over multiple models if required
   if (length(model) == 1) {
-    # generate stan model
-    #mod_file <- gen_mod_file(model = model,
-    #                         spline_params = spline_params,
-    #                         mod_file = NULL,
-    #                         include_pred = !is.null(predictors),
-    #                         include_block = !is.null(block))
-    
     # fit model
-    #cat('Compiling Stan model; this could take a minute or two\n')
-    #stanmod <- rstan::stan_model(file = mod_file)
     mod_name <- paste(model,
                       ifelse(is.null(predictors), 'nopred', 'pred'),
                       ifelse(is.null(block), 'onemod', 'blockmod'),
                       sep = '_')
-    stanmod <- get(paste0(mod_name, '.stan'))
+    stanmod <- get(mod_name, growmod::stanmodels)
     stan_mod <- rstan::sampling(object = stanmod,
                                 data = data_set,
                                 chains = n_chains,
@@ -509,15 +500,12 @@ growmod.default <- function(x,
     for (i in seq(along = model)) {
       cat(paste0('Fitting model ', i, ' of ', length(model), '.\n'))
       
-      # generate stan model
-      mod_file <- gen_mod_file(model = model[i],
-                               spline_params = spline_params,
-                               mod_file = NULL,
-                               include_pred = !is.null(predictors),
-                               include_block = !is.null(block))
-      
       # fit model
-      stanmod <- rstan::stan_model(file = mod_file)
+      mod_name <- paste(model,
+                        ifelse(is.null(predictors), 'nopred', 'pred'),
+                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        sep = '_')
+      stanmod <- get(mod_name, growmod::stanmodels)
       stan_mod <- rstan::sampling(object = stanmod,
                                   data = data_set[[i]],
                                   chains = n_chains,
