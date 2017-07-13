@@ -247,8 +247,8 @@ plot.growmod <- function(x, y, ...) {
               call. = FALSE)
     }
     x_plot <- data_tmp$age_plot
-    y_lims <- c(min(c(plot_data, data_tmp$size_data)),
-                max(c(plot_data, data_tmp$size_data)))
+    y_lims <- c(min(c(plot_data, data_tmp$size_data), na.rm = TRUE),
+                max(c(plot_data, data_tmp$size_data), na.rm = TRUE))
     plot(plot_data[, 1] ~ x_plot,
          type = 'l',
          las = 1,
@@ -296,7 +296,7 @@ plot.growmod_cv <- function(x, y, ...) {
 #' @describeIn plot.growmod plot fitted \code{"growmod_multi"} models
 #' @method plot growmod_multi
 #' @export
-plot.growmod_multi <- function(x, y, group_blocks = TRUE, ...) {
+plot.growmod_multi2 <- function(x, y, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
   noblock_mod <- any(sapply(x, function(x) length(x$data_set$block_data)) == 0)
   if ((group_blocks) & (!noblock_mod)) {
@@ -316,8 +316,8 @@ plot.growmod_multi <- function(x, y, group_blocks = TRUE, ...) {
                   call. = FALSE)
         }
         x_plot <- data_tmp$age_plot
-        y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])),
-                    max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])))
+        y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)]), na.rm = TRUE),
+                    max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)]), na.rm = TRUE))
         plot(plot_data[, 1] ~ x_plot,
              type = 'l',
              las = 1,
