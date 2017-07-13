@@ -447,7 +447,7 @@ growmod.default <- function(x,
     if (model != 'logistic3') {
       model_tmp <- model
     } else {
-      model_tmp <- 'threeparlogistic'
+      model_tmp <- 'threeparl'
     }
     mod_name <- paste(model_tmp,
                       ifelse(is.null(predictors), 'nopred', 'pred'),
@@ -509,7 +509,7 @@ growmod.default <- function(x,
       if (model[i] != 'logistic3') {
         model_tmp <- model[i]
       } else {
-        model_tmp <- 'threeparlogistic'
+        model_tmp <- 'threeparl'
       }
       mod_name <- paste(model_tmp,
                         ifelse(is.null(predictors), 'nopred', 'pred'),

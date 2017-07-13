@@ -121,7 +121,7 @@ validate.growmod <- function(x,
     if (x$model != 'logistic3') {
       model_tmp <- x$model
     } else {
-      model_tmp <- 'threeparlogistic'
+      model_tmp <- 'threeparl'
     }
     mod_name <- paste(model_tmp,
                       ifelse(is.null(predictors), 'nopred', 'pred'),
