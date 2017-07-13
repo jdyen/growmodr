@@ -213,9 +213,14 @@ plot.growmod <- function(x, y, ...) {
     for (i in 1:data_tmp$n_block) {
       row_id <- grep(paste0('plot\\[[[:digit:]]*,', i, '\\]'), rownames(mod_tmp))
       plot_data <- mod_tmp[row_id, c('mean', '2.5%', '50%', '97.5%')]
+      if (any(plot_data == Inf)) {
+        plot_data[which(plot_data == Inf)] <- NA
+        warning(paste0('Some fitted values for the ', x$model, ' model were Inf and have been removed'),
+                call. = FALSE)
+      }
       x_plot <- data_tmp$age_plot
-      y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])),
-                  max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])))
+      y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)]), na.rm = TRUE),
+                  max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)]), na.rm = TRUE))
       plot(plot_data[, 1] ~ x_plot,
            type = 'l',
            las = 1,
