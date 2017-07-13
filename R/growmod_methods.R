@@ -241,6 +241,11 @@ plot.growmod <- function(x, y, ...) {
   } else {
     row_id <- grep(paste0('plot\\['), rownames(mod_tmp))
     plot_data <- mod_tmp[row_id, c('mean', '2.5%', '50%', '97.5%')]
+    if (any(plot_data == Inf)) {
+      plot_data[which(plot_data == Inf)] <- NA
+      warning(paste0('Some fitted values for the ', x$model, ' model were Inf and have been removed'),
+              call. = FALSE)
+    }
     x_plot <- data_tmp$age_plot
     y_lims <- c(min(c(plot_data, data_tmp$size_data)),
                 max(c(plot_data, data_tmp$size_data)))
@@ -266,8 +271,13 @@ plot.growmod <- function(x, y, ...) {
 #' @method plot growmod_cv
 #' @export
 plot.growmod_cv <- function(x, y, ...) {
-  min_val <- min(0, min(x$size_real), min(x$size_pred))
-  max_val <- max(max(x$size_real), max(x$size_pred))
+  if (any(x$size_pred == Inf)) {
+    x$size_pred[which(x$size_pred == Inf)] <- NA
+  }
+  min_val <- min(0, min(x$size_real, na.rm = TRUE),
+                 min(x$size_pred, na.rm = TRUE))
+  max_val <- max(max(x$size_real, na.rm = TRUE),
+                 max(x$size_pred, na.rm = TRUE))
   plot(x$size_real, x$size_pred,
        pch = 16,
        las = 1,
@@ -300,6 +310,11 @@ plot.growmod_multi <- function(x, y, group_blocks = TRUE, ...) {
         data_tmp <- extract_data[[j]]
         row_id <- grep(paste0('plot\\[[[:digit:]]*,', i, '\\]'), rownames(mod_tmp))
         plot_data <- mod_tmp[row_id, c('mean', '2.5%', '50%', '97.5%')]
+        if (any(plot_data == Inf)) {
+          plot_data[which(plot_data == Inf)] <- NA
+          warning(paste0('Some fitted values for the ', x$model, ' model were Inf and have been removed'),
+                  call. = FALSE)
+        }
         x_plot <- data_tmp$age_plot
         y_lims <- c(min(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])),
                     max(c(plot_data, data_tmp$size_data[which(data_tmp$block_data == i)])))
