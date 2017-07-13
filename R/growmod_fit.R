@@ -444,7 +444,12 @@ growmod.default <- function(x,
   # fit models; loop over multiple models if required
   if (length(model) == 1) {
     # fit model
-    mod_name <- paste(model,
+    if (model != 'logistic3') {
+      model_tmp <- model
+    } else {
+      model_tmp <- 'threeparlogistic'
+    }
+    mod_name <- paste(model_tmp,
                       ifelse(is.null(predictors), 'nopred', 'pred'),
                       ifelse(is.null(block), 'onemod', 'blockmod'),
                       sep = '_')
@@ -501,7 +506,12 @@ growmod.default <- function(x,
       cat(paste0('Fitting ', model[i],' model (model ', i, ' of ', length(model), ').\n'))
       
       # fit model
-      mod_name <- paste(model[i],
+      if (model[i] != 'logistic3') {
+        model_tmp <- model[i]
+      } else {
+        model_tmp <- 'threeparlogistic'
+      }
+      mod_name <- paste(model_tmp,
                         ifelse(is.null(predictors), 'nopred', 'pred'),
                         ifelse(is.null(block), 'onemod', 'blockmod'),
                         sep = '_')

@@ -118,8 +118,16 @@ validate.growmod <- function(x,
   if (!is.null(x$stanmod)) {
     mod_compiled <- x$stanmod
   } else {
-    cat('Compiling Stan model; this could take a minute or two\n')
-    mod_compiled <- rstan::stan_model(file = x$mod_file)
+    if (x$model != 'logistic3') {
+      model_tmp <- x$model
+    } else {
+      model_tmp <- 'threeparlogistic'
+    }
+    mod_name <- paste(model_tmp,
+                      ifelse(is.null(predictors), 'nopred', 'pred'),
+                      ifelse(is.null(block), 'onemod', 'blockmod'),
+                      sep = '_')
+    mod_compiled <- get(mod_name, growmod:::stanmodels)
   }
   
   # set sampling details
