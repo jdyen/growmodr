@@ -296,7 +296,7 @@ plot.growmod_cv <- function(x, y, ...) {
 #' @describeIn plot.growmod plot fitted \code{"growmod_multi"} models
 #' @method plot growmod_multi
 #' @export
-plot.growmod_multi2 <- function(x, y, group_blocks = TRUE, ...) {
+plot.growmod_multi <- function(x, y, group_blocks = TRUE, ...) {
   old_mfrow <- par()$mfrow
   noblock_mod <- any(sapply(x, function(x) length(x$data_set$block_data)) == 0)
   if ((group_blocks) & (!noblock_mod)) {
