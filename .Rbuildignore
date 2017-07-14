@@ -1,0 +1,7 @@
+cleanup*
+Readme.md
+.git*
+tests/*
+.Rhistory
+
+
