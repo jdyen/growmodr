@@ -37,5 +37,5 @@ after_success:
   - travis_wait 40 Rscript -e 'covr::codecov()'
 
 after_failure:
-  - cat growmod.Rcheck/00*
+  - cat growmod.Rcheck/00install.out
 
