@@ -21,22 +21,22 @@ BugReports: https://github.com/jdyen/growmod/issues
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 3.02),
-    Rcpp (>= 0.12.0),
+    R (>= 3.0),
+    Rcpp (>= 0.12),
     methods
 Imports:
-    rstan (>= 2.15.1),
-    rstantools (>= 1.2.0),
-    loo (>= 1.1.0),
+    rstan (>= 2.15),
+    rstantools (>= 1.2),
+    loo (>= 1.1),
     splines,
     graphics,
     stats,
     splines2
-LinkingTo: StanHeaders (>= 2.15.0.1),
-           rstan (>= 2.15.1),
-           BH (>= 1.62.0.1),
-           Rcpp (>= 0.12.11),
-           RcppEigen (>= 0.3.3.3.0)
+LinkingTo: StanHeaders (>= 2.15),
+           rstan (>= 2.15),
+           BH (>= 1.62),
+           Rcpp (>= 0.12),
+           RcppEigen (>= 0.3)
 NeedsCompilation: yes
 RoxygenNote: 6.0.1
 
