@@ -162,7 +162,13 @@ validate.growmod <- function(x,
       }
     } else {
       if (is.numeric(n_cv)) {
-        n_cv <- ifelse(n_cv > x$data_set$n, n, n_cv)
+        if (length(x$data_set$block_data)) {
+          n_cv <- ifelse(n_cv > x$data_set$n_block,
+                         x$data_set$n_block,
+                         n_cv)
+        } else {
+          n_cv <- ifelse(n_cv > x$data_set$n, n, n_cv)
+        }
         cat(paste0('Performing ', n_cv, '-fold cross validation\n'))
       } else {
         stop('n_cv must specify a number of folds or be set to "loo" for model validation',
