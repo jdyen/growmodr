@@ -89,7 +89,7 @@ Several applications of growth curve modelling to ecology are:
 
 Thomas, F.M. and Vesk, P.A. (2017) Are trait-growth models transferable? Predicting multi-species growth trajectories between ecosystems using plant functional traits. PLoS ONE 12(5): e0176959.
 
-Thomas, F.M. and Vesk, P.A. (to appear) Height growth in woody plants examined with a trait-based model. Austral Ecology.
+Thomas, F.M. and Vesk, P.A. (in press) Height growth in woody plants examined with a trait-based model. Austral Ecology. DOI: 10.1111/aec.12501.
 
 *****
 
