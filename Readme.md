@@ -42,7 +42,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 # install the current version of growmod
-devtools::install_github("jdyen/growmod")
+devtools::install_github("jdyen/growmod", args = "--preclean")
 ```
 
 *****
