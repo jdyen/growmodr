@@ -153,6 +153,10 @@ validate.growmod <- function(x,
       cat('Performing model validation based on', deparse(substitute(test_data)),'\n')
     }
   } else {
+    if (n_cv == 1) {
+      stop('n_cv must be greater than one',
+           call. = FALSE)
+    }
     if (n_cv == 'loo') {
       if (length(x$data_set$block_data)) {
         n_cv <- x$data_set$n_block
