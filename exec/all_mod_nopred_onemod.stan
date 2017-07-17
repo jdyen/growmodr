@@ -11,9 +11,9 @@ data {
       
 parameters {
   real<lower=0> sigma_obs;
-  vector<lower=0> h1;
-  vector<lower=0> h2;
-  vector<lower=0> h3;
+  real<lower=0> h1;
+  real<lower=0> h2;
+  real<lower=0> h3;
 }
       
 transformed parameters {
@@ -21,49 +21,51 @@ transformed parameters {
   real<lower=0> h1_holdout;
   real<lower=0> h2_holdout;
   real<lower=0> h3_holdout;
-  if (model_id == 1) { 
-    for (i in 1:n)   // archibold
+  for (i in 1:n) {
+    if (model_id == 1) { 
+      // archibold
       mu[i] =  h1 / (h2 + (h3 ^ age[i]));
-  }
-  if (model_id == 2) { 
-    for (i in 1:n)   // hillslope
-      mu[i] =  h1 / (1 + exp(- * (age[i] - h3)));
-  }
-  if (model_id == 3) { 
-    for (i in 1:n)   // hillslope_log
+    }
+    if (model_id == 2) { 
+      // hillslope
+      mu[i] =  h1 / (1 + exp(-h2 * (age[i] - h3)));
+    }
+    if (model_id == 3) { 
+      // hillslope_log
       mu[i] =  h1 / (1 + exp(-h2 * (log(age[i]) - h3)));
-  }
-  if (model_id == 4) { 
-    for (i in 1:n)   // expo
+    }
+    if (model_id == 4) { 
+      // expo
       mu[i] =  h1 + (h2 * log(age[i]));
-  }
-  if (model_id == 5) { 
-    for (i in 1:n)   // koblog
+    }
+    if (model_id == 5) { 
+      // koblog
       mu[i] =  h1 * log(1 + (age[i] / h2));
-  }
-  if (model_id == 6) { 
-    for (i in 1:n)   // logistic3
+    }
+    if (model_id == 6) { 
+      // logistic3
       mu[i] =  h1 / (1 + exp(-h2 * age[i] + h3));
-  }
-  if (model_id == 7) { 
-    for (i in 1:n)   // monod
+    }
+    if (model_id == 7) { 
+      // monod
       mu[i] =  h1 * (age[i] / (h2 + age[i]));
-  }
-  if (model_id == 8) { 
-    for (i in 1:n)   // neg_exp
+    }
+    if (model_id == 8) { 
+      // neg_exp
       mu[i] =  h1 * (1 - exp(-h2 * age[i]));
-  }
-  if (model_id == 9) { 
-    for (i in 1:n)   // power2
+    }
+    if (model_id == 9) { 
+      // power2
       mu[i] =  h1 * (age[i] ^ h2);
-  }
-  if (model_id == 10) { 
-    for (i in 1:n)   // power3
+    }
+    if (model_id == 10) { 
+      // power3
       mu[i] =  h1 * (age[i] ^ (h2 - (h3 / age[i])));
-  }
-  if (model_id == 11) { 
-    for (i in 1:n)   // weibull3
+    }
+    if (model_id == 11) { 
+      // weibull3
       mu[i] =  h1 * (1 - exp(-h2 * (age[i] ^ h3)));
+    }
   }
   h1_holdout = h1;
   h2_holdout = h2;
@@ -77,13 +79,13 @@ model {
   h2 ~ normal(0.0, 2.0);
   h3 ~ normal(0.0, 2.0);
 }
-      
+
 generated quantities {
-  matrix[n_plot] mu_plot_growth;
-  matrix[n_plot] mu_plot_agr;
+  vector[n_plot] mu_plot_growth;
+  vector[n_plot] mu_plot_agr;
   vector[n_pred] mu_pred;
-  matrix<lower=0>[n_plot] size_plot;
-  matrix<lower=0>[n_plot] size_plot_agr;
+  vector<lower=0>[n_plot] size_plot;
+  vector<lower=0>[n_plot] size_plot_agr;
   vector<lower=0>[n_pred] size_pred;
   vector[n] log_lik;
 
@@ -201,4 +203,3 @@ generated quantities {
   for (i in 1:n)
     log_lik[i] = normal_lpdf(log(size_data[i]) | mu[i], sigma_obs);
 }
-
