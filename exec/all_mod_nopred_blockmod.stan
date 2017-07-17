@@ -100,9 +100,9 @@ model {
   h1 ~ normal(psi1, sd_h1);
   h2 ~ normal(psi2, sd_h2);
   h3 ~ normal(psi3, sd_h3);
-  h1_holdout ~ normal(psi1_pred, sd_h1);
-  h2_holdout ~ normal(psi2_pred, sd_h2);
-  h3_holdout ~ normal(psi3_pred, sd_h3);
+  h1_holdout ~ normal(psi_mean1, sd_h1);
+  h2_holdout ~ normal(psi_mean2, sd_h2);
+  h3_holdout ~ normal(psi_mean3, sd_h3);
   sd_h1 ~ normal(0.0, 2.0);
   sd_h2 ~ normal(0.0, 2.0);
   sd_h3 ~ normal(0.0, 2.0);
