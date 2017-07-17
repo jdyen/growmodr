@@ -1,5 +1,6 @@
 data {
   int<lower=0> model_id;
+  int<lower=0> model_type;
   int<lower=0> n;
   int<lower=0> n_pred;
   int<lower=0> n_block;
@@ -123,21 +124,122 @@ generated quantities {
   matrix<lower=0>[n_plot, n_block] size_plot_agr;
   vector<lower=0>[n_pred] size_pred;
   vector[n] log_lik;
-      
-  for (i in 1:n_plot)
-    for (j in 1:n_block)
-      mu_plot_growth[i, j] =  h1[j] / (h2[j] + (h3[j] ^ age_plot[i]));
+
+  for (i in 1:n_plot) {
+    for (j in 1:n_block) {
+      if (model_id == 1) {   // archibold
+        mu_plot_growth[i, j] =  h1[j] / (h2[j] + (h3[j] ^ age_plot[i]));
+      }
+      if (model_id == 2) {   // hillslope
+        mu_plot_growth[i, j] =  h1[j] / (1 + exp(-h2[j] * (age_plot[i] - h3[j])));
+      }
+      if (model_id == 3) {   // hillslope_log
+        mu_plot_growth[i, j] =  h1[j] / (1 + exp(-h2[j] * (log(age_plot[i]) - h3[j])));
+      }
+      if (model_id == 4) {   // expo
+        mu_plot_growth[i, j] =  h1[j] + (h2[j] * log(age_plot[i]));
+      }
+      if (model_id == 5) {   // koblog
+        mu_plot_growth[i, j] =  h1[j] * log(1 + (age_plot[i] / h2[j]));
+      }
+      if (model_id == 6) {   // logistic3
+        mu_plot_growth[i, j] =  h1[j] / (1 + exp(-h2[j] * age_plot[i] + h3[j]));
+      }
+      if (model_id == 7) {   // monod
+        mu_plot_growth[i, j] =  h1[j] * (age_plot[i] / (h2[j] + age_plot[i]));
+      }
+      if (model_id == 8) {   // neg_exp
+        mu_plot_growth[i, j] =  h1[j] * (1 - exp(-h2[j] * age_plot[i]));
+      }
+      if (model_id == 9) {   // power2
+        mu_plot_growth[i, j] =  h1[j] * (age_plot[i] ^ h2[j]);
+      }
+      if (model_id == 10) {   // power3
+        mu_plot_growth[i, j] =  h1[j] * (age_plot[i] ^ (h2[j] - (h3[j] / age_plot[i])));
+      }
+      if (model_id == 11) {   // weibull3
+        mu_plot_growth[i, j] =  h1[j] * (1 - exp(-h2[j] * (age_plot[i] ^ h3[j])));
+      }
+    }
+  }
   for (i in 1:n_plot)
     for (j in 1:n_block)
       size_plot[i, j] = exp(mu_plot_growth[i, j]);
-  for (i in 1:n_plot)
-    for (j in 1:n_block)
-      mu_plot_agr[i, j] =  -h1[j] * (h3[j] ^ age_plot[i]) * log(h3[j]) / ((h2[j] + (h3[j] ^ age_plot[i])) ^ 2);
+  for (i in 1:n_plot) {
+    for (j in 1:n_block) {
+      if (model_id == 1) {   // archibold
+        mu_plot_agr[i, j] =  -h1[j] * (h3[j] ^ age_plot[i]) * log(h3[j]) / ((h2[j] + (h3[j] ^ age_plot[i])) ^ 2);
+      }
+      if (model_id == 2) {   // hillslope
+        mu_plot_agr[i, j] =  mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (age_plot[i] - h3[j]))) / (1 + exp(-h2[j] * (age_plot[i] - h3[j]))));
+      }
+      if (model_id == 3) {   // hillslope_log
+        mu_plot_agr[i, j] =  mu_plot_growth[i, j] * (h2[j] * (exp(-h2[j] * (log(age_plot[i]) - h3[j]))) / (1 + exp(-h2[j] * (log(age_plot[i]) - h3[j]))));
+      }
+      if (model_id == 4) {   // expo
+        mu_plot_agr[i, j] =  h2[j] / age_plot[i];
+      }
+      if (model_id == 5) {   // koblog
+        mu_plot_agr[i, j] =  h1[j] / (h2[j] + age_plot[i]);
+      }
+      if (model_id == 6) {   // logistic3
+        mu_plot_agr[i, j] =  h2[j] * h1[j] / (2 * cosh(h3[j] - h2[j] * age_plot[i]) + 2);
+      }
+      if (model_id == 7) {   // monod
+        mu_plot_agr[i, j] =  h1[j] * (h2[j] / ((h2[j] + age_plot[i]) ^ 2));
+      }
+      if (model_id == 8) {   // neg_exp
+        mu_plot_agr[i, j] =  h1[j] * h2[j] * exp(-h2[j] * age_plot[i]);
+      }
+      if (model_id == 9) {   // power2
+        mu_plot_agr[i, j] =  h1[j] * h2[j] * (age_plot[i] ^ (h2[j] - 1));
+      }
+      if (model_id == 10) {   // power3
+        mu_plot_agr[i, j] =  mu_plot_growth[i, j] * (((h2[j] - (h3[j] / age_plot[i])) / age_plot[i]) + (h3[j] * log(age_plot[i])) / (age_plot[i] ^ 2));
+      }
+      if (model_id == 11) {   // weibull3
+        mu_plot_agr[i, j] =  h1[j] * h2[j] * h3[j] * (age_plot[i] ^ (h3[j] - 1)) * exp(-h2[j] * (age_plot[i] ^ h3[j]));
+      }
+    }
+  }
   for (i in 1:n_plot)
     for (j in 1:n_block)
       size_plot_agr[i, j] = exp(mu_plot_agr[i, j]);
-  for (i in 1:n_pred)
-    mu_pred[i] =  h1_holdout[block_holdout[i]] / (h2_holdout[block_holdout[i]] + (h3_holdout[block_holdout[i]] ^ age_holdout[i, 1]));
+  for (i in 1:n_pred) {
+    if (model_id == 1) {   // archibold
+      mu_pred[i] =  h1_holdout[block_holdout[i]] / (h2_holdout[block_holdout[i]] + (h3_holdout[block_holdout[i]] ^ age_holdout[i, 1]));
+    }
+    if (model_id == 2) {   // hillslope
+      mu_pred[i] =  h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (age_holdout[i, 1] - h3_holdout[block_holdout[i]])));
+    }
+    if (model_id == 3) {   // hillslope_log
+      mu_pred[i] =  h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * (log(age_holdout[i, 1]) - h3_holdout[block_holdout[i]])));
+    }
+    if (model_id == 4) {   // expo
+      mu_pred[i] =  h1_holdout[block_holdout[i]] + (h2_holdout[block_holdout[i]] * log(age_holdout[i, 1]));
+    }
+    if (model_id == 5) {   // koblog
+      mu_pred[i] =  h1_holdout[block_holdout[i]] * log(1 + (age_holdout[i, 1] / h2_holdout[block_holdout[i]]));
+    }
+    if (model_id == 6) {   // logistic3
+      mu_pred[i] =  h1_holdout[block_holdout[i]] / (1 + exp(-h2_holdout[block_holdout[i]] * age_holdout[i, 1] + h3_holdout[block_holdout[i]]));
+    }
+    if (model_id == 7) {   // monod
+      mu_pred[i] =  h1_holdout[block_holdout[i]] * (age_holdout[i, 1] / (h2_holdout[block_holdout[i]] + age_holdout[i, 1]));
+    }
+    if (model_id == 8) {   // neg_exp
+      mu_pred[i] =  h1_holdout[block_holdout[i]] * (1 - exp(-h2_holdout[block_holdout[i]] * age_holdout[i, 1]));
+    }
+    if (model_id == 9) {   // power2
+      mu_pred[i] =  h1_holdout[block_holdout[i]] * (age_holdout[i, 1] ^ h2_holdout[block_holdout[i]]);
+    }
+    if (model_id == 10) {   // power3
+      mu_pred[i] =  h1_holdout[block_holdout[i]] * (age_holdout[i, 1] ^ (h2_holdout[block_holdout[i]] - (h3_holdout[block_holdout[i]] / age_holdout[i, 1])));
+    }
+    if (model_id == 11) {   // weibull3
+      mu_pred[i] =  h1_holdout[block_holdout[i]] * (1 - exp(-h2_holdout[block_holdout[i]] * (age_holdout[i, 1] ^ h3_holdout[block_holdout[i]])));
+    }
+  }
   for (i in 1:n_pred)
     size_pred[i] = exp(mu_pred[i]);
   for (i in 1:n)

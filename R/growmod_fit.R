@@ -444,15 +444,30 @@ growmod.default <- function(x,
   # fit models; loop over multiple models if required
   if (length(model) == 1) {
     # fit model
-    if (model != 'logistic3') {
-      model_tmp <- model
+    if (model != 'spline') {
+      mod_id <- switch(model,
+                       'archibold' = 1,
+                       'hillslope' = 2,
+                       'hillslope_log' = 3,
+                       'expo' = 4,
+                       'koblog' = 5,
+                       'logistic3' = 6,
+                       'monod' = 7,
+                       'neg_exp' = 8,
+                       'power2' = 9,
+                       'power3' = 10,
+                       'weibull3' = 11)
+      data_set$model_id <- mod_id
+      mod_name <- paste('all_mod',
+                        ifelse(is.null(predictors), 'nopred', 'pred'),
+                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        sep = '_')
     } else {
-      model_tmp <- 'threeparl'
+      mod_name <- paste('spline',
+                        ifelse(is.null(predictors), 'nopred', 'pred'),
+                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        sep = '_')
     }
-    mod_name <- paste(model_tmp,
-                      ifelse(is.null(predictors), 'nopred', 'pred'),
-                      ifelse(is.null(block), 'onemod', 'blockmod'),
-                      sep = '_')
     stanmod <- get(mod_name, growmod:::stanmodels)
     stan_mod <- rstan::sampling(object = stanmod,
                                 data = data_set,
