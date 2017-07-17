@@ -488,6 +488,11 @@ growmod.default <- function(x,
     rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
     md <- round(mean((fitted_vals - data_set$size_data)), 3)
 
+    # remove excess params from two par models
+    if (num_params == 2) {
+      cat('do something here\n')
+    }
+    
     # put outputs into a named list
     mod <- list(fitted = fitted_vals,
                 r2 = r2,
@@ -521,15 +526,30 @@ growmod.default <- function(x,
       cat(paste0('Fitting ', model[i],' model (model ', i, ' of ', length(model), ').\n'))
       
       # fit model
-      if (model[i] != 'logistic3') {
-        model_tmp <- model[i]
+      if (model[i] != 'spline') {
+        mod_id <- switch(model[i],
+                         'archibold' = 1,
+                         'hillslope' = 2,
+                         'hillslope_log' = 3,
+                         'expo' = 4,
+                         'koblog' = 5,
+                         'logistic3' = 6,
+                         'monod' = 7,
+                         'neg_exp' = 8,
+                         'power2' = 9,
+                         'power3' = 10,
+                         'weibull3' = 11)
+        data_set$model_id <- mod_id
+        mod_name <- paste('all_mod',
+                          ifelse(is.null(predictors), 'nopred', 'pred'),
+                          ifelse(is.null(block), 'onemod', 'blockmod'),
+                          sep = '_')
       } else {
-        model_tmp <- 'threeparl'
+        mod_name <- paste('spline',
+                          ifelse(is.null(predictors), 'nopred', 'pred'),
+                          ifelse(is.null(block), 'onemod', 'blockmod'),
+                          sep = '_')
       }
-      mod_name <- paste(model_tmp,
-                        ifelse(is.null(predictors), 'nopred', 'pred'),
-                        ifelse(is.null(block), 'onemod', 'blockmod'),
-                        sep = '_')
       stanmod <- get(mod_name, growmod:::stanmodels)
       stan_mod <- rstan::sampling(object = stanmod,
                                   data = data_set[[i]],
@@ -549,6 +569,11 @@ growmod.default <- function(x,
       r2 <- round(cor(fitted_vals, data_set[[i]]$size_data) ** 2, 3)
       rmsd <- round(sqrt(mean((fitted_vals - data_set[[i]]$size_data) ** 2)), 3)
       md <- round(mean((fitted_vals - data_set[[i]]$size_data)), 3)
+      
+      # remove excess params from two par models
+      if (num_params[i] == 2) {
+        cat(paste0('model run', i, ': do something here\n')
+      }
       
       mod[[i]] <- list(fitted = fitted_vals,
                        r2 = r2,
