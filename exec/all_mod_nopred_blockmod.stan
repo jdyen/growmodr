@@ -15,6 +15,9 @@ data {
       
 parameters {
   real<lower=0> sigma_obs;
+  vector[n_block] psi1;
+  vector[n_block] psi2;
+  vector[n_block] psi3;
   real<lower=0> block_sd1;
   real<lower=0> block_sd2;
   real<lower=0> block_sd3;
@@ -34,49 +37,51 @@ parameters {
       
 transformed parameters {
   vector[n] mu;
-  if (model_id == 1) { 
-    for (i in 1:n)   // archibold
+  for (i in 1:n) {   
+    if (model_id == 1) {
+      // archibold
       mu[i] =  h1[block_data[i]] / (h2[block_data[i]] + (h3[block_data[i]] ^ age[i]));
-  }
-  if (model_id == 2) { 
-    for (i in 1:n)   // hillslope
+    }
+    if (model_id == 2) {
+      // hillslope
       mu[i] =  h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (age[i] - h3[block_data[i]])));
-  }
-  if (model_id == 3) { 
-    for (i in 1:n)   // hillslope_log
+    }
+    if (model_id == 3) {
+      // hillslope_log
       mu[i] =  h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * (log(age[i]) - h3[block_data[i]])));
-  }
-  if (model_id == 4) { 
-    for (i in 1:n)   // expo
+    }
+    if (model_id == 4) { 
+      // expo
       mu[i] =  h1[block_data[i]] + (h2[block_data[i]] * log(age[i]));
-  }
-  if (model_id == 5) { 
-    for (i in 1:n)   // koblog
+    }
+    if (model_id == 5) { 
+      // koblog
       mu[i] =  h1[block_data[i]] * log(1 + (age[i] / h2[block_data[i]]));
-  }
-  if (model_id == 6) { 
-    for (i in 1:n)   // logistic3
+    }
+    if (model_id == 6) { 
+      // logistic3
       mu[i] =  h1[block_data[i]] / (1 + exp(-h2[block_data[i]] * age[i] + h3[block_data[i]]));
-  }
-  if (model_id == 7) { 
-    for (i in 1:n)   // monod
+    }
+    if (model_id == 7) { 
+      // monod
       mu[i] =  h1[block_data[i]] * (age[i] / (h2[block_data[i]] + age[i]));
-  }
-  if (model_id == 8) { 
-    for (i in 1:n)   // neg_exp
+    }
+    if (model_id == 8) { 
+      // neg_exp
       mu[i] =  h1[block_data[i]] * (1 - exp(-h2[block_data[i]] * age[i]));
-  }
-  if (model_id == 9) { 
-    for (i in 1:n)   // power2
+    }
+    if (model_id == 9) { 
+      // power2
       mu[i] =  h1[block_data[i]] * (age[i] ^ h2[block_data[i]]);
-  }
-  if (model_id == 10) { 
-    for (i in 1:n)   // power3
+    }
+    if (model_id == 10) { 
+      // power3
       mu[i] =  h1[block_data[i]] * (age[i] ^ (h2[block_data[i]] - (h3[block_data[i]] / age[i])));
-  }
-  if (model_id == 11) { 
-    for (i in 1:n)   // weibull3
+    }
+    if (model_id == 11) { 
+      // weibull3
       mu[i] =  h1[block_data[i]] * (1 - exp(-h2[block_data[i]] * (age[i] ^ h3[block_data[i]])));
+    }
   }
 }
       
