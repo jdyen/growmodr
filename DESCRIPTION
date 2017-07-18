@@ -39,4 +39,5 @@ LinkingTo: StanHeaders (>= 2.15),
            RcppEigen (>= 0.3)
 NeedsCompilation: yes
 RoxygenNote: 6.0.1
-Suggests: testthat
+Suggests: testthat,
+    covr

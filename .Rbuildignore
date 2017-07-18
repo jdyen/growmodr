@@ -11,3 +11,4 @@ LICENSE$
 ^\cleanup*
 ^inst/doc/[A-Za-z0-9\-_]+[.]txt$
 
+^codecov\.yml$
