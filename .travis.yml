@@ -12,8 +12,23 @@ r_github_packages:
   - jimhester/covr
 
 env:
+  global:
+    - CRAN: http://cran.rstudio.com
   matrix:
     - CXX_OLEVEL=2 CXX=clang++
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5']
+      env:
+        - COMPILER=g++-5
+        - CC=gcc=5
+        - CXX=g++-5
 
 before_install:
   - mkdir -p ~/.R/
