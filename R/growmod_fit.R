@@ -488,9 +488,24 @@ growmod.default <- function(x,
     rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
     md <- round(mean((fitted_vals - data_set$size_data)), 3)
 
+    # generate rstan summary
+    stan_summary <- rstan::summary(stan_mod)$summary
+
     # remove excess params from two par models
     if (num_params == 2) {
-      cat('do something here; remove x3 nx_3 and b3, psi3 etc from data set and fitted pars \n')
+      stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
+      stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
+      stan_summary <- stan_summary[-grep('sd_h3', rownames(stan_summary)), ]
+      stan_summary <- stan_summary[-grep('h3_holdout', rownames(stan_summary)), ]
+      stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
+      stan_summary <- stan_summary[-grep('psi3_pred', rownames(stan_summary)), ]
+    }
+    
+    # remove third predictor term for two param models
+    if ((num_params == 2) & (model != 'spline')) {
+      data_set$x3 <- NULL
+      data_set$n_x3 <- NULL
+      data_set$x3_pred <- NULL
     }
     
     # put outputs into a named list
@@ -500,7 +515,7 @@ growmod.default <- function(x,
                 md = md,
                 loo = loo,
                 waic = waic,
-                stan_summary = rstan::summary(stan_mod)$summary,
+                stan_summary = stan_summary,
                 data_set = data_set,
                 predictors = pred_set,
                 model = model,
@@ -570,9 +585,24 @@ growmod.default <- function(x,
       rmsd <- round(sqrt(mean((fitted_vals - data_set[[i]]$size_data) ** 2)), 3)
       md <- round(mean((fitted_vals - data_set[[i]]$size_data)), 3)
       
+      # generate rstan summary
+      stan_summary <- rstan::summary(stan_mod)$summary
+      
       # remove excess params from two par models
-      if (num_params[i] == 2) {
-        cat(paste0('model run', i, ': do something here\n'))
+      if (num_params == 2) {
+        stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
+        stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
+        stan_summary <- stan_summary[-grep('sd_h3', rownames(stan_summary)), ]
+        stan_summary <- stan_summary[-grep('h3_holdout', rownames(stan_summary)), ]
+        stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
+        stan_summary <- stan_summary[-grep('psi3_pred', rownames(stan_summary)), ]
+      }
+
+      # remove third predictor term for two param models
+      if ((num_params == 2) & (model != 'spline')) {
+        data_set[[i]]$x3 <- NULL
+        data_set[[i]]$n_x3 <- NULL
+        data_set[[i]]$x3_pred <- NULL
       }
       
       mod[[i]] <- list(fitted = fitted_vals,
@@ -581,7 +611,7 @@ growmod.default <- function(x,
                        md = md,
                        loo = loo,
                        waic = waic,
-                       stan_summary = rstan::summary(stan_mod)$summary,
+                       stan_summary = stan_summary,
                        data_set = data_set[[i]],
                        predictors = pred_set[[i]],
                        model = model[i],

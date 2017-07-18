@@ -118,15 +118,30 @@ validate.growmod <- function(x,
   if (!is.null(x$stanmod)) {
     mod_compiled <- x$stanmod
   } else {
-    if (x$model != 'logistic3') {
-      model_tmp <- x$model
+    if (model != 'spline') {
+      mod_id <- switch(model[i],
+                       'archibold' = 1,
+                       'hillslope' = 2,
+                       'hillslope_log' = 3,
+                       'expo' = 4,
+                       'koblog' = 5,
+                       'logistic3' = 6,
+                       'monod' = 7,
+                       'neg_exp' = 8,
+                       'power2' = 9,
+                       'power3' = 10,
+                       'weibull3' = 11)
+      data_set$model_id <- mod_id
+      mod_name <- paste('all_mod',
+                        ifelse(is.null(predictors), 'nopred', 'pred'),
+                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        sep = '_')
     } else {
-      model_tmp <- 'threeparl'
+      mod_name <- paste('spline',
+                        ifelse(is.null(predictors), 'nopred', 'pred'),
+                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        sep = '_')
     }
-    mod_name <- paste(model_tmp,
-                      ifelse(is.null(predictors), 'nopred', 'pred'),
-                      ifelse(is.null(block), 'onemod', 'blockmod'),
-                      sep = '_')
     mod_compiled <- get(mod_name, growmod:::stanmodels)
   }
   
@@ -253,6 +268,14 @@ validate.growmod <- function(x,
                       index = index_data,
                       block = block_data,
                       predictors = predictors)
+    
+    # add third predictor variable for two param models
+    if ((num_params == 2) & (model != 'spline')) {
+      train_data$data_set$x3 <- train_data$data_set$x2
+      train_data$data_set$n_x3 <- train_data$data_set$n_x2
+      train_data$data_set$x3_pred <- train_data$data_set$x2_pred
+    }
+    
     pred_test <- predict_internal(mod_compiled = mod_compiled,
                                   train_data = train_data,
                                   test_data = test_data,
