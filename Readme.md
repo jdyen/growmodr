@@ -6,8 +6,8 @@ Copyright &copy; 2017, Jian Yen
 
 *****
 
-[![Coverage Status](https://img.shields.io/codecov/c/github/jdyen/growmod/master.svg)](https://codecov.io/github/jdyen/growmod?branch=master)
 [![Build Status](https://travis-ci.org/jdyen/growmod.svg?branch=collapse-mods)](https://travis-ci.org/jdyen/growmod)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jdyen/growmod/master.svg)](https://codecov.io/github/jdyen/growmod?branch=master)
 
 ## License details
 Licensed under the Apache License, Version 2.0 (the "License");
