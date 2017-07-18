@@ -13,7 +13,7 @@ r_github_packages:
 
 env:
   matrix:
-    - CXX_OLEVEL=s CXX=clang++
+    - CXX_OLEVEL=2 CXX=clang++
 
 before_install:
   - mkdir -p ~/.R/
