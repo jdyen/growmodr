@@ -3,6 +3,7 @@ sudo: required
 warnings_are_errors: false
 r: devel
 cache: packages
+dist: trusty
 
 latex: true
 r_build_args: '--no-build-vignettes'
@@ -12,8 +13,10 @@ r_github_packages:
   - jimhester/covr
 
 env:
+  global:
+    - CRAN: http://cran.rstudio.com
   matrix:
-    - CXX_OLEVEL=s CXX=clang++
+    - CXX_OLEVEL=2 CXX=clang++
 
 before_install:
   - mkdir -p ~/.R/
