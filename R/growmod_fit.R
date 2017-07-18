@@ -572,7 +572,7 @@ growmod.default <- function(x,
       
       # remove excess params from two par models
       if (num_params[i] == 2) {
-        cat(paste0('model run', i, ': do something here\n')
+        cat(paste0('model run', i, ': do something here\n'))
       }
       
       mod[[i]] <- list(fitted = fitted_vals,
