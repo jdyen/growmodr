@@ -119,19 +119,6 @@ validate.growmod <- function(x,
     mod_compiled <- x$stanmod
   } else {
     if (model != 'spline') {
-      mod_id <- switch(model[i],
-                       'archibold' = 1,
-                       'hillslope' = 2,
-                       'hillslope_log' = 3,
-                       'expo' = 4,
-                       'koblog' = 5,
-                       'logistic3' = 6,
-                       'monod' = 7,
-                       'neg_exp' = 8,
-                       'power2' = 9,
-                       'power3' = 10,
-                       'weibull3' = 11)
-      data_set$model_id <- mod_id
       mod_name <- paste('all_mod',
                         ifelse(is.null(predictors), 'nopred', 'pred'),
                         ifelse(is.null(block), 'onemod', 'blockmod'),
@@ -489,6 +476,20 @@ stan_cv_internal <- function(i,
                           n_plot = 10,
                           test_data = test_data)
 
+  mod_id <- switch(model,
+                   'archibold' = 1,
+                   'hillslope' = 2,
+                   'hillslope_log' = 3,
+                   'expo' = 4,
+                   'koblog' = 5,
+                   'logistic3' = 6,
+                   'monod' = 7,
+                   'neg_exp' = 8,
+                   'power2' = 9,
+                   'power3' = 10,
+                   'weibull3' = 11)
+  data_cv$model_id <- mod_id
+
   # fit model and sample predicted values
   stan_mod <- rstan::sampling(object = mod_compiled,
                               data = data_cv,
@@ -545,6 +546,20 @@ predict_internal <- function(mod_compiled, train_data, test_data,
                           spline_params = spline_params,
                           n_plot = 10,
                           test_data = test_data_tmp)
+  
+  mod_id <- switch(model,
+                   'archibold' = 1,
+                   'hillslope' = 2,
+                   'hillslope_log' = 3,
+                   'expo' = 4,
+                   'koblog' = 5,
+                   'logistic3' = 6,
+                   'monod' = 7,
+                   'neg_exp' = 8,
+                   'power2' = 9,
+                   'power3' = 10,
+                   'weibull3' = 11)
+  data_cv$model_id <- mod_id
   
   # fit model just to training set
   stan_mod <- rstan::sampling(object = mod_compiled,

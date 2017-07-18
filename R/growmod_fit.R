@@ -508,6 +508,11 @@ growmod.default <- function(x,
       data_set$x3_pred <- NULL
     }
     
+    # remove unnecessary variables from data set
+    data_set$x1_pred <- NULL
+    data_set$x2_pred <- NULL
+    data_set$model_id <- NULL
+    
     # put outputs into a named list
     mod <- list(fitted = fitted_vals,
                 r2 = r2,
@@ -605,6 +610,11 @@ growmod.default <- function(x,
         data_set[[i]]$x3_pred <- NULL
       }
       
+      # remove unnecessary variables from data set
+      data_set[[i]]$x1_pred <- NULL
+      data_set[[i]]$x2_pred <- NULL
+      data_set[[i]]$model_id <- NULL
+
       mod[[i]] <- list(fitted = fitted_vals,
                        r2 = r2,
                        rmsd = rmsd,
