@@ -3,6 +3,8 @@
 #' @docType package
 #' @aliases growmod-package
 #'
+#' @useDynLib growmod, .registration = TRUE
+#'
 #' @author Jian Yen, \email{jdl.yen@gmail.com}
 #' @author Freya Thomas
 #' 

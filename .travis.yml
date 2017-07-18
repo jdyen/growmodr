@@ -37,7 +37,7 @@ after_script:
   - echo ${NOT_CRAN}
 
 after_success:
-  - tar -C .. -xf $PKG_TARBALL
+  - tar -C .. -xf $growmod_*.tar.gz
   - travis_wait 40 Rscript -e 'covr::codecov(line_exclusions = c("/src/incldue/models.hpp", "src/*.cpp", "R/zzz.R"))'
 
 after_failure:
