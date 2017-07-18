@@ -6,6 +6,9 @@ Copyright &copy; 2017, Jian Yen
 
 *****
 
+[![Build Status](https://travis-ci.org/jdyen/growmod.svg?branch=collapse-mods)](https://travis-ci.org/jdyen/growmod)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jdyen/growmod/master.svg)](https://codecov.io/github/jdyen/growmod?branch=master)
+
 ## License details
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -89,7 +92,7 @@ Several applications of growth curve modelling to ecology are:
 
 Thomas, F.M. and Vesk, P.A. (2017) Are trait-growth models transferable? Predicting multi-species growth trajectories between ecosystems using plant functional traits. PLoS ONE 12(5): e0176959.
 
-Thomas, F.M. and Vesk, P.A. (to appear) Height growth in woody plants examined with a trait-based model. Austral Ecology.
+Thomas, F.M. and Vesk, P.A. (in press) Height growth in woody plants examined with a trait-based model. Austral Ecology. DOI: 10.1111/aec.12501.
 
 *****
 
