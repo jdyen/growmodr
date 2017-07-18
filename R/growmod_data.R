@@ -79,6 +79,11 @@ growmod_data <- function(data_set,
         }        
       }
     }
+    if (num_params == 2) {
+      out$x3 <- out$x2
+      out$n_x3 <- out$n_x2
+      out$x3_pred <- out$x2_pred
+    }
     out$n_pred <- length(out$age_holdout)
     out$n_block_pred <- length(unique(out$block_holdout))
   } else {

@@ -490,7 +490,7 @@ growmod.default <- function(x,
 
     # remove excess params from two par models
     if (num_params == 2) {
-      cat('do something here\n')
+      cat('do something here; remove x3 nx_3 and b3, psi3 etc from data set and fitted pars \n')
     }
     
     # put outputs into a named list
