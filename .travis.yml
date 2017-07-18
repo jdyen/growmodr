@@ -3,6 +3,7 @@ sudo: required
 warnings_are_errors: false
 r: devel
 cache: packages
+dist: trusty
 
 latex: true
 r_build_args: '--no-build-vignettes'
@@ -16,19 +17,6 @@ env:
     - CRAN: http://cran.rstudio.com
   matrix:
     - CXX_OLEVEL=2 CXX=clang++
-
-matrix:
-  include:
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5']
-      env:
-        - COMPILER=g++-5
-        - CC=gcc=5
-        - CXX=g++-5
 
 before_install:
   - mkdir -p ~/.R/
