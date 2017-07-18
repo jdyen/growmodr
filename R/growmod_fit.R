@@ -495,10 +495,7 @@ growmod.default <- function(x,
     if (num_params == 2) {
       stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
       stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
-      stan_summary <- stan_summary[-grep('sd_h3', rownames(stan_summary)), ]
-      stan_summary <- stan_summary[-grep('h3_holdout', rownames(stan_summary)), ]
       stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
-      stan_summary <- stan_summary[-grep('psi3_pred', rownames(stan_summary)), ]
     }
     
     # remove third predictor term for two param models
@@ -597,10 +594,7 @@ growmod.default <- function(x,
       if (num_params == 2) {
         stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
         stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
-        stan_summary <- stan_summary[-grep('sd_h3', rownames(stan_summary)), ]
-        stan_summary <- stan_summary[-grep('h3_holdout', rownames(stan_summary)), ]
         stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
-        stan_summary <- stan_summary[-grep('psi3_pred', rownames(stan_summary)), ]
       }
 
       # remove third predictor term for two param models
