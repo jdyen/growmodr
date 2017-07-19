@@ -424,16 +424,25 @@ growmod.default <- function(x,
   } else {
     data_set <- vector('list', length = length(model))
     for (i in seq(along = model)) {
-      data_set[[i]] <- growmod_data(data_set = list(size = size,
-                                                    index = index,
-                                                    block = block,
-                                                    predictors = ifelse(is.null(pred_set[[i]]),
-                                                                        NULL,
-                                                                        pred_set[[i]])),
-                                    model = model[i],
-                                    num_params = num_params[i],
-                                    spline_params = spline_params,
-                                    n_plot = 100)
+      if (!is.null(pred_set)) {
+        data_set[[i]] <- growmod_data(data_set = list(size = size,
+                                                      index = index,
+                                                      block = block,
+                                                      predictors = pred_set[[i]]),
+                                      model = model[i],
+                                      num_params = num_params[i],
+                                      spline_params = spline_params,
+                                      n_plot = 100)
+      } else {
+        data_set[[i]] <- growmod_data(data_set = list(size = size,
+                                                      index = index,
+                                                      block = block,
+                                                      predictors = NULL),
+                                      model = model[i],
+                                      num_params = num_params[i],
+                                      spline_params = spline_params,
+                                      n_plot = 100)
+      }
     }
   }
   
