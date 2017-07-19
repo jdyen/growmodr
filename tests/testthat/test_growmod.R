@@ -142,14 +142,14 @@ test_that("growmod.formula returns a complete growmod object for spline models",
   expect_growmod_names(mod1)
 })
 test_that("spline models work with different spline models", {
-  expect_error(SW(mod1 <- growmod(size ~ (index | block / predictors),
-                                  data = data_test,
-                                  model = 'spline',
-                                  spline_params = list(degree = 8,
-                                                       n_knots = 10,
-                                                       spline_type = 'jspline'),
-                                  n_iter = ITER,
-                                  n_chains = CHAINS)))
+  expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test,
+                                 model = 'spline',
+                                 spline_params = list(degree = 8,
+                                                      n_knots = 10,
+                                                      spline_type = 'jspline'),
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
   SW(mod1 <- growmod(size ~ (index | block / predictors),
                      data = data_test,
                      model = 'spline',
