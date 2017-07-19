@@ -6,8 +6,8 @@ Date: 2017-07-07
 Authors@R: c(person("Jian", "Yen", role = c("aut", "cre"),
                     email = "jdl.yen@gmail.com"),
              person("Freya", "Thomas", role = "aut"))
-Author: Jian Yen (aut, cre),
-        Freya Thomas (aut)
+Author: Jian Yen [aut, cre],
+        Freya Thomas [aut]
 Maintainer: Jian Yen <jdl.yen@gmail.com>
 Description: R package to fit growth models to data on size at age. Supports
     multiple model types, including standard growth-curve fitting, growth
