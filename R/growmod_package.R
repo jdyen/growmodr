@@ -4,6 +4,15 @@
 #' @aliases growmod-package
 #'
 #' @useDynLib growmod, .registration = TRUE
+#' 
+#' @import methods
+#' @import stats
+#' @import rstantools
+#' @import Rcpp
+#' @importFrom rstan optimizing sampling vb extract summary get_posterior_mean
+#' @importFrom loo extract_log_lik loo waic
+#' @importFrom splines splineDesign
+#' @importFrom splines2 iSpline
 #'
 #' @author Jian Yen, \email{jdl.yen@gmail.com}
 #' @author Freya Thomas

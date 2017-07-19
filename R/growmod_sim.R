@@ -6,8 +6,6 @@
 #'   optionally include blocks within the data set (e.g. species) and 
 #'   predictor varibles that determine the growth parameters for each
 #'   block.
-#'   
-#' @import stats
 #' 
 #' @export
 #' 

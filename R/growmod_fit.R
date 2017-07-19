@@ -8,12 +8,6 @@
 #' @aliases growmod-fit growmod
 #'
 #' @export
-#' @import rstan
-#' @import Rcpp
-#' @import loo
-#' @import methods
-#' @import splines
-#' @import stats
 #' 
 #' @param x model formula (see details) or vector of size data
 #' @param data list containing data on size, age, species, and traits
@@ -432,7 +426,7 @@ growmod.default <- function(x,
                                     n_plot = 100)
     }
   }
-
+  
   # set some defaults for basic Stan settings
   if (!hasArg(control)) {
     control <- list(adapt_delta = 0.99)
@@ -468,29 +462,29 @@ growmod.default <- function(x,
                         ifelse(is.null(block), 'onemod', 'blockmod'),
                         sep = '_')
     }
-    stanmod <- get(mod_name, growmod:::stanmodels)
-    stan_mod <- rstan::sampling(object = stanmod,
-                                data = data_set,
-                                chains = n_chains,
-                                iter = n_iter,
-                                warmup = n_burnin,
-                                thin = n_thin,
-                                cores = stan_cores,
-                                ...)
+    stanmod <- get(mod_name, stanmodels)
+    stan_mod <- sampling(object = stanmod,
+                         data = data_set,
+                         chains = n_chains,
+                         iter = n_iter,
+                         warmup = n_burnin,
+                         thin = n_thin,
+                         cores = stan_cores,
+                         ...)
     
     # summarise fitted stan model
-    log_lik_tmp <- loo::extract_log_lik(stan_mod)
-    loo <- loo::loo(log_lik_tmp)
-    waic <- loo::waic(log_lik_tmp)
-    fitted_vals_tmp <- exp(rstan::get_posterior_mean(stan_mod, pars = 'mu'))
+    log_lik_tmp <- extract_log_lik(stan_mod)
+    loo <- loo(log_lik_tmp)
+    waic <- waic(log_lik_tmp)
+    fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
     fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
     r2 <- round(cor(fitted_vals, data_set$size_data) ** 2, 3)
     rmsd <- round(sqrt(mean((fitted_vals - data_set$size_data) ** 2)), 3)
     md <- round(mean((fitted_vals - data_set$size_data)), 3)
-
+    
     # generate rstan summary
-    stan_summary <- rstan::summary(stan_mod)$summary
-
+    stan_summary <- summary(stan_mod)$summary
+    
     # remove excess params from two par models
     if (num_params == 2) {
       stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
@@ -567,28 +561,28 @@ growmod.default <- function(x,
                           ifelse(is.null(block), 'onemod', 'blockmod'),
                           sep = '_')
       }
-      stanmod <- get(mod_name, growmod:::stanmodels)
-      stan_mod <- rstan::sampling(object = stanmod,
-                                  data = data_set[[i]],
-                                  chains = n_chains,
-                                  iter = n_iter,
-                                  warmup = n_burnin,
-                                  thin = n_thin,
-                                  cores = stan_cores,
-                                  ...)
+      stanmod <- get(mod_name, stanmodels)
+      stan_mod <- sampling(object = stanmod,
+                           data = data_set[[i]],
+                           chains = n_chains,
+                           iter = n_iter,
+                           warmup = n_burnin,
+                           thin = n_thin,
+                           cores = stan_cores,
+                           ...)
       
       # summarise fitted stan model
-      log_lik_tmp <- loo::extract_log_lik(stan_mod)
-      loo <- loo::loo(log_lik_tmp)
-      waic <- loo::waic(log_lik_tmp)
-      fitted_vals_tmp <- exp(rstan::get_posterior_mean(stan_mod, pars = 'mu'))
+      log_lik_tmp <- extract_log_lik(stan_mod)
+      loo <- loo(log_lik_tmp)
+      waic <- waic(log_lik_tmp)
+      fitted_vals_tmp <- exp(get_posterior_mean(stan_mod, pars = 'mu'))
       fitted_vals <- fitted_vals_tmp[, ncol(fitted_vals_tmp)]
       r2 <- round(cor(fitted_vals, data_set[[i]]$size_data) ** 2, 3)
       rmsd <- round(sqrt(mean((fitted_vals - data_set[[i]]$size_data) ** 2)), 3)
       md <- round(mean((fitted_vals - data_set[[i]]$size_data)), 3)
       
       # generate rstan summary
-      stan_summary <- rstan::summary(stan_mod)$summary
+      stan_summary <- summary(stan_mod)$summary
       
       # remove excess params from two par models
       if (num_params == 2) {
@@ -596,7 +590,7 @@ growmod.default <- function(x,
         stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
         stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
       }
-
+      
       # remove third predictor term for two param models
       if ((num_params == 2) & (model != 'spline')) {
         data_set[[i]]$x3 <- NULL
@@ -608,7 +602,7 @@ growmod.default <- function(x,
       data_set[[i]]$x1_pred <- NULL
       data_set[[i]]$x2_pred <- NULL
       data_set[[i]]$model_id <- NULL
-
+      
       mod[[i]] <- list(fitted = fitted_vals,
                        r2 = r2,
                        rmsd = rmsd,
@@ -626,10 +620,10 @@ growmod.default <- function(x,
                        n_burnin = n_burnin,
                        n_thin = n_thin,
                        n_chains = n_chains)
-
+      
       # set model class for single growth curve model
       class(mod[[i]]) <- 'growmod'
-
+      
       # add formula and call to fitted model
       mod[[i]]$formula <- formula
       mod[[i]]$call <- call

@@ -3,10 +3,6 @@
 #' @description Validate a fitted growth model using cross validation
 #'     or by specifying your own test data set
 #' @export
-#' @import rstan
-#' @import loo
-#' @import stats
-#' @useDynLib growmod, .registration = TRUE
 #' 
 #' @param formula list containing data on size, age, species, and traits
 #' @param x fitted growmod or growmod_multi object
@@ -188,7 +184,7 @@ validate.growmod <- function(x,
     all_vars <- all.vars(x$formula[[length(x$formula)]])
     index_var <- all_vars[1]
     size_resp <- all.vars(x$formula)[1]
-
+    
     # check for size data in test_data
     if (exists(size_resp, test_data)) {
       size_data <- get(size_resp, test_data)
@@ -196,7 +192,7 @@ validate.growmod <- function(x,
       stop(paste0(size_resp, ' not found in', deparse(substitute(test_data))),
            call. = FALSE)
     }
-
+    
     # check for index variable in test_data
     if (exists(index_var, test_data)) {
       index_data <- get(index_var, test_data)
@@ -204,7 +200,7 @@ validate.growmod <- function(x,
       stop(paste0(index_var, ' not found in', deparse(substitute(test_data))),
            call. = FALSE)
     }
-
+    
     # check for predictors
     if (length(all_vars) == 3) {
       pred_var <- all_vars[3]
@@ -416,7 +412,7 @@ stan_cv_internal <- function(i,
   } else {
     num_params <- spline_params$n_knots + spline_params$degree
   }
-
+  
   # check predictors
   if (!is.null(predictors)) {
     if (is.matrix(predictors) | is.data.frame(predictors)) {
@@ -475,7 +471,7 @@ stan_cv_internal <- function(i,
                           spline_params = spline_params,
                           n_plot = 10,
                           test_data = test_data)
-
+  
   mod_id <- switch(model,
                    'archibold' = 1,
                    'hillslope' = 2,
@@ -489,21 +485,21 @@ stan_cv_internal <- function(i,
                    'power3' = 10,
                    'weibull3' = 11)
   data_cv$model_id <- mod_id
-
+  
   # fit model and sample predicted values
-  stan_mod <- rstan::sampling(object = mod_compiled,
-                              data = data_cv,
-                              chains = n_chains,
-                              iter = n_iter,
-                              warmup = n_burnin,
-                              thin = n_thin,
-                              cores = stan_cores,
-                              ...)
+  stan_mod <- sampling(object = mod_compiled,
+                       data = data_cv,
+                       chains = n_chains,
+                       iter = n_iter,
+                       warmup = n_burnin,
+                       thin = n_thin,
+                       cores = stan_cores,
+                       ...)
   
   # extract out-of-sample predictions
   size_real <- data$size_data[cv_id]
-  cv_tmp <- rstan::summary(stan_mod, par = 'size_pred')$summary[, 'mean']
-
+  cv_tmp <- summary(stan_mod, par = 'size_pred')$summary[, 'mean']
+  
   # need to switch for model type (no blocks, with blocks, with predictors)
   out <- data.frame(size_pred = cv_tmp, size_real = size_real)
   out
@@ -562,18 +558,18 @@ predict_internal <- function(mod_compiled, train_data, test_data,
   data_cv$model_id <- mod_id
   
   # fit model just to training set
-  stan_mod <- rstan::sampling(object = mod_compiled,
-                              data = data_cv,
-                              chains = n_chains,
-                              iter = n_iter,
-                              warmup = n_burnin,
-                              thin = n_thin,
-                              cores = stan_cores,
-                              ...)
+  stan_mod <- sampling(object = mod_compiled,
+                       data = data_cv,
+                       chains = n_chains,
+                       iter = n_iter,
+                       warmup = n_burnin,
+                       thin = n_thin,
+                       cores = stan_cores,
+                       ...)
   
   # return size_pred
-  size_pred <- rstan::summary(stan_mod, par = 'size_pred')$summary[, 'mean']
-
+  size_pred <- summary(stan_mod, par = 'size_pred')$summary[, 'mean']
+  
   size_pred
 }
 

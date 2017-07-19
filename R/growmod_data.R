@@ -1,6 +1,4 @@
 # prepare data sets for stan models
-#' @import splines
-#' @importFrom splines2 iSpline
 growmod_data <- function(data_set,
                          model,
                          num_params,
@@ -133,11 +131,11 @@ growmod_data <- function(data_set,
           } else {
             knots_set <- NULL
           }
-          basis.func[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
+          basis.func[, i, ] <- iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
                                                  knots = knots_set,
                                                  degree = (bs.order - 1),
                                                  Boundary.knots = c(min(data_set$index), max(data_set$index)))
-          basis.func2[, i, ] <- splines2::iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
+          basis.func2[, i, ] <- iSpline(seq(min(data_set$index), max.vals[i], length = n_plot),
                                                   knots = knots_set,
                                                   degree = (bs.order - 1),
                                                   Boundary.knots = c(min(data_set$index), max(data_set$index)),
@@ -177,11 +175,11 @@ growmod_data <- function(data_set,
         } else {
           knots_set <- NULL
         }
-        basis.func[, 1, ] <- splines2::iSpline(seq(min(data_set$index), max.vals, length = n_plot),
+        basis.func[, 1, ] <- iSpline(seq(min(data_set$index), max.vals, length = n_plot),
                                                knots = knots_set,
                                                degree = (bs.order - 1),
                                                Boundary.knots = c(min(data_set$index), max(data_set$index)))
-        basis.func2[, 1, ] <- splines2::iSpline(seq(min(data_set$index), max.vals, length = n_plot),
+        basis.func2[, 1, ] <- iSpline(seq(min(data_set$index), max.vals, length = n_plot),
                                                 knots = knots_set,
                                                 degree = (bs.order - 1),
                                                 Boundary.knots = c(min(data_set$index), max(data_set$index)),
@@ -210,7 +208,7 @@ growmod_data <- function(data_set,
       } else {
         knots_set <- NULL
       }
-      spline_out <- splines2::iSpline(sort(unique(data_set$index)),
+      spline_out <- iSpline(sort(unique(data_set$index)),
                                       knots = knots_set,
                                       degree = (bs.order - 1),
                                       Boundary.knots = c(min(data_set$index), max(data_set$index)))
@@ -248,7 +246,7 @@ growmod_data <- function(data_set,
                                     ord = bs.order,
                                     derivs = 0)[, -1, drop = FALSE]
       } else {
-        spline_pred <- splines2::iSpline(sort(unique(index_pred)),
+        spline_pred <- iSpline(sort(unique(index_pred)),
                                          knots = knots_store,
                                          degree = (bs.order - 1),
                                          Boundary.knots = c(min(data_set$index),
@@ -274,7 +272,7 @@ growmod_data <- function(data_set,
                                     ord = bs.order,
                                     derivs = 0)[, -1, drop = FALSE]
       } else {
-        spline_pred <- splines2::iSpline(sort(unique(test_data$index)),
+        spline_pred <- iSpline(sort(unique(test_data$index)),
                                          knots = knots_store,
                                          degree = (bs.order - 1),
                                          Boundary.knots = c(min(data_set$index),
