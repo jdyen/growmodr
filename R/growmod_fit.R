@@ -424,6 +424,7 @@ growmod.default <- function(x,
   } else {
     data_set <- vector('list', length = length(model))
     for (i in seq(along = model)) {
+      print(pred_set)
       if (!is.null(pred_set)) {
         data_set[[i]] <- growmod_data(data_set = list(size = size,
                                                       index = index,
