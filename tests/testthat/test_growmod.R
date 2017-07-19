@@ -64,17 +64,6 @@ test_that("growmod.formula handles NAs in index data for hillslope models", {
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
-test_that("growmod.formula handles NAs in block data for hillslope models", {
-  block_tmp <- data_test$block
-  block_tmp[c(1, 5, 10)] <- NA
-  SW(mod1 <- growmod(size ~ (index | block_tmp / predictors),
-                     data = data_test,
-                     model = 'hillslope',
-                     n_iter = ITER,
-                     n_chains = CHAINS))
-  expect_growmod(mod1)
-  expect_growmod_names(mod1)
-})
 test_that("growmod.formula returns a complete growmod object for hillslope_log models", {
   SW(mod1 <- growmod(size ~ (index | block / predictors),
                      data = data_test,
@@ -632,36 +621,32 @@ test_that("growmod.default returns a complete growmod object for spline models",
                      spline_params = list(degree = 10,
                                           n_knots = 25,
                                           spline_type = NULL)))
-  SW(mod2 <- growmod(x = data_test$size,
-                     index = c(data_test$index, 1, 2, 3),
-                     block = data_test$block,
-                     predictors = NULL,
-                     model = 'spline',
-                     n_iter = ITER,
-                     n_burnin = floor(ITER / 2),
-                     n_thin = 1,
-                     n_chains = CHAINS,
-                     stan_cores = 1,
-                     spline_params = list(degree = 8,
-                                          n_knots = 10,
-                                          spline_type = 'ispline')))
-  SW(mod3 <- growmod(x = data_test$size,
-                     index = data_test$index,
-                     block = c(data_test$block, 1, 2, 3),
-                     predictors = NULL,
-                     model = 'spline',
-                     n_iter = ITER,
-                     n_burnin = floor(ITER / 2),
-                     n_thin = 1,
-                     n_chains = CHAINS,
-                     stan_cores = 1,
-                     spline_params = list(degree = 8,
-                                          n_knots = 10,
-                                          spline_type = 'ispline')))
+  expect_error(mod2 <- growmod(x = data_test$size,
+                               index = c(data_test$index, 1, 2, 3),
+                               block = data_test$block,
+                               predictors = NULL,
+                               model = 'spline',
+                               n_iter = ITER,
+                               n_burnin = floor(ITER / 2),
+                               n_thin = 1,
+                               n_chains = CHAINS,
+                               stan_cores = 1,
+                               spline_params = list(degree = 8,
+                                                    n_knots = 10,
+                                                    spline_type = 'ispline')))
+  expect_error(mod3 <- growmod(x = data_test$size,
+                               index = data_test$index,
+                               block = c(data_test$block, 1, 2, 3),
+                               predictors = NULL,
+                               model = 'spline',
+                               n_iter = ITER,
+                               n_burnin = floor(ITER / 2),
+                               n_thin = 1,
+                               n_chains = CHAINS,
+                               stan_cores = 1,
+                               spline_params = list(degree = 8,
+                                                    n_knots = 10,
+                                                    spline_type = 'ispline')))
   expect_growmod(mod1)
   expect_growmod_names(mod1)
-  expect_growmod(mod2)
-  expect_growmod_names(mod2)
-  expect_growmod(mod3)
-  expect_growmod_names(mod3)
 })
