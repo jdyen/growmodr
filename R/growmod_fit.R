@@ -313,6 +313,14 @@ growmod.default <- function(x,
     nblock <- length(unique(block))
   }
   
+  # set call and formula when called directly
+  if (is.null(call)) {
+    call <- match.call()
+  }
+  if (is.null(formula)) {
+    formula <- 'model fitted with growmod.default; no formula provided'
+  }
+  
   # check data for errors
   if (length(index) != n) {
     stop('index should be the same length as size.',
@@ -635,6 +643,5 @@ growmod.default <- function(x,
   }
   
   # return outputs
-  print(names(mod))
   mod
 }
