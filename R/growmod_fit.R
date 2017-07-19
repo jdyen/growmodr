@@ -635,5 +635,6 @@ growmod.default <- function(x,
   }
   
   # return outputs
+  print(names(mod))
   mod
 }
