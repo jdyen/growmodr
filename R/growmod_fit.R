@@ -622,6 +622,11 @@ growmod.default <- function(x,
         }
       }
 
+      if (length(pred_set) == length(model)) {
+        pred_tmp <- pred_set[[i]]
+      } else {
+        pred_tmp <- NULL
+      }
       mod[[i]] <- list(fitted = fitted_vals,
                        r2 = r2,
                        rmsd = rmsd,
@@ -630,7 +635,7 @@ growmod.default <- function(x,
                        waic = waic,
                        stan_summary = stan_summary,
                        data_set = data_set[[i]],
-                       predictors = pred_set[[i]],
+                       predictors = pred_tmp,
                        model = model[i],
                        stanmod = stanmod,
                        spline_params = spline_params,
