@@ -85,28 +85,3 @@ check_preds <- function(predictors,
   }
   predictors_clean
 }
-
-calc_growth_curve <- function(model, index, block, params) {
-  eqn_set <- switch(model, 
-                    'hillslope' = function(x, h1, h2, h3) h1 / (1 + exp(-h2 * (x - h3))),
-                    'hillslope_log' = function(x, h1, h2, h3) h1 / (1 + exp(-h2 * (log(x) - h3))),
-                    'power2' = function(x, h1, h2, h3) h1 * (x ** h2),
-                    'expo' = function(x, h1, h2, h3) h1 + (h2 * log(x)),
-                    'monod' = function(x, h1, h2, h3) h1 * (x / (h2 + x)),
-                    'neg_exp' = function(x, h1, h2, h3) h1 * (1 - exp(-h2 * x)),
-                    'koblog' = function(x, h1, h2, h3) h1 * log(1 + (x / h2)),
-                    'power3' = function(x, h1, h2, h3) h1 * (x ** (h2 - (h3 / x))),
-                    'logistic3' = function(x, h1, h2, h3) h1 / (1 + exp(-h2 * x + h3)),
-                    'archibold' = function(x, h1, h2, h3) h1 / (h2 + (h3 ** x)),
-                    'weibull3' = function(x, h1, h2, h3) h1 * (1 - exp(-h2 * (x ** h3))))
-  out <- vector('numeric', length = length(index))
-  for (i in 1:length(unique(block))) {
-    x_vals <- index[which(block == unique(block)[i])]
-    h_vals <- params[i, ]
-    out[which(block == unique(block)[i])] <- exp(eqn_set(x_vals,
-                                                         h_vals[1],
-                                                         h_vals[2],
-                                                         h_vals[3]))
-  }
-  out
-}

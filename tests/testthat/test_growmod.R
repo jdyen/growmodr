@@ -141,7 +141,66 @@ test_that("growmod.formula returns a complete growmod object for spline models",
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
-
+test_that("spline models work with different spline models", {
+  expect_error(SW(mod1 <- growmod(size ~ (index | block / predictors),
+                                  data = data_test,
+                                  model = 'spline',
+                                  spline_params = c(degree = 8,
+                                                    n_knots = 10,
+                                                    spline_type = 'jspline'),
+                                  n_iter = ITER,
+                                  n_chains = CHAINS)))
+  SW(mod1 <- growmod(size ~ (index | block / predictors),
+                     data = data_test,
+                     model = 'spline',
+                     spline_params = c(degree = 8,
+                                       n_knots = 10,
+                                       spline_type = 'bspline'),
+                     n_iter = ITER,
+                     n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
+test_that("growmod.formula works when predictors are defined in a list", {
+  data_test2 <- data_test
+  data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors)
+  SW(mod1 <- growmod(size ~ (index | block / predictors),
+                     data = data_test2,
+                     model = 'hillslope',
+                     n_iter = ITER,
+                     n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
+test_that("spline model warns when predictors are provided as a list", {
+  data_test2 <- data_test
+  data_test2$predictors <- lapply(1:18, function(x) data_test2$predictors)
+  expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test2,
+                                 model = 'spline',
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
+})
+test_that("spline model warns when spline_params are inappropriate", {
+  expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test,
+                                 model = 'spline',
+                                 spline_params = list(degree = 10,
+                                                      n_knots = 25,
+                                                      spline_type = 'ispline'),
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
+})
+test_that("spline model works when spline_params are incomplete", {
+  expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test,
+                                 model = 'spline',
+                                 spline_params = list(spline_type = 'bspline'),
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
 
 context('growmod (model with blocks but no predictors)')
 test_that("growmod.formula returns a complete growmod object for hillslope models", {

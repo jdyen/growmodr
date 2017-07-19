@@ -154,6 +154,23 @@ growmod.formula <- function(x,
   index_var <- all_vars[1]
   size_resp <- all.vars(form_tmp)[1]
   
+  # check spline params for completeness and for number of basis functions
+  if (is.null(spline_params$degree)) {
+    spline_params$degree <- 8
+  }
+  if (is.null(spline_params$n_knots)) {
+    spline_params$n_knots <- 10
+  }
+  if (is.null(spline_params$spline_type)) {
+    spline_params$spline_type <- 'ispline'
+  }
+  if ((spline_params$degree + spline_params$n_knots) != 18) {
+    warning('spline model degree and number of knots must sum to 18; using degree = 8 and n_knots = 10 by default',
+            call. = FALSE)
+    spline_params$degree <- 8
+    spline_params$n_knots <- 10
+  }
+  
   # check for size data in data and workspace
   if (!is.null(data)) {
     if (exists(size_resp, data)) {
@@ -311,6 +328,23 @@ growmod.default <- function(x,
   n <- length(size)
   if (!is.null(block)) {
     nblock <- length(unique(block))
+  }
+  
+  # check spline params
+  if (is.null(spline_params$degree)) {
+    spline_params$degree <- 8
+  }
+  if (is.null(spline_params$n_knots)) {
+    spline_params$n_knots <- 10
+  }
+  if (is.null(spline_params$spline_type)) {
+    spline_params$spline_type <- 'ispline'
+  }
+  if ((spline_params$degree + spline_params$n_knots) != 18) {
+    warning('spline model degree and number of knots must sum to 18; using degree = 8 and n_knots = 10 by default',
+            call. = FALSE)
+    spline_params$degree <- 8
+    spline_params$n_knots <- 10
   }
   
   # set call and formula when called directly
