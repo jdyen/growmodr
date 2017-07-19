@@ -176,7 +176,7 @@ test_that("growmod.formula works when predictors are defined in a list with one 
   data_test2 <- data_test
   data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors)
   for (i in seq_along(data_test2$predictors)) {
-    data_test2$predictors[[i]] <- data_test2$predictors[[i]][sample(1:nrow(data_test2$predictors),
+    data_test2$predictors[[i]] <- data_test2$predictors[[i]][sample(1:nrow(data_test2$predictors[[i]]),
                                                                     size = length(data_test2$size),
                                                                     replace = TRUE), ]
   }
@@ -226,10 +226,10 @@ test_that("growmod.formula errors when predictors are defined in a list with the
                                n_iter = ITER,
                                n_chains = CHAINS))
 })
-test_that("growmod.formula errors when predictors are defined in a list with the wrong number of parameters", {
+test_that("growmod.formula errors when predictors are defined in a list with the wrong number of observations in one element", {
   data_test2 <- data_test
   data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors)
-  data_test2$predictors[[1]] <- cbind(data_test2$predictors[[1]], data_test2$predictors[[1]])
+  data_test2$predictors[[1]] <- rbind(data_test2$predictors[[1]], data_test2$predictors[[1]])
   expect_error(mod1 <- growmod(size ~ (index | block / predictors),
                                data = data_test2,
                                model = 'hillslope',
