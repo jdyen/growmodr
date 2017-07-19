@@ -172,6 +172,22 @@ test_that("growmod.formula works when predictors are defined in a list", {
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
+test_that("growmod.formula works when predictors are defined in a list with one row per observation", {
+  data_test2 <- data_test
+  data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors)
+  for (i in seq_along(data_test2$predictors)) {
+    data_test2$predictors[[i]] <- data_test2$predictors[[i]][sample(1:nrow(data_test2$predictors),
+                                                                    size = length(data_test2$size),
+                                                                    replace = TRUE), ]
+  }
+  expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test2,
+                                 model = 'hillslope',
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
 test_that("spline model warns when predictors are provided as a list", {
   data_test2 <- data_test
   data_test2$predictors <- lapply(1:18, function(x) data_test2$predictors)
@@ -200,6 +216,25 @@ test_that("spline model works when spline_params are incomplete", {
                                  n_chains = CHAINS))
   expect_growmod(mod1)
   expect_growmod_names(mod1)
+})
+test_that("growmod.formula errors when predictors are defined in a list with the wrong number of parameters", {
+  data_test2 <- data_test
+  data_test2$predictors <- lapply(1:4, function(x) data_test2$predictors)
+  expect_error(mod1 <- growmod(size ~ (index | block / predictors),
+                               data = data_test2,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+})
+test_that("growmod.formula errors when predictors are defined in a list with the wrong number of parameters", {
+  data_test2 <- data_test
+  data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors)
+  data_test2$predictors[[1]] <- cbind(data_test2$predictors[[1]], data_test2$predictors[[1]])
+  expect_error(mod1 <- growmod(size ~ (index | block / predictors),
+                               data = data_test2,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
 })
 test_that("growmod.formula warns when predictors are provided per observation", {
   data_test2 <- data_test
