@@ -201,6 +201,30 @@ test_that("spline model works when spline_params are incomplete", {
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
+test_that("growmod.formula warns when predictors are provided per observation", {
+  data_test2 <- data_test
+  data_test2$predictors <- data_test2$predictors[sample(1:nrow(data_test2$predictors),
+                                                        size = length(data_test2$size),
+                                                        replace = TRUE), ]
+  expect_warning(SW(mod1 <- growmod(size ~ (index | block / predictors),
+                                    data = data_test2,
+                                    model = 'hillslope',
+                                    n_iter = ITER,
+                                    n_chains = CHAINS)))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
+test_that("growmod.formula errors when predictors do not match blocks or observations", {
+  data_test2 <- data_test
+  data_test2$predictors <- data_test2$predictors[sample(1:nrow(data_test2$predictors),
+                                                        size = (length(data_test2$size) - 4),
+                                                        replace = TRUE), ]
+  expect_error(SW(mod1 <- growmod(size ~ (index | block / predictors),
+                                  data = data_test2,
+                                  model = 'hillslope',
+                                  n_iter = ITER,
+                                  n_chains = CHAINS)))
+})
 
 context('growmod (model with blocks but no predictors)')
 test_that("growmod.formula returns a complete growmod object for hillslope models", {

@@ -410,7 +410,7 @@ growmod.default <- function(x,
     mod_params <- vector('list', length = length(model))
     for (i in seq(along = model)) {
       if (model[i] != 'spline') {
-        mod_params[[i]] <- get(paste0(model[i], '_param_fetch'))()
+        mod_params[[i]] <- get(paste0(model[i], '_param_fetch'))(include_block = FALSE)
       } else {
         mod_params[[i]] <- list(num_par = (spline_params$n_knots + spline_params$degree))
       }

@@ -25,6 +25,11 @@ capture.output(
                      model = 'hillslope',
                      n_iter = ITER,
                      n_chains = CHAINS)),
+  SW(mod4 <- growmod(size ~ index,
+                     data = data_test,
+                     model = 'hillslope',
+                     n_iter = ITER,
+                     n_chains = CHAINS)),
   SW(mod_multi <- growmod(size ~ (index | block / predictors),
                           data = data_test,
                           model = c('hillslope',
@@ -78,7 +83,9 @@ test_that("plot methods work correctly", {
   expect_silent(plot(mod1))
   expect_silent(plot(mod2))
   expect_silent(plot(mod3))
+  expect_silent(plot(mod4))
   expect_warning(plot(mod_multi))
+  expect_warning(plot(mod_multi, group_blocks = FALSE))
   expect_silent(plot(mod_cv))
   expect_silent(plot(mod_cv_multi))
 })
