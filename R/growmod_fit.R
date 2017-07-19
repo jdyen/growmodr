@@ -506,9 +506,18 @@ growmod.default <- function(x,
     
     # remove excess params from two par models
     if (num_params == 2) {
-      stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
-      stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
-      stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
+      b3_rm <- grep('b3', rownames(stan_summary))
+      h3_rm <- grep('h3', rownames(stan_summary))
+      psi3_rm <- grep('psi3', rownames(stan_summary))
+      if (length(b3_rm)) {
+        stan_summary <- stan_summary[-b3_rm, ]
+      }
+      if (length(h3_rm)) {
+        stan_summary <- stan_summary[-h3_rm, ]
+      }
+      if (length(psi3_rm)) {
+        stan_summary <- stan_summary[-psi3_rm, ]
+      }
     }
     
     # remove unnecessary variables from data set
@@ -605,9 +614,18 @@ growmod.default <- function(x,
       
       # remove excess params from two par models
       if (num_params[i] == 2) {
-        stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
-        stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
-        stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
+        b3_rm <- grep('b3', rownames(stan_summary))
+        h3_rm <- grep('h3', rownames(stan_summary))
+        psi3_rm <- grep('psi3', rownames(stan_summary))
+        if (length(b3_rm)) {
+          stan_summary <- stan_summary[-b3_rm, ]
+        }
+        if (length(h3_rm)) {
+          stan_summary <- stan_summary[-h3_rm, ]
+        }
+        if (length(psi3_rm)) {
+          stan_summary <- stan_summary[-psi3_rm, ]
+        }
       }
       
       # remove unnecessary variables from data set
