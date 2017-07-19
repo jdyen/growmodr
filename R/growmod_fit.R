@@ -492,17 +492,17 @@ growmod.default <- function(x,
       stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
     }
     
-    # remove third predictor term for two param models
-    if ((num_params == 2) & (model != 'spline')) {
-      data_set$x3 <- NULL
-      data_set$n_x3 <- NULL
-      data_set$x3_pred <- NULL
-    }
-    
     # remove unnecessary variables from data set
-    data_set$x1_pred <- NULL
-    data_set$x2_pred <- NULL
-    data_set$model_id <- NULL
+    if (model != 'spline') {
+      data_set$x1_pred <- NULL
+      data_set$x2_pred <- NULL
+      data_set$model_id <- NULL
+      if ((num_params == 2)) {
+        data_set$x3 <- NULL
+        data_set$n_x3 <- NULL
+        data_set$x3_pred <- NULL
+      }
+    }
     
     # put outputs into a named list
     mod <- list(fitted = fitted_vals,
@@ -550,7 +550,7 @@ growmod.default <- function(x,
                          'power2' = 9,
                          'power3' = 10,
                          'weibull3' = 11)
-        data_set$model_id <- mod_id
+        data_set[[i]]$model_id <- mod_id
         mod_name <- paste('all_mod',
                           ifelse(is.null(predictors), 'nopred', 'pred'),
                           ifelse(is.null(block), 'onemod', 'blockmod'),
@@ -591,18 +591,18 @@ growmod.default <- function(x,
         stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
       }
       
-      # remove third predictor term for two param models
-      if ((num_params == 2) & (model != 'spline')) {
-        data_set[[i]]$x3 <- NULL
-        data_set[[i]]$n_x3 <- NULL
-        data_set[[i]]$x3_pred <- NULL
-      }
-      
       # remove unnecessary variables from data set
-      data_set[[i]]$x1_pred <- NULL
-      data_set[[i]]$x2_pred <- NULL
-      data_set[[i]]$model_id <- NULL
-      
+      if (model != 'spline') {
+        data_set[[i]]$x1_pred <- NULL
+        data_set[[i]]$x2_pred <- NULL
+        data_set[[i]]$model_id <- NULL
+        if ((num_params == 2)) {
+          data_set[[i]]$x3 <- NULL
+          data_set[[i]]$n_x3 <- NULL
+          data_set[[i]]$x3_pred <- NULL
+        }
+      }
+
       mod[[i]] <- list(fitted = fitted_vals,
                        r2 = r2,
                        rmsd = rmsd,
