@@ -44,15 +44,15 @@ test_that("growmod extractor methods work correctly", {
   expect_equal(residuals(mod2), c(mod2$data_set$size_data - mod2$fitted))
   expect_equal(fitted(mod3), mod3$fitted)
   expect_equal(residuals(mod3), c(mod3$data_set$size_data - mod3$fitted))
-  expect_equal(fitted(mod_multi), lapply(mod_multi, function(x) x$fitted))
-  expect_equal(residuals(mod_multi), lapply(mod_multi,
-                                            function(x) c(x$data_set$size_data - x$fitted)))
+  expect_equivalent(fitted(mod_multi), lapply(mod_multi, function(x) x$fitted))
+  expect_equivalent(residuals(mod_multi), lapply(mod_multi,
+                                                 function(x) c(x$data_set$size_data - x$fitted)))
   expect_equal(fitted(mod_cv), mod_cv$size_pred)
   expect_equal(residuals(mod_cv), c(mod_cv$size_real - mod_cv$size_pred))
-  expect_equal(fitted(mod_cv_multi), lapply(mod_cv_multi,
-                                            function(x) x$size_pred))
-  expect_equal(residuals(mod_cv_multi), lapply(mod_cv_multi,
-                                               function(x) c(x$size_real - x$size_pred)))
+  expect_equivalent(fitted(mod_cv_multi), lapply(mod_cv_multi,
+                                                 function(x) x$size_pred))
+  expect_equivalent(residuals(mod_cv_multi), lapply(mod_cv_multi,
+                                                    function(x) c(x$size_real - x$size_pred)))
 })
 
 test_that("print, summary and compare methods work correctly", {

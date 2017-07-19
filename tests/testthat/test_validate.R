@@ -116,11 +116,11 @@ test_that("validate.formula returns a complete growmod_cv object with loo", {
 
 test_that("validate.growmod errors if n_cv and test_data not specified", {
   expect_error(mod_cv8 <- validate(mod1, n_cv = NULL, test_data = NULL))
-  expect_error(mod_cv9 <- validate(size ~ (index | block / predictors),
-                                   data = data_test,
-                                   model = 'hillslope',
-                                   n_cv = NULL,
-                                   test_data = NULL,
-                                   n_iter = ITER,
-                                   n_chains = CHAINS))
+  expect_error(SW(mod_cv9 <- validate(size ~ (index | block / predictors),
+                                      data = data_test,
+                                      model = 'hillslope',
+                                      n_cv = NULL,
+                                      test_data = NULL,
+                                      n_iter = ITER,
+                                      n_chains = CHAINS)))
 })

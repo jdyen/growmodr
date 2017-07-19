@@ -261,7 +261,7 @@ validate.growmod <- function(x,
                       predictors = predictors)
     
     # add third predictor variable for two param models
-    if ((num_params == 2) & (model != 'spline')) {
+    if ((num_params == 2) & (x$model != 'spline')) {
       train_data$data_set$x3 <- train_data$data_set$x2
       train_data$data_set$n_x3 <- train_data$data_set$n_x2
       train_data$data_set$x3_pred <- train_data$data_set$x2_pred

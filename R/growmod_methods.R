@@ -531,34 +531,18 @@ residuals.growmod_cv <- function(object, ...) {
 
 #' @export
 residuals.growmod_multi <- function(object, ...) {
-  x_len <- sapply(object, length)
-  if (length(unique(x_len)) == 1) {
-    out <- matrix(NA, nrow = length(object[[1]]$fitted), ncol = x_len[1])
-    for (i in seq_along(object)) {
-      out[, i] <- object[[i]]$data_set$size_data - object[[i]]$fitted
-    }
-  } else {
-    out <- vector('list', length = length(object))
-    for (i in seq_along(object)) {
-      out[[i]] <- object[[i]]$data_set$size_data - object[[i]]$fitted
-    }
+  out <- vector('list', length = length(object))
+  for (i in seq_along(object)) {
+    out[[i]] <- object[[i]]$data_set$size_data - object[[i]]$fitted
   }
   out
 }
 
 #' @export
 residuals.growmod_cv_multi <- function(object, ...) {
-  x_len <- sapply(object, length)
-  if (length(unique(x_len)) == 1) {
-    out <- matrix(NA, nrow = length(object[[1]]$fitted), ncol = x_len[1])
-    for (i in seq_along(object)) {
-      out[, i] <- object[[i]]$size_real - object[[i]]$size_pred
-    }
-  } else {
-    out <- vector('list', length = length(object))
-    for (i in seq_along(object)) {
-      out[[i]] <- object[[i]]$size_real - object[[i]]$size_pred
-    }
+  out <- vector('list', length = length(object))
+  for (i in seq_along(object)) {
+    out[[i]] <- object[[i]]$size_real - object[[i]]$size_pred
   }
   out
 }
