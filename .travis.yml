@@ -38,7 +38,7 @@ after_script:
 
 after_success:
   - tar -C .. -xf $growmod_*.tar.gz
-  - travis_wait 40 Rscript -e "covr::codecov(line_exclusions = c('R/zzz.R', 'src/init.cpp', 'src/include/models.hpp'))"
+  - travis_wait 40 Rscript -e "covr::codecov(exclusions = c('R/zzz.R', 'src/init.cpp', 'src/include/models.hpp'))"
 
 after_failure:
   - cat growmod.Rcheck/00install.out
