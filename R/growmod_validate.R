@@ -169,7 +169,7 @@ validate.growmod <- function(x,
                          x$data_set$n_block,
                          n_cv)
         } else {
-          n_cv <- ifelse(n_cv > x$data_set$n, n, n_cv)
+          n_cv <- ifelse(n_cv > x$data_set$n, x$data_set$n, n_cv)
         }
         cat(paste0('Performing ', n_cv, '-fold cross validation\n'))
       } else {

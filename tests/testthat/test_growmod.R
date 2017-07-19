@@ -145,17 +145,17 @@ test_that("spline models work with different spline models", {
   expect_error(SW(mod1 <- growmod(size ~ (index | block / predictors),
                                   data = data_test,
                                   model = 'spline',
-                                  spline_params = c(degree = 8,
-                                                    n_knots = 10,
-                                                    spline_type = 'jspline'),
+                                  spline_params = list(degree = 8,
+                                                       n_knots = 10,
+                                                       spline_type = 'jspline'),
                                   n_iter = ITER,
                                   n_chains = CHAINS)))
   SW(mod1 <- growmod(size ~ (index | block / predictors),
                      data = data_test,
                      model = 'spline',
-                     spline_params = c(degree = 8,
-                                       n_knots = 10,
-                                       spline_type = 'bspline'),
+                     spline_params = list(degree = 8,
+                                          n_knots = 10,
+                                          spline_type = 'bspline'),
                      n_iter = ITER,
                      n_chains = CHAINS))
   expect_growmod(mod1)
@@ -206,11 +206,11 @@ test_that("growmod.formula warns when predictors are provided per observation", 
   data_test2$predictors <- data_test2$predictors[sample(1:nrow(data_test2$predictors),
                                                         size = length(data_test2$size),
                                                         replace = TRUE), ]
-  expect_warning(SW(mod1 <- growmod(size ~ (index | block / predictors),
-                                    data = data_test2,
-                                    model = 'hillslope',
-                                    n_iter = ITER,
-                                    n_chains = CHAINS)))
+  expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test2,
+                                 model = 'hillslope',
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
