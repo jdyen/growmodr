@@ -427,7 +427,9 @@ growmod.default <- function(x,
       data_set[[i]] <- growmod_data(data_set = list(size = size,
                                                     index = index,
                                                     block = block,
-                                                    predictors = pred_set[[i]]),
+                                                    predictors = ifelse(length(pred_set[[i]]),
+                                                                        pred_set[[i]],
+                                                                        NULL)),
                                     model = model[i],
                                     num_params = num_params[i],
                                     spline_params = spline_params,
@@ -593,18 +595,18 @@ growmod.default <- function(x,
       stan_summary <- summary(stan_mod)$summary
       
       # remove excess params from two par models
-      if (num_params == 2) {
+      if (num_params[i] == 2) {
         stan_summary <- stan_summary[-grep('b3', rownames(stan_summary)), ]
         stan_summary <- stan_summary[-grep('h3', rownames(stan_summary)), ]
         stan_summary <- stan_summary[-grep('psi3', rownames(stan_summary)), ]
       }
       
       # remove unnecessary variables from data set
-      if (model != 'spline') {
+      if (model[i] != 'spline') {
         data_set[[i]]$x1_pred <- NULL
         data_set[[i]]$x2_pred <- NULL
         data_set[[i]]$model_id <- NULL
-        if ((num_params == 2)) {
+        if ((num_params[i] == 2)) {
           data_set[[i]]$x3 <- NULL
           data_set[[i]]$n_x3 <- NULL
           data_set[[i]]$x3_pred <- NULL

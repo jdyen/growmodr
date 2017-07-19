@@ -6,9 +6,8 @@ tests/*
 ^\.travis\.yml$
 man-roxygen/*
 \.github/*
-LICENSE$
 ^.*\.o$
 ^\cleanup*
 ^inst/doc/[A-Za-z0-9\-_]+[.]txt$
 
-^codecov\.yml$
+.codecov\.yml$

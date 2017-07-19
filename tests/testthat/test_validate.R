@@ -104,23 +104,23 @@ test_that("validate.growmod_multi returns a complete growmod_cv object with a ho
 })
 
 test_that("validate.formula returns a complete growmod_cv object with loo", {
-  SW(mod_cv7 <- growmod(size ~ (index | block / predictors),
-                        data = data_test,
-                        model = 'hillslope',
-                        n_cv = 'loo',
-                        n_iter = ITER,
-                        n_chains = CHAINS))
-  expect_valmod(mod_cv_multi2[[4]])
-  expect_valmod_names(mod_cv_multi2[[4]])
+  SW(mod_cv7 <- validate(size ~ (index | block / predictors),
+                         data = data_test,
+                         model = 'hillslope',
+                         n_cv = 'loo',
+                         n_iter = ITER,
+                         n_chains = CHAINS))
+  expect_valmod(mod_cv7)
+  expect_valmod_names(mod_cv7)
 })
 
 test_that("validate.growmod errors if n_cv and test_data not specified", {
   expect_error(mod_cv8 <- validate(mod1, n_cv = NULL, test_data = NULL))
-  expect_error(mod_cv7 <- growmod(size ~ (index | block / predictors),
-                                  data = data_test,
-                                  model = 'hillslope',
-                                  n_cv = NULL,
-                                  test_data = NULL,
-                                  n_iter = ITER,
-                                  n_chains = CHAINS))
+  expect_error(mod_cv9 <- validate(size ~ (index | block / predictors),
+                                   data = data_test,
+                                   model = 'hillslope',
+                                   n_cv = NULL,
+                                   test_data = NULL,
+                                   n_iter = ITER,
+                                   n_chains = CHAINS))
 })

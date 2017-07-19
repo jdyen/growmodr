@@ -114,18 +114,18 @@ validate.growmod <- function(x,
   if (!is.null(x$stanmod)) {
     mod_compiled <- x$stanmod
   } else {
-    if (model != 'spline') {
+    if (x$model != 'spline') {
       mod_name <- paste('all_mod',
-                        ifelse(is.null(predictors), 'nopred', 'pred'),
-                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        ifelse(is.null(x$predictors), 'nopred', 'pred'),
+                        ifelse(length(x$data_set$block_data), 'blockmod', 'onemod'),
                         sep = '_')
     } else {
       mod_name <- paste('spline',
-                        ifelse(is.null(predictors), 'nopred', 'pred'),
-                        ifelse(is.null(block), 'onemod', 'blockmod'),
+                        ifelse(is.null(x$predictors), 'nopred', 'pred'),
+                        ifelse(length(x$data_set$block_data), 'blockmod', 'onemod'),
                         sep = '_')
     }
-    mod_compiled <- get(mod_name, growmod:::stanmodels)
+    mod_compiled <- get(mod_name, stanmodels)
   }
   
   # set sampling details
@@ -177,6 +177,14 @@ validate.growmod <- function(x,
              call. = FALSE)
       }
     }
+  }
+  
+  # calculate num_params
+  if (x$model != 'spline') {
+    mod_params <- get(paste0(x$model, '_param_fetch'))()
+    num_params <- mod_params$num_par
+  } else {
+    num_params <- x$spline_params$n_knots + x$spline_params$degree
   }
   
   # run cv in loop
