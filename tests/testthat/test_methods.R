@@ -68,6 +68,7 @@ test_that("print, summary and compare methods work correctly", {
   expect_output(summary(mod1), "summary statistics")
   expect_output(summary(mod2), "summary statistics")
   expect_output(summary(mod3), "summary statistics")
+  expect_output(summary(mod4), "summary statistics")
   expect_output(summary(mod_multi), "models were fitted")
   expect_length(compare(mod1, mod2, mod3), 15)
   expect_length(compare(mod_multi), 10)
@@ -79,11 +80,39 @@ test_that("print, summary and compare methods work correctly", {
   expect_length(compare(mod_cv_multi), 6)
 })
 
+test_that("compare methods error with incorrect inputs", {
+  expect_error(compare(x = mod1, mod2))
+  mod_test <- seq(1, 10, 1)
+  class(mod_test) <- 'growmod'
+  expect_error(compare(x = mod_test))
+  expect_length(compare(x = mod1), 5)
+  expect_error(compare(x = mod_cv, mod_cv))
+  mod_test <- seq(1, 10, 1)
+  class(mod_test) <- 'growmod_cv'
+  expect_error(compare(x = mod_test))
+  expect_length(compare(x = mod_cv), 3)
+  expect_length(compare(x = mod_multi), 10)
+  expect_error(compare(x = mod_multi, mod_multi))
+  mod_test <- seq(1, 10, 1)
+  class(mod_test) <- 'growmod_multi'
+  expect_error(compare(x = mod_test))
+  expect_length(compare(mod_multi, mod_multi), 20)
+  expect_length(compare(x = mod_cv_multi), 6)
+  expect_length(compare(mod_cv_multi, mod_cv_multi), 12)
+  expect_error(compare(x = mod_cv_multi, mod_cv_multi))
+  mod_test <- seq(1, 10, 1)
+  class(mod_test) <- 'growmod_cv_multi'
+  expect_error(compare(x = mod_test))
+})
+
 test_that("plot methods work correctly", {
   expect_silent(plot(mod1))
   expect_silent(plot(mod2))
   expect_silent(plot(mod3))
   expect_silent(plot(mod4))
+#  mod4a <- mod4
+#  mod4a$stan_summary[grep(paste0('plot\\[1'), rownames(mod4a$stan_summary)), '97.5%'] <- Inf
+  expect_warning(plot(mod4a))
   expect_warning(plot(mod_multi))
   expect_warning(plot(mod_multi, group_blocks = FALSE))
   expect_silent(plot(mod_cv))

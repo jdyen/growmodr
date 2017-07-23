@@ -180,8 +180,28 @@ test_that("spline models work with different spline models", {
                                           spline_type = 'bspline'),
                      n_iter = ITER,
                      n_chains = CHAINS))
+  SW(mod2 <- growmod(size ~ (index | block),
+                     data = data_test,
+                     model = 'spline',
+                     spline_params = list(degree = 8,
+                                          n_knots = 10,
+                                          spline_type = 'bspline'),
+                     n_iter = ITER,
+                     n_chains = CHAINS))
+  SW(mod3 <- growmod(size ~ index,
+                     data = data_test,
+                     model = 'spline',
+                     spline_params = list(degree = 8,
+                                          n_knots = 10,
+                                          spline_type = 'bspline'),
+                     n_iter = ITER,
+                     n_chains = CHAINS))
   expect_growmod(mod1)
   expect_growmod_names(mod1)
+  expect_growmod(mod2)
+  expect_growmod_names(mod2)
+  expect_growmod(mod3)
+  expect_growmod_names(mod3)
 })
 test_that("growmod.formula works when predictors are defined in a list", {
   data_test2 <- data_test

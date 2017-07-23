@@ -30,6 +30,25 @@ capture.output(
                      model = 'hillslope',
                      n_iter = ITER,
                      n_chains = CHAINS)),
+  SW(mod5 <- growmod(size ~ index,
+                     data = data_test,
+                     model = 'spline',
+                     n_iter = ITER,
+                     n_chains = CHAINS,
+                     spline_params = list(spline_type = 'ispline'))),
+  SW(mod6 <- growmod(size ~ index,
+                     data = data_test,
+                     model = 'spline',
+                     n_iter = ITER,
+                     n_chains = CHAINS,
+                     spline_params = list(spline_type = 'bspline'))),
+  data_test2 <- data_test,
+  data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors),
+  SW(mod7 <- growmod(size ~ (index | block / predictors),
+                     data = data_test2,
+                     model = 'hillslope',
+                     n_iter = ITER,
+                     n_chains = CHAINS)),
   SW(mod_multi <- growmod(size ~ (index | block / predictors),
                           data = data_test,
                           model = c('hillslope',
@@ -61,14 +80,22 @@ context('cross validate growmod models')
 test_that("validate.growmod returns a complete growmod_cv object with loo cv", {
   SW(mod_cv1 <- validate(mod1, n_cv = 'loo'))
   SW(mod_cv2 <- validate(mod2, n_cv = 'loo'))
+  SW(mod_cv2a <- validate(mod2, n_cv = mod2$data_set$n))
   SW(mod_cv3 <- validate(mod3, n_cv = 'loo'))
   SW(mod_cv3a <- validate(mod4, n_cv = 'loo'))
+  SW(mod_cv1a <- validate(mod7, n_cv = 'loo'))
   expect_valmod(mod_cv1)
   expect_valmod_names(mod_cv1)
   expect_valmod(mod_cv2)
   expect_valmod_names(mod_cv2)
+  expect_valmod(mod_cv2a)
+  expect_valmod_names(mod_cv2a)
   expect_valmod(mod_cv3)
   expect_valmod_names(mod_cv3)
+  expect_valmod(mod_cv3a)
+  expect_valmod_names(mod_cv3a)
+  expect_valmod(mod_cv1a)
+  expect_valmod_names(mod_cv1a)
 })
 test_that("validate.growmod returns a complete growmod_cv when stanmodel is not defined", {
   mod1_tmp <- mod1
@@ -87,8 +114,14 @@ test_that("validate.growmod_multi returns a complete growmod_cv_multi object", {
 })
 test_that("validate.growmod returns a complete growmod_cv object with k-fold cv (k < num_blocks)", {
   SW(mod_cv4 <- validate(mod1, n_cv = 2))
+  SW(mod_cv4a <- validate(mod4, n_cv = 2))
   expect_valmod(mod_cv4)
   expect_valmod_names(mod_cv4)
+  expect_valmod(mod_cv4a)
+  expect_valmod_names(mod_cv4a)
+})
+test_that("validate.growmod errors for non-numeric n_cv", {
+  expect_error(mod_cv4 <- validate(mod1, n_cv = 'a'))
 })
 test_that("validate.growmod returns a complete growmod_cv object with k-fold cv (k > num_blocks)", {
   SW(mod_cv5 <- validate(mod1, n_cv = 10))
@@ -105,8 +138,44 @@ test_that("validate.growmod returns a complete growmod_cv object with a holdout 
                    index = sample(data_test$index, size = ntest, replace = TRUE))
   data_tmp$predictors <- data_test$predictors[unique(data_tmp$block), ]
   SW(mod_cv6 <- validate(mod1, test_data = data_tmp))
+  SW(mod_cv6c <- validate(mod2, test_data = data_tmp))
+  SW(mod_cv6d <- validate(mod4, test_data = data_tmp))
+  SW(mod_cv6a <- validate(mod5, test_data = data_tmp))
+  SW(mod_cv6b <- validate(mod6, test_data = data_tmp))
   expect_valmod(mod_cv6)
   expect_valmod_names(mod_cv6)
+  expect_valmod(mod_cv6a)
+  expect_valmod_names(mod_cv6a)
+  expect_valmod(mod_cv6b)
+  expect_valmod_names(mod_cv6b)
+  expect_valmod(mod_cv6c)
+  expect_valmod_names(mod_cv6c)
+  expect_valmod(mod_cv6d)
+  expect_valmod_names(mod_cv6d)
+})
+test_that("validate.growmod errors on incomplete test data", {
+  ntest <- 20
+  data_tmp <- list(size = sample(data_test$size, size = ntest, replace = TRUE),
+                   block = sample(data_test$block, size = ntest, replace = TRUE),
+                   index = sample(data_test$index, size = ntest, replace = TRUE))
+  data_tmp$predictors <- data_test$predictors[unique(data_tmp$block), ]
+  data_tmp$block <- NULL
+  expect_error(mod_cv6 <- validate(mod1, test_data = data_tmp))
+  data_tmp <- list(size = sample(data_test$size, size = ntest, replace = TRUE),
+                   block = sample(data_test$block, size = ntest, replace = TRUE),
+                   index = sample(data_test$index, size = ntest, replace = TRUE))
+  data_tmp$size <- NULL
+  expect_error(mod_cv6 <- validate(mod1, test_data = data_tmp))
+  data_tmp <- list(size = sample(data_test$size, size = ntest, replace = TRUE),
+                   block = sample(data_test$block, size = ntest, replace = TRUE),
+                   index = sample(data_test$index, size = ntest, replace = TRUE))
+  data_tmp$index <- NULL
+  expect_error(mod_cv6 <- validate(mod1, test_data = data_tmp))
+  data_tmp <- list(size = sample(data_test$size, size = ntest, replace = TRUE),
+                   block = sample(data_test$block, size = ntest, replace = TRUE),
+                   index = sample(data_test$index, size = ntest, replace = TRUE))
+  data_tmp$index <- c(data_tmp$index, 1, 2, 3)
+  expect_error(mod_cv6 <- validate(mod1, test_data = data_tmp))
 })
 test_that("validate.growmod_multi returns a complete growmod_cv object with a holdout data set", {
   ntest <- 20
@@ -147,6 +216,7 @@ test_that("validate.formula returns a complete growmod_cv object with a holdout 
 
 test_that("validate.growmod errors if n_cv and test_data not specified", {
   expect_error(mod_cv8 <- validate(mod1, n_cv = NULL, test_data = NULL))
+  expect_error(mod_cv8a <- validate(mod_multi, n_cv = NULL, test_data = NULL))
   expect_error(SW(mod_cv9 <- validate(size ~ (index | block / predictors),
                                       data = data_test,
                                       model = 'hillslope',
