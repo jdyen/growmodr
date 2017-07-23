@@ -110,8 +110,8 @@ test_that("plot methods work correctly", {
   expect_silent(plot(mod2))
   expect_silent(plot(mod3))
   expect_silent(plot(mod4))
-#  mod4a <- mod4
-#  mod4a$stan_summary[grep(paste0('plot\\[1'), rownames(mod4a$stan_summary)), '97.5%'] <- Inf
+  mod4a <- mod4
+  mod4a$stan_summary[grep(paste0('plot\\[1'), rownames(mod4a$stan_summary))[1], '97.5%'] <- Inf
   expect_warning(plot(mod4a))
   expect_warning(plot(mod_multi))
   expect_warning(plot(mod_multi, group_blocks = FALSE))
