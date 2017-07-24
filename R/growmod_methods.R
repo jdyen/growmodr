@@ -120,9 +120,6 @@ compare.growmod_multi <- function(..., x) {
     }
     out_tmp <- x
     nms <- names(out_tmp)
-    if (!length(nms)) {
-      nms <- paste0('model', seq_along(out_tmp))
-    }
   }
   print_out <- rbind(sapply(out_tmp, function(x) x$r2),
                      sapply(out_tmp, function(x) x$rmsd),

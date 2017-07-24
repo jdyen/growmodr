@@ -407,38 +407,24 @@ stan_cv_internal <- function(i,
       if (!is.matrix(predictors_tmp)) {
         if (ncol(predictors) == 1) {
           predictors_tmp <- matrix(predictors_tmp, ncol = 1)
-        } else {
-          predictors_tmp <- matrix(predictors_tmp, nrow = 1)
         }
       }
       if (length(block_id) == 1) {
         predictors_tmp_test <- matrix(predictors[block_id, ], nrow = 1)
       } else {
         predictors_tmp_test <- predictors[block_id, ]
-        if (!is.matrix(predictors_tmp_test)) {
-          if (ncol(predictors) == 1) {
-            predictors_tmp_test <- matrix(predictors_tmp_test, ncol = 1)
-          } else {
-            predictors_tmp_test <- matrix(predictors_tmp_test, nrow = 1)
-          }
-        }
       }
     } else {
       if (is.list(predictors)) {
         predictors_tmp <- vector('list', length = length(predictors))
         predictors_tmp_test <- vector('list', length = length(predictors))
         for (j in seq(along = predictors)) {
-          if (!is.matrix(predictors[[j]]) & !is.data.frame(predictors[[j]])) {
-            predictors[[j]] <- matrix(predictors[[j]], ncol = 1)
-          }
           predictors_tmp[[j]] <- predictors[[j]][-block_id, ]
           if (!is.matrix(predictors_tmp[[j]])) {
             predictors_tmp[[j]] <- matrix(predictors_tmp[[j]], ncol = ncol(predictors[[j]]))
           }
           if (length(block_id) == 1) {
             predictors_tmp_test[[j]] <- matrix(predictors[[j]][block_id, ], ncol = ncol(predictors[[j]]))
-          } else {
-            predictors_tmp_test[[j]] <- predictors[[j]][block_id, ]
           }
         }
       }

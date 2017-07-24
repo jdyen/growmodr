@@ -75,6 +75,18 @@ test_that("growmod.formula handles NAs in block data for hillslope models", {
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
+test_that("growmod.formula finds predictors in parent env", {
+  data_test2 <- data_test
+  pred_tmp <- data_test2$predictors
+  data_test2$predictors <- NULL
+  SW(mod1 <- growmod(size ~ (index | block / pred_tmp),
+                     data = data_test2,
+                     model = 'hillslope',
+                     n_iter = ITER,
+                     n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
 test_that("growmod.formula returns a complete growmod object for hillslope_log models", {
   SW(mod1 <- growmod(size ~ (index | block / predictors),
                      data = data_test,

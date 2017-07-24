@@ -56,6 +56,13 @@ capture.output(
                      n_iter = ITER,
                      n_chains = CHAINS,
                      spline_params = list(spline_type = 'bspline'))),
+  data_test5 <- data_test,
+  data_test5$predictors <- lapply(1:18, function(x) data_test5$predictors),
+  SW(mod6list <- growmod(size ~ (index | block / predictors),
+                         data = data_test5,
+                         model = 'spline',
+                         n_iter = ITER,
+                         n_chains = CHAINS)),
   data_test2 <- data_test,
   data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors),
   SW(mod7 <- growmod(size ~ (index | block / predictors),
@@ -175,6 +182,7 @@ test_that("validate.growmod returns a complete growmod_cv object with a holdout 
   data_tmp2 <- data_tmp
   data_tmp2$predictors <- lapply(1:18, function(x) data_tmp2$predictors)
   SW(mod_cv6e <- validate(mod5, test_data = data_tmp2))
+  SW(mod_cv6f <- validate(mod6list, test_data = data_tmp2))
   expect_valmod(mod_cv6)
   expect_valmod_names(mod_cv6)
   expect_valmod(mod_cv6a)
@@ -185,6 +193,10 @@ test_that("validate.growmod returns a complete growmod_cv object with a holdout 
   expect_valmod_names(mod_cv6c)
   expect_valmod(mod_cv6d)
   expect_valmod_names(mod_cv6d)
+  expect_valmod(mod_cv6e)
+  expect_valmod_names(mod_cv6e)
+  expect_valmod(mod_cv6f)
+  expect_valmod_names(mod_cv6f)
 })
 test_that("validate.growmod errors on incomplete test data", {
   ntest <- 20
