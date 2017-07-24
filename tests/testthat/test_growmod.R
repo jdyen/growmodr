@@ -65,10 +65,10 @@ test_that("growmod.formula handles NAs in index data for hillslope models", {
   expect_growmod_names(mod1)
 })
 test_that("growmod.formula handles NAs in block data for hillslope models", {
-  block_tmp <- data_test$block
-  block_tmp[c(1, 5, 10)] <- NA
-  SW(mod1 <- growmod(size ~ (index | block_tmp / predictors),
-                     data = data_test,
+  data_test2 <- data_test
+  data_test2$block[c(1, 5, 10)] <- NA
+  SW(mod1 <- growmod(size ~ (index | block / predictors),
+                     data = data_test2,
                      model = 'hillslope',
                      n_iter = ITER,
                      n_chains = CHAINS))

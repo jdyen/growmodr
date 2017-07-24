@@ -39,7 +39,7 @@ capture.output(
   SW(mod_multi_noblock <- growmod(size ~ index,
                                   data = data_test,
                                   model = c('hillslope',
-                                            'power2'),
+                                            'hillslope_log'),
                                   n_iter = ITER,
                                   n_chains = CHAINS)),
   SW(mod_cv <- validate(mod1, n_cv = 'loo')),
