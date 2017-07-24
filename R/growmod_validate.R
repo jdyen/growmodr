@@ -240,18 +240,6 @@ validate.growmod <- function(x,
       nblock <- length(unique(block_data))
     }
     
-    # check all data for errors
-    if (length(index_data) != n) {
-      stop(paste0(index_var, ' should be the same length as ', size_resp, '.'),
-           call. = FALSE)
-    }
-    if (!is.null(block_var)) {
-      if (length(block_data) != n) {
-        stop(paste0(block_var, ' should be the same length as ', size_resp, '.'),
-             call. = FALSE)
-      }
-    }
-    
     # predict to test data
     train_data <- list(data_set = x$data_set,
                        predictors = x$predictors)
@@ -366,38 +354,24 @@ stan_cv_internal <- function(i,
                              ...) {
   # defaults to structured loo or structured k-fold if blocks included in model
   if (length(data$block_data)) {
-    if (data$n_block > 1) {
-      n_cv <- ifelse(n_cv > data$n_block, data$n_block, n_cv)
-      if (n_cv == data$n_block) {
-        block_id <- i
-        cv_id <- which(data$block_data == i)
-      } else {
-        n_holdout <- floor(data$n_block / n_cv)
-        n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
-        if (i < n_cv) {
-          block_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
-          cv_id <- NULL
-          for (i in seq_along(block_id)) {
-            cv_id <- c(cv_id, which(data$block_data == block_id[i]))
-          }
-        } else {
-          block_id <- ((i - 1) * n_holdout + 1):data$n_block
-          cv_id <- NULL
-          for (i in seq_along(block_id)) {
-            cv_id <- c(cv_id, which(data$block_data == block_id[i]))
-          }
-        }
-      }
+    n_cv <- ifelse(n_cv > data$n_block, data$n_block, n_cv)
+    if (n_cv == data$n_block) {
+      block_id <- i
+      cv_id <- which(data$block_data == i)
     } else {
-      if (n_cv == data$n) {
-        cv_id <- i
+      n_holdout <- floor(data$n_block / n_cv)
+      n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
+      if (i < n_cv) {
+        block_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
+        cv_id <- NULL
+        for (i in seq_along(block_id)) {
+          cv_id <- c(cv_id, which(data$block_data == block_id[i]))
+        }
       } else {
-        n_holdout <- floor(data$n / n_cv)
-        n_holdout <- ifelse(n_holdout == 0, 1, n_holdout)
-        if (i < n_cv) {
-          cv_id <- ((i - 1) * n_holdout + 1):(i * n_holdout)
-        } else {
-          cv_id <- ((i - 1) * n_holdout + 1):data$n
+        block_id <- ((i - 1) * n_holdout + 1):data$n_block
+        cv_id <- NULL
+        for (i in seq_along(block_id)) {
+          cv_id <- c(cv_id, which(data$block_data == block_id[i]))
         }
       }
     }

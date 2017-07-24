@@ -15,6 +15,20 @@ capture.output(
                      model = 'hillslope',
                      n_iter = ITER,
                      n_chains = CHAINS)),
+  data_test_1pred <- data_test,
+  data_test_1pred$predictors <- data_test_1pred$predictors[, 1],
+  SW(mod1pred <- growmod(size ~ (index | block / predictors),
+                         data = data_test_1pred,
+                         model = 'hillslope',
+                         n_iter = ITER,
+                         n_chains = CHAINS)),
+  data_test_1pred_list <- data_test_1pred,
+  data_test_1pred_list$predictors <- lapply(1:3, function(x) data_test_1pred$predictors),
+  SW(mod1pred_list <- growmod(size ~ (index | block / predictors),
+                              data = data_test_1pred_list,
+                              model = 'hillslope',
+                              n_iter = ITER,
+                              n_chains = CHAINS)),
   SW(mod2 <- growmod(size ~ (index | block),
                      data = data_test,
                      model = 'hillslope',
@@ -79,6 +93,8 @@ expect_valmod_names <- function(x) expect_named(x, c('size_real',
 context('cross validate growmod models')
 test_that("validate.growmod returns a complete growmod_cv object with loo cv", {
   SW(mod_cv1 <- validate(mod1, n_cv = 'loo'))
+  SW(mod_cv1pred <- validate(mod1pred, n_cv = 'loo'))
+  SW(mod_cv1pred_list <- validate(mod1pred_list, n_cv = 'loo'))
   SW(mod_cv2 <- validate(mod2, n_cv = 'loo'))
   SW(mod_cv2a <- validate(mod2, n_cv = mod2$data_set$n))
   SW(mod_cv3 <- validate(mod3, n_cv = 'loo'))
@@ -96,13 +112,22 @@ test_that("validate.growmod returns a complete growmod_cv object with loo cv", {
   expect_valmod_names(mod_cv3a)
   expect_valmod(mod_cv1a)
   expect_valmod_names(mod_cv1a)
+  expect_valmod(mod_cv1pred)
+  expect_valmod_names(mod_cv1pred)
+  expect_valmod(mod_cv1pred_list)
+  expect_valmod_names(mod_cv1pred_list)
 })
 test_that("validate.growmod returns a complete growmod_cv when stanmodel is not defined", {
   mod1_tmp <- mod1
   mod1_tmp$stanmod <- NULL
   SW(mod_cv1a <- validate(mod1_tmp, n_cv = 'loo'))
+  mod5_tmp <- mod5
+  mod5_tmp$stanmod <- NULL
+  SW(mod_cv5a <- validate(mod5_tmp, n_cv = 'loo'))
   expect_valmod(mod_cv1a)
   expect_valmod_names(mod_cv1a)
+  expect_valmod(mod_cv5a)
+  expect_valmod_names(mod_cv5a)
 })
 test_that("validate.growmod_multi returns a complete growmod_cv_multi object", {
   SW(mod_cv_multi <- validate(mod_multi, n_cv = 'loo'))
@@ -142,6 +167,9 @@ test_that("validate.growmod returns a complete growmod_cv object with a holdout 
   SW(mod_cv6d <- validate(mod4, test_data = data_tmp))
   SW(mod_cv6a <- validate(mod5, test_data = data_tmp))
   SW(mod_cv6b <- validate(mod6, test_data = data_tmp))
+  data_tmp2 <- data_tmp
+  data_tmp2$predictors <- lapply(1:18, function(x) data_tmp2$predictors)
+  SW(mod_cv6e <- validate(mod5, test_data = data_tmp2))
   expect_valmod(mod_cv6)
   expect_valmod_names(mod_cv6)
   expect_valmod(mod_cv6a)

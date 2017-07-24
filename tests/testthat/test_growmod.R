@@ -64,6 +64,17 @@ test_that("growmod.formula handles NAs in index data for hillslope models", {
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
+test_that("growmod.formula handles NAs in block data for hillslope models", {
+  block_tmp <- data_test$block
+  block_tmp[c(1, 5, 10)] <- NA
+  SW(mod1 <- growmod(size ~ (index | block_tmp / predictors),
+                     data = data_test,
+                     model = 'hillslope',
+                     n_iter = ITER,
+                     n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+})
 test_that("growmod.formula returns a complete growmod object for hillslope_log models", {
   SW(mod1 <- growmod(size ~ (index | block / predictors),
                      data = data_test,
@@ -165,6 +176,14 @@ test_that("growmod.formula returns a complete growmod object for spline models",
 })
 test_that("spline models work with different spline models", {
   expect_warning(mod1 <- growmod(size ~ (index | block / predictors),
+                                 data = data_test,
+                                 model = 'spline',
+                                 spline_params = list(degree = 8,
+                                                      n_knots = 10,
+                                                      spline_type = 'jspline'),
+                                 n_iter = ITER,
+                                 n_chains = CHAINS))
+  expect_warning(mod1 <- growmod(size ~ index,
                                  data = data_test,
                                  model = 'spline',
                                  spline_params = list(degree = 8,
@@ -602,6 +621,19 @@ test_that("growmod.default returns a complete growmod object for hillslope model
                      spline_params = list(degree = 8,
                                           n_knots = 10,
                                           spline_type = 'ispline')))
+  expect_error(mod3a <- growmod(x = cbind(data_test$size, data_test$size),
+                                index = data_test$index,
+                                block = NULL,
+                                predictors = NULL,
+                                model = 'hillslope',
+                                n_iter = ITER,
+                                n_burnin = floor(ITER / 2),
+                                n_thin = 1,
+                                n_chains = CHAINS,
+                                stan_cores = 1,
+                                spline_params = list(degree = 8,
+                                                     n_knots = 10,
+                                                     spline_type = 'ispline')))
   data_test2 <- data_test
   data_test2$predictors <- lapply(1:3, function(x) data_test2$predictors)
   SW(mod4 <- growmod(x = data_test2$size,
@@ -641,6 +673,19 @@ test_that("growmod.default returns a complete growmod object for spline models",
                      spline_params = list(degree = 10,
                                           n_knots = 25,
                                           spline_type = NULL)))
+  SW(mod1a <- growmod(x = data_test$size,
+                      index = data_test$index,
+                      block = data_test$block,
+                      predictors = data_test$predictors,
+                      model = 'spline',
+                      n_iter = ITER,
+                      n_burnin = floor(ITER / 2),
+                      n_thin = 1,
+                      n_chains = CHAINS,
+                      stan_cores = 1,
+                      spline_params = list(degree = NULL,
+                                           n_knots = NULL,
+                                           spline_type = NULL)))
   expect_error(mod2 <- growmod(x = data_test$size,
                                index = c(data_test$index, 1, 2, 3),
                                block = data_test$block,
@@ -669,4 +714,59 @@ test_that("growmod.default returns a complete growmod object for spline models",
                                                     spline_type = 'ispline')))
   expect_growmod(mod1)
   expect_growmod_names(mod1)
+  expect_growmod(mod1a)
+  expect_growmod_names(mod1a)
+})
+test_that("growmod.formula errors on incorrect parameters", {
+  size <- data_test$size
+  index <- data_test$index
+  block <- data_test$block
+  predictors <- data_test$predictors
+  expect_error(mod1 <- growmod(treesize ~ (index | block / predictors),
+                               data = data_test,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  expect_error(mod1 <- growmod(treesize ~ (index | block / predictors),
+                               data = NULL,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  expect_error(mod1 <- growmod(size ~ (treeindex | block / predictors),
+                               data = data_test,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  expect_error(mod1 <- growmod(size ~ (treeindex | block / predictors),
+                               data = NULL,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  SW(mod1 <- growmod(size ~ (index | block / predictors),
+                     data = NULL,
+                     model = 'hillslope',
+                     n_iter = ITER,
+                     n_chains = CHAINS))
+  expect_growmod(mod1)
+  expect_growmod_names(mod1)
+  expect_error(mod1 <- growmod(size ~ (index | block / treepredictors),
+                               data = data_test,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  expect_error(mod1 <- growmod(size ~ (index | block / treepredictors),
+                               data = NULL,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  expect_error(mod1 <- growmod(size ~ (index | treeblock / predictors),
+                               data = data_test,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
+  expect_error(mod1 <- growmod(size ~ (index | treeblock / predictors),
+                               data = NULL,
+                               model = 'hillslope',
+                               n_iter = ITER,
+                               n_chains = CHAINS))
 })

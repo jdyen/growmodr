@@ -57,3 +57,10 @@ test_that("growmod_sim returns predictors if required or null if not", {
   expect_is(data_test1$predictors, "matrix")
   expect_is(data_test1$coefs, "matrix")
 })
+test_that("growmod_sim corrects the number of obs per block", {
+  SW(data_test1 <- growmod_sim(n = 100,
+                               nblock = 3,
+                               age_range = c(0, 50),
+                               include_predictors = TRUE,
+                               true_model = 'hillslope'))
+})

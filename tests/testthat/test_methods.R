@@ -36,6 +36,12 @@ capture.output(
                                     'power2'),
                           n_iter = ITER,
                           n_chains = CHAINS)),
+  SW(mod_multi_noblock <- growmod(size ~ index,
+                                  data = data_test,
+                                  model = c('hillslope',
+                                            'power2'),
+                                  n_iter = ITER,
+                                  n_chains = CHAINS)),
   SW(mod_cv <- validate(mod1, n_cv = 'loo')),
   SW(mod_cv_multi <- validate(mod_multi, n_cv = 'loo'))
 )
@@ -103,6 +109,12 @@ test_that("compare methods error with incorrect inputs", {
   mod_test <- seq(1, 10, 1)
   class(mod_test) <- 'growmod_cv_multi'
   expect_error(compare(x = mod_test))
+  mod_multi2 <- mod_multi
+  names(mod_multi2) <- NULL
+  expect_length(compare(x = mod_multi), 10)
+  mod_cv_multi2 <- mod_cv_multi
+  names(mod_cv_multi2) <- NULL
+  expect_length(compare(x = mod_cv_multi2), 6)
 })
 
 test_that("plot methods work correctly", {
@@ -110,6 +122,7 @@ test_that("plot methods work correctly", {
   expect_silent(plot(mod2))
   expect_silent(plot(mod3))
   expect_silent(plot(mod4))
+  expect_silent(plot(mod_multi_noblock))
   mod4a <- mod4
   mod4a$stan_summary[grep(paste0('plot\\[1'), rownames(mod4a$stan_summary))[1], '97.5%'] <- Inf
   expect_warning(plot(mod4a))

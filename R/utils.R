@@ -9,35 +9,25 @@ check_preds <- function(predictors,
                         nblock) {
   # get predictor data
   if (!is.null(predictors)) {
-    if (is.null(block_data)) {
-      warning('no blocking variable was provided so predictors will not be used.',
-              call. = FALSE)
+    if (is.matrix(predictors) | is.data.frame(predictors)) {
+      npred <- ncol(predictors)
+      nblock_pred <- nrow(predictors)
     } else {
-      if (is.matrix(predictors) | is.data.frame(predictors)) {
-        npred <- ncol(predictors)
-        nblock_pred <- nrow(predictors)
-      } else {
-        if (is.list(predictors)) {
-          if (length(predictors) != num_params) {
-            stop(paste0('the ', model, ' model has ', num_params,
-                        ' parameters but predictors only has ',
-                        length(predictors), ' elements. There should 
+      if (length(predictors) != num_params) {
+        stop(paste0('the ', model, ' model has ', num_params,
+                    ' parameters but predictors only has ',
+                    length(predictors), ' elements. There should 
                         be one element of predictors for each model parameter.'),
-                 call. = FALSE)
-          }
-          npred <- sapply(predictors, ncol)
-          nblock_pred <- sapply(predictors, nrow)
-          if (!all(nblock_pred == nblock_pred[1])) {
-            stop(paste0('all elements of predictors should have the same number
+             call. = FALSE)
+      }
+      npred <- sapply(predictors, ncol)
+      nblock_pred <- sapply(predictors, nrow)
+      if (!all(nblock_pred == nblock_pred[1])) {
+        stop(paste0('all elements of predictors should have the same number
                  of rows for the ', model, ' model.'),
-                 call. = FALSE)
-          } else {
-            nblock_pred <- nblock_pred[1]
-          }
-        } else {
-          stop('predictors must be a matrix, data.frame or list.',
-               call. = FALSE)
-        }
+             call. = FALSE)
+      } else {
+        nblock_pred <- nblock_pred[1]
       }
     }
     if (nblock != nblock_pred) {
