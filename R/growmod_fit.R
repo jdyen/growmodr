@@ -388,6 +388,7 @@ growmod.default <- function(x,
     size <- size[-rows_to_rm]
     index <- index[-rows_to_rm]
     block <- block[-rows_to_rm]
+    nblock <- length(unique(block))
     warning(paste0('removed ', length(rows_to_rm), ' observations due to NAs in ', na_rem_list),
             call. = FALSE)
   }

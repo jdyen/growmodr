@@ -65,18 +65,18 @@ test_that("growmod.formula works for multiple models with blocks and predictors 
                                'power3'),
                      n_iter = ITER,
                      n_chains = CHAINS))
-  data_test2$predictors <- 1:10
-  SW(mod1 <- growmod(size ~ (index | block / predictors),
-                     data = data_test2,
-                     model = c('hillslope',
-                               'hillslope_log',
-                               'power3'),
-                     n_iter = ITER,
-                     n_chains = CHAINS))
   expect_growmod(mod1[[1]])
   expect_growmod_names(mod1[[1]])
   expect_growmod(mod1[[3]])
   expect_growmod_names(mod1[[3]])
+  data_test2$predictors <- 1:10
+  expect_error(growmod(size ~ (index | block / predictors),
+                       data = data_test2,
+                       model = c('hillslope',
+                                 'hillslope_log',
+                                 'power3'),
+                       n_iter = ITER,
+                       n_chains = CHAINS))
 })
 test_that("growmod.formula works for multiple models with blocks but no predictors", {
   SW(mod1 <- growmod(size ~ (index | block),
