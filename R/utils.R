@@ -12,6 +12,7 @@ check_preds <- function(predictors,
     if (is.numeric(predictors)) {
       predictors <- as.matrix(predictors)
     }
+    print(predictors)
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       npred <- ncol(predictors)
       nblock_pred <- nrow(predictors)
@@ -24,11 +25,8 @@ check_preds <- function(predictors,
              call. = FALSE)
       }
       for (i in seq_along(predictors)) {
-        if (!is.matrix(predictors[[j]])) {
-          predictors[[i]] <- matrix(predictors[[i]], ncol = 1)
-        }
+        predictors[[i]] <- as.matrix(predictors[[i]])
       }
-      print(predictors)
       npred <- sapply(predictors, ncol)
       nblock_pred <- sapply(predictors, nrow)
       if (!all(nblock_pred == nblock_pred[1])) {
