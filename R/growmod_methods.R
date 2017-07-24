@@ -43,7 +43,7 @@ compare <- function(x, ...) {
 
 #' @describeIn compare compare fitted \code{"growmod"} models
 #' @export
-compare.growmod2 <- function(..., x) {
+compare.growmod <- function(..., x) {
   dots <- list(...)
   if (length(dots)) {
     if (!missing(x)) {
