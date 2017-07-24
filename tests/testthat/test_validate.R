@@ -121,7 +121,12 @@ test_that("validate.growmod returns a complete growmod_cv when stanmodel is not 
   mod1_tmp <- mod1
   mod1_tmp$stanmod <- NULL
   SW(mod_cv1a <- validate(mod1_tmp, n_cv = 'loo'))
-  mod5_tmp <- mod5
+  SW(mod5_tmp <- growmod(size ~ (index | block / predictors),
+                         data = data_test,
+                         model = 'spline',
+                         n_iter = ITER,
+                         n_chains = CHAINS,
+                         spline_params = list(spline_type = 'ispline')))
   mod5_tmp$stanmod <- NULL
   SW(mod_cv5a <- validate(mod5_tmp, n_cv = 'loo'))
   expect_valmod(mod_cv1a)
