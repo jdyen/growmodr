@@ -398,7 +398,9 @@ stan_cv_internal <- function(i,
   # check predictors
   if (!is.null(predictors)) {
     if (is.numeric(predictors)) {
-      predictors <- as.matrix(predictors)
+      if (!is.matrix(predictors) & !is.data.frame(predictors)) {
+        predictors <- matrix(predictors, ncol = 1)
+      }
     }
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       predictors_tmp <- predictors[-block_id, ]
@@ -415,8 +417,8 @@ stan_cv_internal <- function(i,
         predictors_tmp <- vector('list', length = length(predictors))
         predictors_tmp_test <- vector('list', length = length(predictors))
         for (j in seq(along = predictors)) {
-          if (!is.matrix(predictors[[j]])) {
-            predictors[[j]] <- as.matrix(predictors[[j]])
+          if (!is.matrix(predictors[[j]]) & !is.data.frame(predictors[[j]])) {
+            predictors[[j]] <- matrix(predictors[[j]], ncol = 1)
           }
           predictors_tmp[[j]] <- predictors[[j]][-block_id, ]
           if (!is.matrix(predictors_tmp[[j]])) {
