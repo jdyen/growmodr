@@ -405,12 +405,19 @@ stan_cv_internal <- function(i,
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       predictors_tmp <- predictors[-block_id, ]
       if (!is.matrix(predictors_tmp)) {
-        predictors_tmp <- matrix(predictors_tmp, nrow = 1)
+        if (ncol(predictors) == 1) {
+          predictors_tmp <- matrix(predictors_tmp, ncol = 1)
+        } else {
+          predictors_tmp <- matrix(predictors_tmp, nrow = 1)
+        }
       }
       if (length(block_id) == 1) {
         predictors_tmp_test <- matrix(predictors[block_id, ], nrow = 1)
       } else {
         predictors_tmp_test <- predictors[block_id, ]
+        if (!is.matrix(predictors_tmp_test)) {
+          predictors_tmp_test <- matrix(predictors_tmp_test, ncol = 1)
+        }
       }
     } else {
       if (is.list(predictors)) {
