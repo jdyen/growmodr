@@ -10,7 +10,7 @@ check_preds <- function(predictors,
   # get predictor data
   if (!is.null(predictors)) {
     if (is.numeric(predictors)) {
-      predictors <- matrix(predictors, ncol = 1)
+      predictors <- as.matrix(predictors)
     }
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       npred <- ncol(predictors)
