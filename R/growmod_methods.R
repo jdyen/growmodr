@@ -83,7 +83,7 @@ compare.growmod_cv <- function(..., x) {
     if (!is.list(x) || !length(x)) {
       stop("'x' must be a list.")
     }
-    dots <- x
+    dots <- list(x)
     nms <- names(dots)
     if (!length(nms)) {
       nms <- paste0('model', seq_along(dots))
