@@ -416,7 +416,11 @@ stan_cv_internal <- function(i,
       } else {
         predictors_tmp_test <- predictors[block_id, ]
         if (!is.matrix(predictors_tmp_test)) {
-          predictors_tmp_test <- matrix(predictors_tmp_test, ncol = 1)
+          if (ncol(predictors) == 1) {
+            predictors_tmp_test <- matrix(predictors_tmp_test, ncol = 1)
+          } else {
+            predictors_tmp_test <- matrix(predictors_tmp_test, nrow = 1)
+          }
         }
       }
     } else {
