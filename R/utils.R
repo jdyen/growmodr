@@ -24,8 +24,11 @@ check_preds <- function(predictors,
              call. = FALSE)
       }
       for (i in seq_along(predictors)) {
-        predictors[[i]] <- as.matrix(predictors[[i]])
+        if (!is.matrix(predictors[[j]])) {
+          predictors[[i]] <- matrix(predictors[[i]], ncol = 1)
+        }
       }
+      print(predictors)
       npred <- sapply(predictors, ncol)
       nblock_pred <- sapply(predictors, nrow)
       if (!all(nblock_pred == nblock_pred[1])) {
