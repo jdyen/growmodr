@@ -9,13 +9,16 @@ check_preds <- function(predictors,
                         nblock) {
   # get predictor data
   if (!is.null(predictors)) {
+    if (is.numeric(predictors)) {
+      predictors <- matrix(predictors, ncol = 1)
+    }
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       npred <- ncol(predictors)
       nblock_pred <- nrow(predictors)
     } else {
       if (length(predictors) != num_params) {
         stop(paste0('the ', model, ' model has ', num_params,
-                    ' parameters but predictors only has ',
+                    ' parameters but predictors has ',
                     length(predictors), ' elements. There should 
                         be one element of predictors for each model parameter.'),
              call. = FALSE)
@@ -36,7 +39,7 @@ check_preds <- function(predictors,
                     ' rows in each element'),
              call. = FALSE)
       }
-      warning('there should be value of each predictor variable for each 
+      warning('there should be one value of each predictor variable for each 
                  unique level of the blocking variable; tapply() has been
                  used to calculate mean values of each predictor for each
                  blocking level.',

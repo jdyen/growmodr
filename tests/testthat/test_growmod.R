@@ -147,7 +147,7 @@ test_that("growmod.formula returns a complete growmod object for logistic3 model
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
-test_that("growmod.formula returns a growmod object for hillslope models", {
+test_that("growmod.formula returns a growmod object for archibold models", {
   SW(mod1 <- growmod(size ~ (index | block / predictors),
                      data = data_test,
                      model = 'archibold',
@@ -325,11 +325,11 @@ test_that("growmod.formula errors when predictors do not match blocks or observa
   data_test2$predictors <- data_test2$predictors[sample(1:nrow(data_test2$predictors),
                                                         size = (length(data_test2$size) - 4),
                                                         replace = TRUE), ]
-  expect_error(SW(mod1 <- growmod(size ~ (index | block / predictors),
+  expect_error(mod1 <- growmod(size ~ (index | block / predictors),
                                   data = data_test2,
                                   model = 'hillslope',
                                   n_iter = ITER,
-                                  n_chains = CHAINS)))
+                                  n_chains = CHAINS))
 })
 
 context('growmod (model with blocks but no predictors)')
@@ -414,7 +414,7 @@ test_that("growmod.formula returns a complete growmod object for logistic3 model
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
-test_that("growmod.formula returns a growmod object for hillslope models", {
+test_that("growmod.formula returns a growmod object for archibold models", {
   SW(mod1 <- growmod(size ~ (index | block),
                      data = data_test,
                      model = 'archibold',
@@ -552,7 +552,7 @@ test_that("growmod.formula returns a complete growmod object for logistic3 model
   expect_growmod(mod1)
   expect_growmod_names(mod1)
 })
-test_that("growmod.formula returns a growmod object for hillslope models", {
+test_that("growmod.formula returns a growmod object for archibold models", {
   SW(mod1 <- growmod(size ~ index,
                      data = data_test,
                      model = 'archibold',
