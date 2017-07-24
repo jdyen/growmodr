@@ -23,6 +23,9 @@ check_preds <- function(predictors,
                         be one element of predictors for each model parameter.'),
              call. = FALSE)
       }
+      for (i in seq_along(predictors)) {
+        predictors[[i]] <- as.matrix(predictors[[i]])
+      }
       npred <- sapply(predictors, ncol)
       nblock_pred <- sapply(predictors, nrow)
       if (!all(nblock_pred == nblock_pred[1])) {
