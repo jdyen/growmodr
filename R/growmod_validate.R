@@ -397,11 +397,6 @@ stan_cv_internal <- function(i,
   
   # check predictors
   if (!is.null(predictors)) {
-    if (is.numeric(predictors)) {
-      if (!is.matrix(predictors) & !is.data.frame(predictors)) {
-        predictors <- matrix(predictors, ncol = 1)
-      }
-    }
     if (is.matrix(predictors) | is.data.frame(predictors)) {
       predictors_tmp <- predictors[-block_id, ]
       if (!is.matrix(predictors_tmp)) {
