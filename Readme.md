@@ -32,7 +32,7 @@ and rstan 2.15.1.
 
 Created 31 May 2017
 
-Updated 14 July 2017
+Updated 31 July 2017
 
 *****
 
