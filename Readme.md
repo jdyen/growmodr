@@ -37,8 +37,9 @@ Updated 31 July 2017
 *****
 
 ## Installation
-growmod is distributed as an R package in source form, and is not currently available through the CRAN.
+`growmod` is distributed as an R package in source form, and is not currently available through the CRAN.
 
+- installing `growmod` requires an appropriate toolchain. The Stan developers provide excellent guides to installing RStan and an appropriate toolchain: [Windows](https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Windows) and [Mac/Linux](https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Mac-or-Linux). 
 - the easiest (and recommended) method for installation is to use the devtools package to install directly from the GitHub source:
 ```
 if (!require(devtools)) {
