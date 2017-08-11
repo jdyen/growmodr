@@ -1,5 +1,5 @@
 # test the growmod_sim function
-library(growmod)
+library(growmodr)
 SEED <- 12345
 set.seed(SEED)
 

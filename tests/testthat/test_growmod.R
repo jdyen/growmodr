@@ -1,7 +1,7 @@
 # model testing for the growmod.formula and growmod.default functions when fitting
 #   a single model
 
-library(growmod)
+library(growmodr)
 SEED <- 12345
 set.seed(SEED)
 ITER <- 10

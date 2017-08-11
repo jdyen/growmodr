@@ -1,5 +1,5 @@
 # test growmod fit to multiple models at once
-library(growmod)
+library(growmodr)
 SEED <- 12345
 set.seed(SEED)
 ITER <- 10

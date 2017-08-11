@@ -1,5 +1,5 @@
 # test the validate functions
-library(growmod)
+library(growmodr)
 SEED <- 12345
 set.seed(SEED)
 ITER <- 10

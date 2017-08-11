@@ -1,5 +1,5 @@
 # test methods for growmod S3 class
-library(growmod)
+library(growmodr)
 SEED <- 12345
 set.seed(SEED)
 ITER <- 10
