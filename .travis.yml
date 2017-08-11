@@ -38,7 +38,7 @@ after_script:
 
 after_success:
   - tar -C .. -xf $growmodr_*.tar.gz
-  - travis_wait 40 Rscript -e codecov.R 
+  - travis_wait 40 Rscript -e growmodr/codecov.R 
 
 after_failure:
   - cat growmodr.Rcheck/00install.out
