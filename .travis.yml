@@ -1,4 +1,4 @@
-la4-48b7-ba98-64669c7bfd48anguage: r
+language: r
 sudo: required
 warnings_are_errors: false
 r: devel
