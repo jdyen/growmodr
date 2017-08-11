@@ -8,7 +8,7 @@ static const R_CallMethodDef CallEntries[] = {
   {NULL, NULL, 0}
 };
 
-void attribute_visible R_init_growmod(DllInfo *dll) {
+void attribute_visible R_init_growmodr(DllInfo *dll) {
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, TRUE);
 }

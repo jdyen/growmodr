@@ -1,4 +1,4 @@
-Package: growmod
+Package: growmodr
 Type: Package
 Title: Hierarchical Growth Curve Modelling and Validation with Stan
 Version: 0.1.0
@@ -16,8 +16,8 @@ Description: R package to fit growth models to data on size at age. Supports
     where curve parameters depend on a predictor variable (e.g. a species's
     traits). Includes methods for model validation, comparison, and plotting.
 License: file LICENSE
-URL: https://github.com/jdyen/growmod
-BugReports: https://github.com/jdyen/growmod/issues
+URL: https://github.com/jdyen/growmodr
+BugReports: https://github.com/jdyen/growmodr/issues
 Encoding: UTF-8
 LazyData: true
 Depends:
