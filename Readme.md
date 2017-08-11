@@ -1,13 +1,13 @@
-# growmod: growth curve modelling and validation in R 
+# growmodr: growth curve modelling and validation in R 
 
-This README is for the R package growmod
+This README is for the R package growmodr
 
 Copyright &copy; 2017, Jian Yen
 
 *****
 
-[![Build Status](https://travis-ci.org/jdyen/growmod.svg?branch=collapse-mods)](https://travis-ci.org/jdyen/growmod)
-[![Coverage Status](https://img.shields.io/codecov/c/github/jdyen/growmod/master.svg)](https://codecov.io/github/jdyen/growmod?branch=master)
+[![Build Status](https://travis-ci.org/jdyen/growmodr.svg?branch=master)](https://travis-ci.org/jdyen/growmodr)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jdyen/growmodr/master.svg)](https://codecov.io/github/jdyen/growmodr?branch=master)
 
 ## License details
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,34 +25,34 @@ limitations under the License.
 *****
 
 ## Overview
-`growmod` is a collection of R functions for fitting regression models to growth curves.
+`growmodr` is a collection of R functions for fitting regression models to growth curves.
 The emphasis is on easy model fitting and simple interfaces for extensive model comparison
-and model validation. All functions in `growmod` are written in R 3.4.0 and use Stan 2.12.0
+and model validation. All functions in `growmodr` are written in R 3.4.0 and use Stan 2.12.0
 and rstan 2.15.1.
 
 Created 31 May 2017
 
-Updated 31 July 2017
+Updated 11 August 2017
 
 *****
 
 ## Installation
-`growmod` is distributed as an R package in source form, and is not currently available through the CRAN.
+`growmodr` is distributed as an R package in source form, and is not currently available through the CRAN.
 
-- installing `growmod` requires an appropriate toolchain. The Stan developers provide excellent guides to installing RStan and an appropriate toolchain: [Windows](https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Windows) and [Mac/Linux](https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Mac-or-Linux). 
+- installing `growmodr` requires an appropriate toolchain. The Stan developers provide excellent guides to installing RStan and an appropriate toolchain: [Windows](https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Windows) and [Mac/Linux](https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Mac-or-Linux). 
 - the easiest (and recommended) method for installation is to use the devtools package to install directly from the GitHub source:
 ```
 if (!require(devtools)) {
   install.packages("devtools")
 }
-# install the current version of growmod
-devtools::install_github("jdyen/growmod", args = "--preclean")
+# install the current version of growmodr
+devtools::install_github("jdyen/growmodr", args = "--preclean")
 ```
 
 *****
 
 ## Usage
-Once `growmod` has been installed there is one function to fit several different growth models: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block / predictor)`. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be `size ~ (age | species / traits)`, and could be used to predict growth curves for any given species based on its trait values.
+Once `growmodr` has been installed there is one function to fit several different growth models: `growmod`. This function has a formula interface (`growmod.formula`) and information about its use can be found by typing `?growmod` in the R console. The formula interface has been set up to handle data clustered into blocks and predictor variables relevant to each block, with the syntax `size ~ (age | block / predictor)`. An example use-case for this setup is growth curves measured on species, with trait data for each species. The model then would be `size ~ (age | species / traits)`, and could be used to predict growth curves for any given species based on its trait values.
 
 A fitted growth model is a `growmod` object and can be validated using the `validate` function. This function can used to cross-validate a fitted model or can be used to validate a fitted growth model against a holdout data set.
 
@@ -60,8 +60,8 @@ Models fitted using `growmod` are of class `growmod` and have several S3 methods
 
 A typical workflow for fitting a growth model with `growmod` would look something like:
 ```
-# load growmod package
-library(growmod)
+# load growmodr package
+library(growmodr)
 
 # load or simulate data
 data <- growmod_sim()

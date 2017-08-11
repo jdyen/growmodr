@@ -1,6 +1,6 @@
 library(testthat)
 
-library(growmod)
+library(growmodr)
 
-test_check('growmod')
+test_check('growmodr')
 

@@ -1,9 +1,10 @@
-#' growmod: Growth Curve Modelling and Validation with Stan
-#' @name growmod-package
+#' growmodr: Growth Curve Modelling and Validation with Stan
+#' @name growmodr-package
 #' @docType package
-#' @aliases growmod-package
-#'
-#' @useDynLib growmod, .registration = TRUE
+#' @aliases growmodr-package
+#' @aliases growmodr
+#`
+#' @useDynLib growmodr, .registration = TRUE
 #' 
 #' @import methods
 #' @import stats
