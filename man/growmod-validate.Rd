@@ -12,15 +12,17 @@ validate(x, ...)
 
 \method{validate}{formula}(formula, data = NULL, model = "hillslope",
   n_cv = NULL, test_data = NULL, n_iter = 5000,
-  n_burnin = floor(n_iter/2), n_thin = 1, n_chains = 4, stan_cores = 1,
-  spline_params = list(degree = 8, n_knots = 10, spline_type = "ispline"),
-  ...)
+  n_burnin = floor(n_iter/2), n_thin = 1, n_chains = 4,
+  stan_cores = 1, spline_params = list(degree = 8, n_knots = 10,
+  spline_type = "ispline"), ...)
 
 \method{validate}{growmod}(x, n_cv = NULL, test_data = NULL,
-  n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL, ...)
+  n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL,
+  ...)
 
 \method{validate}{growmod_multi}(x, n_cv = NULL, test_data = NULL,
-  n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL, ...)
+  n_iter = NULL, n_burnin = NULL, n_thin = NULL, n_chains = NULL,
+  ...)
 }
 \arguments{
 \item{x}{fitted growmod or growmod_multi object}

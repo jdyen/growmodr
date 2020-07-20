@@ -10,13 +10,13 @@
 growmod(x, ...)
 
 \method{growmod}{formula}(x, data = NULL, model = "hillslope",
-  n_iter = 5000, n_burnin = floor(n_iter/2), n_thin = 1, n_chains = 4,
-  stan_cores = 1, spline_params = list(degree = 8, n_knots = 10, spline_type
-  = "ispline"), ...)
+  n_iter = 5000, n_burnin = floor(n_iter/2), n_thin = 1,
+  n_chains = 4, stan_cores = 1, spline_params = list(degree = 8,
+  n_knots = 10, spline_type = "ispline"), ...)
 
-\method{growmod}{default}(x, index, block, predictors, model, n_iter, n_burnin,
-  n_thin, n_chains, stan_cores, spline_params, call = NULL, formula = NULL,
-  ...)
+\method{growmod}{default}(x, index, block, predictors, model, n_iter,
+  n_burnin, n_thin, n_chains, stan_cores, spline_params, call = NULL,
+  formula = NULL, ...)
 }
 \arguments{
 \item{x}{model formula (see details) or vector of size data}
